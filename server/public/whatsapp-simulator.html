@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENX Money WhatsApp Chatbot & Ledger Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wa-green: #00a884;
+      --wa-dark-green: #008069;
+      --wa-light-green: #25d366;
+      --wa-bg-dark: #0c1317;
+      --wa-chat-bg: #0b141a;
+      --wa-panel-bg: #111b21;
+      --wa-card-bg: #202c33;
+      --wa-outgoing: #005c4b;
+      --wa-incoming: #202c33;
+      --wa-text-primary: #e9edef;
+      --wa-text-secondary: #8696a0;
+      --wa-border: #222d34;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    body {
+      background: #090e11;
+      color: var(--wa-text-primary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Global Header */
+    .top-header {
+      height: 60px;
+      background: var(--wa-panel-bg);
+      border-bottom: 1px solid var(--wa-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--wa-light-green), var(--wa-dark-green));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 168, 132, 0.3);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--wa-text-secondary);
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .btn-primary-header {
+      background: var(--wa-green);
+      color: #fff;
+    }
+    .btn-primary-header:hover { background: var(--wa-dark-green); }
+
+    .btn-secondary-header {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-color: #334155;
+    }
+    .btn-secondary-header:hover { background: #334155; color: #fff; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .badge-live { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
+    .dot-pulse { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+    /* Main Container */
+    .main-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+
+    /* Left: WhatsApp Phone Simulator */
+    .chat-column {
+      background: var(--wa-chat-bg);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--wa-border);
+      position: relative;
+    }
+
+    .chat-header {
+      height: 64px;
+      background: var(--wa-panel-bg);
+      border-bottom: 1px solid var(--wa-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+
+    .bot-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bot-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #047857);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .bot-details h3 {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--wa-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bot-details p {
+      font-size: 11.5px;
+      color: var(--wa-light-green);
+      font-weight: 500;
+    }
+
+    .verified-icon {
+      background: var(--wa-green);
+      color: #fff;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+    }
+
+    .chat-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-header-btn {
+      background: transparent;
+      border: none;
+      color: var(--wa-text-secondary);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 6px;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .chat-header-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* Messages Scroll Area */
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .msg-date-divider {
+      align-self: center;
+      background: #182229;
+      color: var(--wa-text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 8px;
+      margin: 4px 0 10px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .msg-bubble {
+      max-width: 84%;
+      padding: 9px 12px 6px 12px;
+      border-radius: 12px;
+      position: relative;
+      font-size: 13.5px;
+      line-height: 1.45;
+      word-wrap: break-word;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-outgoing {
+      align-self: flex-end;
+      background: var(--wa-outgoing);
+      color: #e9edef;
+      border-bottom-right-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .msg-incoming {
+      align-self: flex-start;
+      background: var(--wa-incoming);
+      color: var(--wa-text-primary);
+      border-bottom-left-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .msg-text {
+      white-space: pre-wrap;
+    }
+
+    .msg-text strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .msg-text code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #6ee7b7;
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+    }
+
+    .checkmarks { color: #53bdeb; font-weight: bold; }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: none;
+      align-self: flex-start;
+      background: var(--wa-incoming);
+      padding: 12px 18px;
+      border-radius: 14px;
+      border-bottom-left-radius: 2px;
+      gap: 5px;
+    }
+
+    .typing-indicator span {
+      width: 7px;
+      height: 7px;
+      background: var(--wa-text-secondary);
+      border-radius: 50%;
+      animation: bounce 1.3s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.18s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.36s; }
+
+    @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+    /* Quick Action Pills */
+    .quick-pills {
+      background: var(--wa-panel-bg);
+      border-top: 1px solid var(--wa-border);
+      padding: 8px 12px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .quick-pills::-webkit-scrollbar { display: none; }
+
+    .pill-btn {
+      background: #202c33;
+      border: 1px solid #2a3942;
+      color: #94a3b8;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover {
+      background: var(--wa-green);
+      color: #fff;
+      border-color: var(--wa-green);
+    }
+
+    /* Input Bar */
+    .chat-input-bar {
+      height: 64px;
+      background: var(--wa-panel-bg);
+      border-top: 1px solid var(--wa-border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .chat-input {
+      width: 100%;
+      background: #2a3942;
+      border: 1px solid transparent;
+      color: #fff;
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .chat-input:focus {
+      border-color: var(--wa-green);
+    }
+
+    .btn-send {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--wa-green);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.15s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-send:hover { background: var(--wa-dark-green); transform: scale(1.05); }
+
+    /* Right: Control Center & Diagnostics */
+    .inspector-column {
+      background: #0d1217;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 24px;
+      gap: 20px;
+    }
+
+    .panel-card {
+      background: #111822;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .panel-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+    .stat-box {
+      background: #16202c;
+      border: 1px solid #223042;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    .stat-label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+    .stat-val { font-size: 14.5px; font-weight: 700; color: #e2e8f0; margin-top: 4px; }
+    .stat-val.highlight { color: #34d399; }
+
+    .select-field, .input-field {
+      width: 100%;
+      background: #16202c;
+      border: 1px solid #223042;
+      color: #e2e8f0;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    .select-field:focus, .input-field:focus { border-color: var(--wa-green); }
+
+    .trigger-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .action-trigger-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .action-trigger-btn:hover {
+      background: #2563eb;
+      color: #fff;
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+    }
+
+    .action-trigger-btn.btn-green:hover {
+      background: var(--wa-dark-green);
+      border-color: var(--wa-green);
+    }
+
+    .raw-log-view {
+      background: #070a0e;
+      border: 1px solid #1a2330;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: #a7f3d0;
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #334155;
+      color: #94a3b8;
+    }
+    .chip.verified { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .chip.pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    /* Modal Overlay & Card */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: #111822;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .modal-header h3 { font-size: 17px; font-weight: 700; color: #fff; }
+    .btn-close-modal { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+    .btn-close-modal:hover { color: #fff; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
+
+    .radio-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .radio-pill {
+      flex: 1;
+      text-align: center;
+      padding: 9px;
+      background: #16202c;
+      border: 1px solid #223042;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .radio-pill.active {
+      background: var(--wa-green);
+      color: #fff;
+      border-color: var(--wa-green);
+    }
+
+    .btn-submit-modal {
+      width: 100%;
+      padding: 12px;
+      background: var(--wa-green);
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .btn-submit-modal:hover { background: var(--wa-dark-green); }
+
+    /* Chat History Panel in Inspector */
+    .chat-history-list {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .chat-history-item {
+      background: #16202c;
+      border: 1px solid #223042;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .chat-history-item.in { border-left: 3px solid #3b82f6; }
+    .chat-history-item.out { border-left: 3px solid #10b981; }
+    .chat-history-meta { display: flex; justify-content: space-between; color: #64748b; font-size: 10.5px; margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Global Header -->
+  <header class="top-header">
+    <div class="brand">
+      <div class="brand-logo">ENX</div>
+      <div>
+        <div class="brand-title">ENX Money WhatsApp Hub</div>
+        <div class="brand-subtitle">Persistent Chat & Live Ledger Accounting</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn btn-primary-header" onclick="openLinkAccountModal()">
+        <span>🔗</span> Link Real Account
+      </button>
+      <button class="header-btn btn-secondary-header" onclick="openCustomTxModal()">
+        <span>➕</span> Add Custom Value
+      </button>
+      <div class="badge badge-live">
+        <div class="dot-pulse"></div>
+        <span>Storage: data.json Live</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dual Grid Layout -->
+  <div class="main-layout">
+
+    <!-- LEFT: WhatsApp Phone Chat UI -->
+    <div class="chat-column">
+      <div class="chat-header">
+        <div class="bot-info">
+          <div class="bot-avatar">🤖</div>
+          <div class="bot-details">
+            <h3>ENX Financial Assistant <span class="verified-icon">✓</span></h3>
+            <p id="chatSubStatus">online • WhatsApp Official Business</p>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button class="chat-header-btn" title="Refresh Live Chats" onclick="loadPersistentChats()">🔄</button>
+          <button class="chat-header-btn" title="Clear View" onclick="resetChat()">🧹</button>
+        </div>
+      </div>
+
+      <!-- Messages Container -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg-date-divider">Today</div>
+
+        <!-- Initial Welcome Message -->
+        <div class="msg-bubble msg-incoming">
+          <div class="msg-text">👋 <strong>Welcome to ENX Money WhatsApp Assistant!</strong>
+
+Your WhatsApp chat and ledger mutations are permanently saved to <code>data.json</code>.
+
+💡 You can:
+• Click <strong>'Link Real Account'</strong> to bind your real WhatsApp phone number
+• Click <strong>'Add Custom Value'</strong> or type <code>Add expense 1500 Lunch mode upi</code>
+• Type <strong>'Check balance all'</strong> or <strong>'Quick actions'</strong> for complete reports! 🚀</div>
+          <div class="msg-meta">
+            <span id="initTime">12:00 PM</span>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Quick Action Pills -->
+      <div class="quick-pills">
+        <button class="pill-btn" style="background:#00a884;color:#fff;font-weight:700;border:none;" onclick="sendQuickPrompt('Balance')">💰 Balance (Account Summary)</button>
+        <button class="pill-btn" style="background:#005c4b;color:#fff;font-weight:700;border:1px solid #00a884;" onclick="sendQuickPrompt('Statement')">📄 Statement (PDF Khata)</button>
+        <button class="pill-btn" style="background:#92400e;color:#fff;font-weight:700;border:none;" onclick="sendQuickPrompt('Remind')">🔔 Send Due Reminders</button>
+        <button class="pill-btn" onclick="sendQuickPrompt('Who owes me money?')">📥 Receivables</button>
+        <button class="pill-btn" onclick="sendQuickPrompt('What bills are due to suppliers?')">📤 Payables</button>
+        <button class="pill-btn" onclick="sendQuickPrompt('Show recent transactions')">🧾 Transactions</button>
+        <button class="pill-btn" onclick="openCustomTxModal('expense')">➕ Add Custom Expense</button>
+        <button class="pill-btn" onclick="openCustomTxModal('revenue')">🟢 Add Custom Income</button>
+        <button class="pill-btn" onclick="sendQuickPrompt('Give me a secure link to open app')">🔗 App Handoff</button>
+      </div>
+
+      <!-- Input Bar -->
+      <form class="chat-input-bar" id="chatForm" onsubmit="handleChatSubmit(event)">
+        <div class="input-wrapper">
+          <input type="text" id="userInput" class="chat-input" placeholder="Type a message, or 'Add expense 500 Lunch category Food mode card'..." autocomplete="off" />
+        </div>
+        <button type="submit" class="btn-send" id="btnSend">➤</button>
+      </form>
+    </div>
+
+    <!-- RIGHT: Inspector & Control Center -->
+    <div class="inspector-column">
+
+      <!-- Card 1: WhatsApp Session & Identity -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>📱 Real Account & WhatsApp Number</span>
+          <span id="sessionStatusBadge" class="chip verified">Permanent Active</span>
+        </div>
+        <div class="grid-2">
+          <div class="stat-box">
+            <div class="stat-label">Active WhatsApp Number</div>
+            <select id="userPhoneSelect" class="select-field" style="margin-top:4px;" onchange="handleUserSwitch(this.value)">
+              <option value="919876543210">+91 98765 43210 (Demo Admin)</option>
+            </select>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Linked Entity / User</div>
+            <div class="stat-val highlight" id="pairedUserName">Anjali Enterprise Admin</div>
+          </div>
+        </div>
+        <div style="margin-top: 12px; display: flex; gap: 8px;">
+          <button class="action-trigger-btn btn-green" style="flex:1;" onclick="openLinkAccountModal()">
+            <span>➕</span> Link New Real Account
+          </button>
+          <button class="action-trigger-btn" style="flex:1;" onclick="openCustomTxModal()">
+            <span>📝</span> Add Custom Value
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2: AI & Intent Diagnostic Engine -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>🧠 Diagnostic Inspector & Ledger State</span>
+          <span class="chip">Live JsonStore</span>
+        </div>
+        <div class="grid-3" style="margin-bottom: 12px;">
+          <div class="stat-box">
+            <div class="stat-label">Detected Intent</div>
+            <div class="stat-val" id="diagIntent">None</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Tool Called</div>
+            <div class="stat-val highlight" id="diagTool">None</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Latency</div>
+            <div class="stat-val" id="diagLatency">0 ms</div>
+          </div>
+        </div>
+        <div class="stat-label" style="margin-bottom: 6px;">Live Output / Tool Context Data</div>
+        <div class="raw-log-view" id="diagPayload">// Waiting for user interaction...</div>
+      </div>
+
+      <!-- Card 3: Persistent Chat History (data.json) -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>💾 Saved WhatsApp Chats (<span id="chatCountBadge">0</span>)</span>
+          <button class="chat-header-btn" title="Clear History" onclick="clearPersistentChats()" style="font-size:12px; color:#ef4444;">Clear All</button>
+        </div>
+        <div class="chat-history-list" id="persistentChatList">
+          <div style="color: #64748b; font-size: 12px; text-align: center; padding: 12px;">Loading chat history...</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Webhook Architecture Info -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>🌐 Endpoints</span>
+        </div>
+        <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+          • <strong>Link Real Account:</strong> <code>POST /api/whatsapp/link-account</code><br>
+          • <strong>Add Custom Transaction:</strong> <code>POST /api/whatsapp/transaction</code><br>
+          • <strong>Persistent Chats:</strong> <code>GET /api/whatsapp/chats?phoneNumber=...</code><br>
+          • <strong>Meta Webhook:</strong> <code>POST /api/whatsapp/webhook</code>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 1: Link Real Account -->
+  <div class="modal-overlay" id="modalLinkAccount">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🔗 Link Real Account with WhatsApp</h3>
+        <button class="btn-close-modal" onclick="closeLinkAccountModal()">✕</button>
+      </div>
+      <form id="linkAccountForm" onsubmit="handleLinkAccountSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">WhatsApp Phone Number</label>
+          <input type="text" id="linkPhone" class="input-field" placeholder="e.g. 919811223344 (with country code)" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="linkName" class="input-field" placeholder="e.g. Anjali Sharma" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Registered Email</label>
+          <input type="email" id="linkEmail" class="input-field" placeholder="e.g. anjali@enterprise.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company / Enterprise Name</label>
+          <input type="text" id="linkCompany" class="input-field" placeholder="e.g. Anjali Global Technologies" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Default Account Profile</label>
+          <div class="radio-group">
+            <div class="radio-pill active" id="pillProfileBiz" onclick="selectLinkProfile('business')">Business</div>
+            <div class="radio-pill" id="pillProfilePers" onclick="selectLinkProfile('personal')">Personal</div>
+          </div>
+          <input type="hidden" id="linkProfileType" value="business" />
+        </div>
+        <button type="submit" class="btn-submit-modal">Save & Link Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Add Custom Expense / Income -->
+  <div class="modal-overlay" id="modalCustomTx">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="customTxModalTitle">➕ Add Custom Value</h3>
+        <button class="btn-close-modal" onclick="closeCustomTxModal()">✕</button>
+      </div>
+      <form id="customTxForm" onsubmit="handleCustomTxSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Transaction Type</label>
+          <div class="radio-group">
+            <div class="radio-pill active" id="pillTxExpense" onclick="selectTxType('expense')">🔴 Expense</div>
+            <div class="radio-pill" id="pillTxRevenue" onclick="selectTxType('revenue')">🟢 Income / Revenue</div>
+          </div>
+          <input type="hidden" id="txTypeInput" value="expense" />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" id="txAmount" class="input-field" step="0.01" min="1" placeholder="e.g. 4999.50" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Mode</label>
+            <select id="txPaymentMode" class="select-field">
+              <option value="upi">UPI (GPay/PhonePe)</option>
+              <option value="creditCard">Credit Card</option>
+              <option value="debitCard">Debit Card</option>
+              <option value="bankTransfer">Bank Transfer / NEFT</option>
+              <option value="cash">Cash</option>
+              <option value="cheque">Cheque</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description / Title</label>
+          <input type="text" id="txTitle" class="input-field" placeholder="e.g. AWS Cloud Servers or UI Consulting" required />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" id="txCategory" class="input-field" placeholder="e.g. Infrastructure, Dining Out" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Account Profile</label>
+            <select id="txProfileType" class="select-field">
+              <option value="business">Business Account</option>
+              <option value="personal">Personal Account</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit-modal" id="btnRecordTx">Record Transaction to Live Ledger</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const userPhoneSelect = document.getElementById('userPhoneSelect');
+
+    document.getElementById('initTime').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    function getActivePhone() {
+      return userPhoneSelect.value || '919876543210';
+    }
+
+    function addMessageBubble(text, isOutgoing = false, timeStr = null, docUrl = null, docName = null) {
+      const bubble = document.createElement('div');
+      bubble.className = `msg-bubble ${isOutgoing ? 'msg-outgoing' : 'msg-incoming'}`;
+
+      const t = timeStr || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const checkmarks = isOutgoing ? '<span class="checkmarks">✓✓</span>' : '';
+
+      // Check if text has PDF url
+      let detectedDocUrl = docUrl;
+      if (!detectedDocUrl) {
+        const urlMatch = text.match(/(https?:\/\/[^\s]+\.pdf|https?:\/\/[^\s]+\/statements\/[^\s]+)/i);
+        if (urlMatch) detectedDocUrl = urlMatch[0];
+      }
+
+      let formatted = text
+        .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+        .replace(/_(.*?)_/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+
+      let docAttachmentHtml = '';
+      if (detectedDocUrl) {
+        const name = docName || detectedDocUrl.split('/').pop() || 'Khata_Statement.pdf';
+        docAttachmentHtml = `
+          <div style="margin-top:12px;padding:12px;background:#111b21;border:1px solid #00a884;border-radius:10px;display:flex;align-items:center;gap:12px;">
+            <div style="font-size:26px;">📄</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:12.5px;color:#e9edef;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">${name}</div>
+              <div style="font-size:11px;color:#00a884;font-weight:600;">Official Khata Ledger PDF Report</div>
+            </div>
+            <a href="${detectedDocUrl}" target="_blank" download style="background:#00a884;color:#fff;text-decoration:none;padding:7px 12px;border-radius:8px;font-size:11.5px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,168,132,0.4);">⬇️ Download PDF</a>
+          </div>
+        `;
+      }
+
+      bubble.innerHTML = `
+        <div class="msg-text">${formatted}${docAttachmentHtml}</div>
+        <div class="msg-meta">
+          <span>${t}</span> ${checkmarks}
+        </div>
+      `;
+
+      chatMessages.insertBefore(bubble, typingIndicator);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function sendToBackend(messageText) {
+      addMessageBubble(messageText, true);
+      typingIndicator.style.display = 'flex';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      const startTime = performance.now();
+      const phone = getActivePhone();
+
+      try {
+        const response = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: phone,
+            message: messageText
+          })
+        });
+
+        const data = await response.json();
+        const latency = Math.round(performance.now() - startTime);
+
+        typingIndicator.style.display = 'none';
+
+        if (data.success && data.data) {
+          const res = data.data;
+          addMessageBubble(res.reply, false, null, res.downloadUrl, res.fileName);
+
+          // Update Inspector
+          document.getElementById('diagIntent').textContent = res.intent || 'GENERAL';
+          document.getElementById('diagTool').textContent = res.toolCalled || 'None';
+          document.getElementById('diagLatency').textContent = `${latency} ms`;
+          document.getElementById('diagPayload').textContent = JSON.stringify(res, null, 2);
+
+          if (res.user) {
+            document.getElementById('pairedUserName').textContent = res.user.userName || res.user.user_name || res.user.email || 'Admin';
+          }
+
+          // Reload persistent chats
+          loadPersistentChats();
+        } else {
+          addMessageBubble(`⚠️ Error: ${data.message || 'Could not process message.'}`);
+        }
+      } catch (err) {
+        typingIndicator.style.display = 'none';
+        addMessageBubble(`❌ Server error: ${err.message}`);
+      }
+    }
+
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
+      userInput.value = '';
+      sendToBackend(text);
+    }
+
+    function sendQuickPrompt(prompt) {
+      sendToBackend(prompt);
+    }
+
+    function resetChat() {
+      chatMessages.innerHTML = `
+        <div class="msg-date-divider">Today</div>
+        <div class="msg-bubble msg-incoming">
+          <div class="msg-text">👋 <strong>Conversation reset.</strong> How can I assist you today?</div>
+          <div class="msg-meta"><span>Just now</span></div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+    }
+
+    // Modal Handlers: Link Account
+    function openLinkAccountModal() {
+      document.getElementById('modalLinkAccount').style.display = 'flex';
+      document.getElementById('linkPhone').value = getActivePhone();
+    }
+    function closeLinkAccountModal() {
+      document.getElementById('modalLinkAccount').style.display = 'none';
+    }
+    function selectLinkProfile(prof) {
+      document.getElementById('linkProfileType').value = prof;
+      document.getElementById('pillProfileBiz').className = `radio-pill ${prof === 'business' ? 'active' : ''}`;
+      document.getElementById('pillProfilePers').className = `radio-pill ${prof === 'personal' ? 'active' : ''}`;
+    }
+
+    async function handleLinkAccountSubmit(e) {
+      e.preventDefault();
+      const phone = document.getElementById('linkPhone').value.trim();
+      const name = document.getElementById('linkName').value.trim();
+      const email = document.getElementById('linkEmail').value.trim();
+      const company = document.getElementById('linkCompany').value.trim();
+      const profile = document.getElementById('linkProfileType').value;
+
+      try {
+        const resp = await fetch('/api/whatsapp/link-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: phone,
+            userName: name,
+            email: email,
+            companyName: company || name,
+            profileType: profile
+          })
+        });
+        const res = await resp.json();
+        if (res.success) {
+          closeLinkAccountModal();
+          await loadUsers();
+          userPhoneSelect.value = res.user.phoneNumber || res.user.phone_number;
+          document.getElementById('pairedUserName').textContent = res.user.userName || res.user.user_name;
+          addMessageBubble(`🎉 Account Linked for ${name} (+${phone}) to ${company || name}!`, false);
+          loadPersistentChats();
+        } else {
+          alert('Failed to link account: ' + (res.detail || res.message));
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    // Modal Handlers: Custom Transaction
+    function openCustomTxModal(type = 'expense') {
+      selectTxType(type);
+      document.getElementById('modalCustomTx').style.display = 'flex';
+    }
+    function closeCustomTxModal() {
+      document.getElementById('modalCustomTx').style.display = 'none';
+    }
+    function selectTxType(type) {
+      document.getElementById('txTypeInput').value = type;
+      document.getElementById('pillTxExpense').className = `radio-pill ${type === 'expense' ? 'active' : ''}`;
+      document.getElementById('pillTxRevenue').className = `radio-pill ${type === 'revenue' ? 'active' : ''}`;
+      document.getElementById('customTxModalTitle').textContent = type === 'expense' ? '🔴 Add Custom Expense' : '🟢 Add Custom Income';
+      document.getElementById('btnRecordTx').textContent = type === 'expense' ? 'Record Expense to Ledger' : 'Record Income to Ledger';
+    }
+
+    async function handleCustomTxSubmit(e) {
+      e.preventDefault();
+      const type = document.getElementById('txTypeInput').value;
+      const amount = parseFloat(document.getElementById('txAmount').value);
+      const title = document.getElementById('txTitle').value.trim();
+      const category = document.getElementById('txCategory').value.trim();
+      const profile = document.getElementById('txProfileType').value;
+      const mode = document.getElementById('txPaymentMode').value;
+      const phone = getActivePhone();
+
+      try {
+        const resp = await fetch('/api/whatsapp/transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: phone,
+            amount: amount,
+            title: title,
+            type: type,
+            category: category || null,
+            profileType: profile,
+            paymentMode: mode
+          })
+        });
+        const res = await resp.json();
+        if (res.success) {
+          closeCustomTxModal();
+          // Reset fields
+          document.getElementById('txAmount').value = '';
+          document.getElementById('txTitle').value = '';
+          document.getElementById('txCategory').value = '';
+          // Render bubbles in chat
+          addMessageBubble(`Add ${type} ₹${amount} for ${title} (${mode.toUpperCase()})`, true);
+          addMessageBubble(res.data.reply, false);
+          loadPersistentChats();
+        } else {
+          alert('Failed to record transaction: ' + (res.detail || res.message));
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    // Persistent Chat History
+    async function loadPersistentChats() {
+      const phone = getActivePhone();
+      try {
+        const resp = await fetch(`/api/whatsapp/chats?phoneNumber=${phone}`);
+        const res = await resp.json();
+        const listEl = document.getElementById('persistentChatList');
+        if (res.success && res.chats) {
+          document.getElementById('chatCountBadge').textContent = res.chats.length;
+          if (res.chats.length === 0) {
+            listEl.innerHTML = '<div style="color: #64748b; font-size: 12px; text-align: center; padding: 12px;">No messages saved yet.</div>';
+            return;
+          }
+          listEl.innerHTML = res.chats.slice(-20).reverse().map(c => {
+            const isOut = c.direction === 'outbound';
+            const time = c.timestamp ? new Date(c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            return `
+              <div class="chat-history-item ${isOut ? 'out' : 'in'}">
+                <div class="chat-history-meta">
+                  <span>${isOut ? '🤖 Assistant' : '👤 User'}</span>
+                  <span>${time}</span>
+                </div>
+                <div>${c.message.replace(/\*(.*?)\*/g, '<strong>$1</strong>').slice(0, 140)}${c.message.length > 140 ? '...' : ''}</div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.warn('Failed to load chats:', e);
+      }
+    }
+
+    async function clearPersistentChats() {
+      if (!confirm('Are you sure you want to clear saved WhatsApp messages for this number?')) return;
+      const phone = getActivePhone();
+      try {
+        await fetch(`/api/whatsapp/chats?phoneNumber=${phone}`, { method: 'DELETE' });
+        loadPersistentChats();
+        resetChat();
+      } catch (e) {
+        alert('Could not clear chats: ' + e.message);
+      }
+    }
+
+    // Load Linked Users
+    async function loadUsers() {
+      try {
+        const resp = await fetch('/api/whatsapp/users');
+        const res = await resp.json();
+        if (res.success && res.users && res.users.length > 0) {
+          const current = userPhoneSelect.value;
+          userPhoneSelect.innerHTML = res.users.map(u => {
+            const num = u.phoneNumber || u.phone_number;
+            const name = u.userName || u.user_name || u.companyName || num;
+            return `<option value="${num}">+${num} (${name})</option>`;
+          }).join('');
+          if (current && [...userPhoneSelect.options].some(o => o.value === current)) {
+            userPhoneSelect.value = current;
+          }
+          handleUserSwitch(userPhoneSelect.value);
+        }
+      } catch (e) {
+        console.warn('Failed to load users:', e);
+      }
+    }
+
+    function handleUserSwitch(phone) {
+      loadPersistentChats();
+    }
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', async () => {
+      const chatForm = document.getElementById('chatForm');
+      if (chatForm) {
+        chatForm.addEventListener('submit', handleChatSubmit);
+      }
+
+      const btnSend = document.getElementById('btnSend');
+      if (btnSend) {
+        btnSend.addEventListener('click', (e) => {
+          e.preventDefault();
+          handleChatSubmit(e);
+        });
+      }
+
+      if (userInput) {
+        userInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleChatSubmit(e);
+          }
+        });
+      }
+
+      // Bind all pill buttons programmatically as safety fallback
+      document.querySelectorAll('.quick-pills .pill-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const txt = (btn.textContent || '').trim();
+          if (txt.includes('Balance')) sendQuickPrompt('Balance');
+          else if (txt.includes('Statement')) sendQuickPrompt('Statement');
+          else if (txt.includes('Remind')) sendQuickPrompt('Remind');
+          else if (txt.includes('Receivables')) sendQuickPrompt('Who owes me money?');
+          else if (txt.includes('Payables')) sendQuickPrompt('What bills are due to suppliers?');
+          else if (txt.includes('Transactions')) sendQuickPrompt('Show recent transactions');
+          else if (txt.includes('App Handoff')) sendQuickPrompt('Give me a secure link to open app');
+          else if (txt.includes('Add Custom Expense')) openCustomTxModal('expense');
+          else if (txt.includes('Add Custom Income')) openCustomTxModal('revenue');
+        });
+      });
+
+      await loadUsers();
+      await loadPersistentChats();
+    });
+  </script>
+</body>
+</html>

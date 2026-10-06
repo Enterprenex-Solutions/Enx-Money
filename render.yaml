@@ -1,0 +1,121 @@
+services:
+  - type: web
+    name: enx-money-api
+    env: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    domains:
+      - enxmoney.enterprenex.solutions
+      - enterprenex.solutions
+      - www.enterprenex.solutions
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: enx_money_prod
+
+      # ── Sender Configuration ─────────────────────────────────────────────
+      - key: EMAIL_FROM
+        value: "ENX Money <support@enterprenex.solutions>"
+      - key: SUPPORT_EMAIL
+        value: support@enterprenex.solutions
+
+      # ── Global HTTPS Email Delivery (Brevo HTTPS API over Port 443 — set in Render Dashboard) ──
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        value: support@enterprenex.solutions
+      - key: SENDGRID_API_KEY
+        sync: false
+
+      # ── SMTP fallback (port 465 SSL / 587 STARTTLS — set in Render Dashboard) ──────────────────────
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_SECURE
+        value: "true"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+
+      - key: CORS_ORIGIN
+        value: "*"
+
+      # ── Meta AI & Groq Live Chat Engine ──────────────────────────────────
+      - key: GROQ_API_KEY
+        sync: false
+      - key: META_AI_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: "groq/compound-mini"
+      - key: META_AI_API_URL
+        value: "https://api.groq.com/openai/v1/chat/completions"
+
+      # ── Google Gemini Secondary Fallback Engine ──────────────────────────
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: "gemini-3.6-flash"
+      - key: GEMINI_PROJECT_NAME
+        value: "projects/996628455899"
+      - key: GEMINI_PROJECT_NUMBER
+        value: "996628455899"
+
+      # ── Razorpay Payment Gateway Configuration ───────────────────────────
+      - key: RAZORPAY_KEY_ID
+        value: rzp_live_ThjlhbHvQ4iaQV
+      - key: RAZORPAY_KEY_SECRET
+        value: obTkTnLgWoM2bkq35zhUY7Og
+      - key: RAZORPAY_WEBHOOK_SECRET
+        value: enx_live_webhook_2026
+      - key: SUPPORT_PHONE
+        value: "+91 9226860060"
+      - key: COMPANY_PHONE
+        value: "+91 9226860060"
+      - key: FAST2SMS_API_KEY
+        value: "heLqVYR93WKfCASGotvOcB0uXiamj5lsIxzZEwrPHk827U4nDbyDtewr7qvkYA0ipXFsuROM3GWxZcmS"
+
+      # ── WhatsApp Cloud API & Automated Financial Bot ─────────────────────
+      - key: WHATSAPP_PROVIDER
+        value: "meta"
+      - key: WHATSAPP_VERIFY_TOKEN
+        value: "enx_money_webhook_token_2026"
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: APP_BASE_URL
+        value: "https://enxmoney.enterprenex.solutions"
+
+      # ── Setu KYC & Sandbox Engine Configuration ───────────────────────────
+      - key: SETU_SANDBOX_MODE
+        value: "true"
+      - key: SETU_BASE_URL
+        value: "https://dg-sandbox.setu.co"
+      - key: SETU_CLIENT_ID
+        value: "setu_sandbox_client_enxmoney_2026"
+      - key: SETU_CLIENT_SECRET
+        value: "setu_sandbox_secret_enxmoney_2026"
+      - key: SETU_PRODUCT_INSTANCE_ID
+        value: "8dd40f05-6d99-4713-a215-79d73f953146"
+      - key: PAN_API_KEY
+        value: "setu_sandbox_client_enxmoney_2026"
+      - key: PAN_API_SECRET
+        value: "setu_sandbox_secret_enxmoney_2026"

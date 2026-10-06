@@ -1,0 +1,79 @@
+# Miscellaneous & OS
+*.class
+*.log
+*.pyc
+*.swp
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+analysis_results.txt
+scratch/
+
+# Environment & Dependencies
+.env
+*.env
+node_modules/
+backend/node_modules/
+server/node_modules/
+npm-debug.log*
+yarn-error.log
+
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+*.db
+*.sqlite3
+server/exports/
+server/public/statements/*.pdf
+*Engineering_Work_Report*.pdf
+*Report*.pdf
+server/scripts/generate_engineering_report_pdf.js
+
+
+
+# IDE
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Flutter / Dart / Pub
+**/doc/api/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/build/
+**/coverage/
+**/.widget_preview/
+
+# Android Studio / Build artifacts
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+
+# Keep APK and AAB binaries out of git repository
+*.apk
+*.aab
+*.abb
+server/public/*.apk
+server/public/*.aab
+
+
+# Test database artifacts
+*.test.json
+

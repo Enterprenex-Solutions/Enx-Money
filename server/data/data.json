@@ -1,0 +1,161 @@
+{
+  "enterprises": [
+    {
+      "id": "ent-1",
+      "companyName": "ENX Global Technologies Pvt Ltd",
+      "gstin": "27AAACE1234F1Z9",
+      "email": "billing@enxtech.com",
+      "phone": "+91 98765 43210",
+      "address": "101 Tech Park, BKC, Mumbai, Maharashtra 400051",
+      "createdAt": "2026-09-13T18:09:02.412670"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-1",
+      "name": "TechCorp Solutions",
+      "companyName": "TechCorp LLC",
+      "phone": "+91 91234 56789",
+      "email": "accounts@techcorp.com",
+      "address": "Sector 62, Noida, Uttar Pradesh 201301",
+      "totalInvoiced": 490000.0,
+      "outstandingBalance": 95000.0,
+      "createdAt": "2026-09-13T18:09:02.412670"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "supp-2",
+      "name": "Dell Hardware Vendor",
+      "companyName": "Dell Technologies",
+      "category": "Hardware Supplier",
+      "phone": "+91 80000 44556",
+      "email": "enterprise-sales@dell.com",
+      "address": "Whitefield, Bengaluru, Karnataka 560066",
+      "totalBilled": 68000.0,
+      "outstandingPayable": 68000.0,
+      "createdAt": "2026-09-13T18:09:02.412670"
+    },
+    {
+      "id": "supp-1",
+      "name": "AWS Cloud Services",
+      "companyName": "Amazon Web Services",
+      "category": "Cloud Infrastructure",
+      "phone": "+91 80000 11223",
+      "email": "aws-billing@amazon.com",
+      "address": "Hyderabad, Telangana 500081",
+      "totalBilled": 64800.0,
+      "outstandingPayable": 0.0,
+      "createdAt": "2026-09-13T18:09:02.412670"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "p-201",
+      "title": "Monthly Salary Credit",
+      "amount": 150000.0,
+      "type": "revenue",
+      "profileType": "personal",
+      "category": "Salary",
+      "date": "2026-09-13T18:09:02.412670",
+      "paymentMode": "bankTransfer",
+      "notes": "Monthly salary credit",
+      "gstRate": 0.0,
+      "invoiceNumber": null,
+      "isCleared": true,
+      "enterpriseId": null,
+      "customerId": null,
+      "supplierId": null
+    },
+    {
+      "id": "b-102",
+      "title": "AWS Cloud Hosting Invoice",
+      "amount": 32400.0,
+      "type": "expense",
+      "profileType": "business",
+      "category": "Infrastructure",
+      "date": "2026-09-13T18:09:02.412670",
+      "paymentMode": "creditCard",
+      "notes": "Monthly production server fees",
+      "gstRate": 18.0,
+      "invoiceNumber": "AWS-99210",
+      "isCleared": true,
+      "enterpriseId": "ent-1",
+      "customerId": null,
+      "supplierId": "supp-1"
+    },
+    {
+      "id": "b-101",
+      "title": "Enterprise Software License Sale",
+      "amount": 245000.0,
+      "type": "revenue",
+      "profileType": "business",
+      "category": "Software Sales",
+      "date": "2026-09-13T18:09:02.412670",
+      "paymentMode": "bankTransfer",
+      "notes": "Annual license renewal for TechCorp",
+      "gstRate": 18.0,
+      "invoiceNumber": "INV-2026-089",
+      "isCleared": true,
+      "enterpriseId": "ent-1",
+      "customerId": "cust-1",
+      "supplierId": null
+    }
+  ],
+  "categories": {
+    "business": {
+      "revenue": [
+        "Software Sales",
+        "Consulting",
+        "Maintenance",
+        "Service Contracts",
+        "Other Income"
+      ],
+      "expense": [
+        "Infrastructure",
+        "Hardware",
+        "Office Rent",
+        "Salaries",
+        "Marketing",
+        "Travel",
+        "Legal & Accounting",
+        "Taxes",
+        "Miscellaneous"
+      ]
+    },
+    "personal": {
+      "revenue": [
+        "Salary",
+        "Freelancing",
+        "Investments",
+        "Dividends",
+        "Rental Income",
+        "Gifts"
+      ],
+      "expense": [
+        "Rent",
+        "Groceries",
+        "Dining Out",
+        "Utilities",
+        "Shopping",
+        "Entertainment",
+        "Healthcare",
+        "Loans & EMI",
+        "Travel",
+        "Education"
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "id": "business",
+      "label": "Business Management",
+      "description": "Commercial revenues, vendor payments, GST & invoices"
+    },
+    {
+      "id": "personal",
+      "label": "Personal Expense",
+      "description": "Personal bank accounts, home budget & daily expenses"
+    }
+  ]
+}
