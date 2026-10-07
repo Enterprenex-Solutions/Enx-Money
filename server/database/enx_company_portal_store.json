@@ -71,6 +71,15 @@
       "status": "ACTIVE",
       "employeeId": "EMP-008",
       "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-009",
+      "email": "vikas.test1791341403128@enterprenex.solutions",
+      "passwordHash": "$2a$10$rmvnHrdy/rcOyHadE8BH7Ot80mzXXEOwJCtHn/BwZVr1RoTg.LAAW",
+      "role": "EMPLOYEE",
+      "status": "ACTIVE",
+      "employeeId": "EMP-009",
+      "createdAt": "2026-10-07T02:50:03.190Z"
     }
   ],
   "employees": [
@@ -169,6 +178,18 @@
       "status": "ACTIVE",
       "salaryAmount": 25000,
       "joiningDate": "2026-01-10"
+    },
+    {
+      "id": "EMP-009",
+      "name": "Vikas Deshmukh",
+      "email": "vikas.test1791341403128@enterprenex.solutions",
+      "role": "EMPLOYEE",
+      "department": "OPERATIONS",
+      "designation": "Operations Specialist",
+      "phone": "+91-9123456789",
+      "status": "ACTIVE",
+      "salaryAmount": 60000,
+      "joiningDate": "2026-10-07"
     }
   ],
   "departments": [
@@ -339,6 +360,41 @@
     }
   ],
   "notifications": [],
-  "auditLogs": [],
-  "updatedAt": "2026-10-07T02:44:39.184Z"
+  "auditLogs": [
+    {
+      "id": "AUD-6ab80b1c",
+      "userId": "EMP-004",
+      "userEmail": "jyothi@enterprenex.solutions",
+      "role": "HR",
+      "action": "LOGIN_SUCCESS",
+      "resourceType": "AUTH",
+      "resourceId": null,
+      "ipAddress": "::ffff:127.0.0.1",
+      "userAgent": "Portal-Client",
+      "details": {
+        "redirectUrl": "/portal/hr",
+        "rememberMe": false
+      },
+      "timestamp": "2026-10-07T02:50:03.116Z"
+    },
+    {
+      "id": "AUD-8860f38d",
+      "userId": "EMP-004",
+      "userEmail": "jyothi@enterprenex.solutions",
+      "role": "HR",
+      "action": "CREATE_EMPLOYEE",
+      "resourceType": "EMPLOYEE",
+      "resourceId": "EMP-009",
+      "ipAddress": "::ffff:127.0.0.1",
+      "userAgent": "Portal-Client",
+      "details": {
+        "name": "Vikas Deshmukh",
+        "email": "vikas.test1791341403128@enterprenex.solutions",
+        "role": "EMPLOYEE",
+        "department": "OPERATIONS"
+      },
+      "timestamp": "2026-10-07T02:50:03.190Z"
+    }
+  ],
+  "updatedAt": "2026-10-07T02:50:03.191Z"
 }

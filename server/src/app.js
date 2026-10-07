@@ -25,6 +25,7 @@ const {
 const { getSaasLandingHtml } = require('./public_saas_landing');
 const { getAdminDashboardHtml } = require('./public_admin_dashboard');
 const { getWorkforcePortalHtml } = require('./public_workforce_portal');
+const { getCompanyPortalHtml } = require('./public_company_portal');
 const DownloadModel = require('./models/download.model');
 const compression = require('compression');
 
@@ -32,6 +33,16 @@ const app = express();
 
 // Enable trust proxy for reverse proxies (Render, Cloudflare, Nginx, AWS ALB/CloudFront)
 app.set('trust proxy', 1);
+
+// Automatic routing for portal.enterprenex.solutions subdomain
+app.use((req, res, next) => {
+  const host = (req.headers.host || '').toLowerCase();
+  if (host.startsWith('portal.enterprenex.solutions') && !req.path.startsWith('/api')) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(getCompanyPortalHtml());
+  }
+  next();
+});
 
 // Enable high-performance HTTP Gzip/Deflate compression for fast loading (<2s)
 app.use(compression({ threshold: 1024 }));
@@ -310,9 +321,24 @@ app.get(['/admin', '/admin/dashboard', '/admin/analytics-portal'], (req, res) =>
 });
 
 // Interactive Workforce & Task Management Portal (Internal HRMS & Work Delivery)
-app.get(['/workforce', '/workforce/dashboard', '/portal/workforce', '/hrms'], (req, res) => {
+app.get(['/workforce', '/workforce/dashboard', '/hrms'], (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(getWorkforcePortalHtml());
+});
+
+// Enterprenex Company Management Portal (Unified Single Login & RBAC Executive Dashboards)
+app.get([
+  '/portal',
+  '/portal/*',
+  '/company-portal',
+  '/company-portal/*',
+  '/enterprenex-portal',
+], (req, res, next) => {
+  if (req.path.startsWith('/portal/api') || req.path.startsWith('/api')) {
+    return next();
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(getCompanyPortalHtml());
 });
 
 

@@ -279,4 +279,26 @@ describe('Enterprenex Company Management Portal — RBAC & Security Suite', () =
     const deniedLogs = res.body.data.filter(l => l.action.includes('DENIED'));
     expect(deniedLogs.length).toBeGreaterThan(0);
   });
+
+  // ─── 4. UNIFIED PORTAL UI & SUBDOMAIN ROUTING ─────────
+  it('20. Should render Unified Company Management Portal Web UI on /portal', async () => {
+    const res = await request(app).get('/portal');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toContain('text/html');
+    expect(res.text).toContain('Enterprenex Solutions');
+    expect(res.text).toContain('Company Management Portal');
+    expect(res.text).toContain('Company Email');
+    expect(res.text).toContain('Sign In to Portal');
+  });
+
+  it('21. Should render Unified Portal when accessing via Host: portal.enterprenex.solutions', async () => {
+    const res = await request(app)
+      .get('/')
+      .set('Host', 'portal.enterprenex.solutions');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toContain('text/html');
+    expect(res.text).toContain('portal.enterprenex.solutions');
+    expect(res.text).toContain('Company Management Portal');
+  });
 });

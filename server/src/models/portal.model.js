@@ -1042,6 +1042,11 @@ class PortalModel {
   }
 
   static _resetForTesting() {
+    try {
+      if (process.env.NODE_ENV === 'test' && fs.existsSync(STORE_FILE)) {
+        fs.unlinkSync(STORE_FILE);
+      }
+    } catch (_) {}
     this._users.clear();
     this._employees.clear();
     this._departments.clear();
