@@ -61,6 +61,8 @@ jobs:
           PORT: 5001
           JWT_SECRET: ci_cd_test_jwt_secret_key_1234567890
           DEMO_OTP_ENABLED: "false"
+          RAZORPAY_KEY_ID: rzp_live_ThjlhbHvQ4iaQV
+          RAZORPAY_KEY_SECRET: obTkTnLgWoM2bkq35zhUY7Og
 
   deploy-and-verify:
     name: Continuous Deployment & Health Verification

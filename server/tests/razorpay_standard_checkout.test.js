@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const app = require('../src/app');
 
 describe('Razorpay Standard Web Checkout Integration', () => {
-  const testKeySecret = process.env.RAZORPAY_KEY_SECRET || 'qO8RdiLp42oez5ZF6O5XvF3w';
+  const testKeySecret = process.env.RAZORPAY_KEY_SECRET || 'obTkTnLgWoM2bkq35zhUY7Og';
 
   describe('STEP 1: POST /api/create-order', () => {
     test('Rejects request if amount is missing or invalid', async () => {
