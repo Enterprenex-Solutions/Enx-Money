@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, Download, Globe } from 'lucide-react';
+import { Menu, X, ArrowRight, Download, Globe, Users } from 'lucide-react';
 import { SITE_CONFIG } from '../data/content';
 
 interface NavbarProps {
@@ -66,8 +66,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
             ))}
           </nav>
 
-          {/* Right Action Icons & Web CTA (Like OkCredit - NO LOGIN) */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right Action Icons & Web CTA */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* Enterprenex Staff / Workforce Portal Link */}
+            <a
+              href="/workforce"
+              className="text-xs font-bold text-slate-700 hover:text-emerald-700 transition-colors flex items-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100/90 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 shadow-sm"
+              title="Enterprenex Workforce — Employee Login, Clock-in Attendance & Tasks"
+            >
+              <Users className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Staff Portal</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            </a>
+
             {/* Quick Web app link (Desktop / Laptop) */}
             <a
               href={SITE_CONFIG.webAppUrl}
@@ -97,6 +108,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
 
           {/* Mobile Hamburger Toggle */}
           <div className="flex lg:hidden items-center gap-2">
+            <a
+              href="/workforce"
+              className="p-2 rounded-lg text-emerald-700 bg-emerald-50 border border-emerald-200"
+              title="Staff Portal"
+            >
+              <Users className="w-4 h-4" />
+            </a>
+
             <a
               href="#download"
               onClick={onDownloadClick}
@@ -131,6 +150,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
             </a>
           ))}
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2.5">
+            {/* Staff Portal Mobile Link */}
+            <a
+              href="/workforce"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-3 rounded-xl border border-emerald-300 text-emerald-900 font-bold text-center text-sm flex items-center justify-center gap-2 bg-emerald-50/80 shadow-sm"
+            >
+              <Users className="w-4 h-4 text-emerald-600" />
+              <span>Staff Portal (Attendance & Tasks)</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </a>
+
             <a
               href={SITE_CONFIG.whatsappUrl}
               target="_blank"

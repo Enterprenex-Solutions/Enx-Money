@@ -139,6 +139,12 @@ export const Footer: React.FC = () => {
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
+              <li>
+                <a href="/workforce" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1.5 pt-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Staff & HR Portal</span>
+                </a>
+              </li>
             </ul>
           </div>
 

@@ -59,11 +59,13 @@ export const SITE_CONFIG = {
   instagramUrl: 'https://www.instagram.com/enterprenexsolution?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==',
   address: 'Plot No. 148, Shrinand Plaza, CIDCO Waluj Mahanagar 1, Chhatrapati Sambhajinagar, Maharashtra - 431136, India',
   
-  // Legal Links
+  // Legal & Portal Links
   privacyUrl: '/privacy-policy',
   termsUrl: '/terms-and-conditions',
   refundUrl: '/refund-policy',
   accountDeletionUrl: '/delete-account',
+  workforceUrl: '/workforce',
+  staffPortalUrl: '/workforce',
 };
 
 export const STATS = [

@@ -1,0 +1,129 @@
+{
+  "employees": [
+    {
+      "id": "EMP-001",
+      "name": "Rohit Pawar",
+      "email": "rohit@enterprenex.solutions",
+      "role": "CEO",
+      "department": "EXECUTIVE",
+      "designation": "Chief Executive Officer",
+      "phone": "+91-9226860060",
+      "status": "ACTIVE",
+      "password": "Admin@123",
+      "joinedDate": "2025-01-01"
+    },
+    {
+      "id": "EMP-002",
+      "name": "Revanth Reddy",
+      "email": "revanth.reddy@enterprenex.solutions",
+      "role": "CTO",
+      "department": "ENGINEERING",
+      "designation": "Chief Technology Officer",
+      "phone": "+91-9440829762",
+      "status": "ACTIVE",
+      "password": "Admin@123",
+      "joinedDate": "2025-01-15"
+    },
+    {
+      "id": "EMP-003",
+      "name": "Aniket Tambe",
+      "email": "aniket@enterprenex.solutions",
+      "role": "CFO",
+      "department": "FINANCE",
+      "designation": "Chief Financial Officer",
+      "phone": "+91-9876543210",
+      "status": "ACTIVE",
+      "password": "Admin@123",
+      "joinedDate": "2025-02-01"
+    },
+    {
+      "id": "EMP-004",
+      "name": "Jyothi Sharma",
+      "email": "jyothi@enterprenex.solutions",
+      "role": "HR",
+      "department": "HUMAN_RESOURCES",
+      "designation": "Head of Human Resources & People Ops",
+      "phone": "+91-9811223344",
+      "status": "ACTIVE",
+      "password": "Admin@123",
+      "joinedDate": "2025-03-01"
+    },
+    {
+      "id": "EMP-005",
+      "name": "Piyush Jadhav",
+      "email": "piyush@enterprenex.solutions",
+      "role": "LEAD",
+      "department": "ENGINEERING",
+      "designation": "Lead Full-Stack Engineer",
+      "phone": "+91-9822334455",
+      "status": "ACTIVE",
+      "password": "Admin@123",
+      "joinedDate": "2025-04-01"
+    },
+    {
+      "id": "EMP-006",
+      "name": "Kishore Kumar",
+      "email": "kishore@enterprenex.solutions",
+      "role": "EMPLOYEE",
+      "department": "ENGINEERING",
+      "designation": "Senior Backend Developer",
+      "phone": "+91-9900112233",
+      "status": "ACTIVE",
+      "password": "Admin@123",
+      "joinedDate": "2025-05-15"
+    }
+  ],
+  "attendance": [],
+  "tasks": [
+    {
+      "id": "TSK-101",
+      "title": "Review Google Play Store Production Bundle & Permissions",
+      "description": "Verify 64-bit compliance, target SDK 35, and contact picker runtime permissions before app release.",
+      "department": "ENGINEERING",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "assignedBy": "EMP-002",
+      "assignedByName": "Revanth Reddy (CTO)",
+      "assignedTo": "EMP-005",
+      "assignedToName": "Piyush Jadhav",
+      "dueDate": "2026-10-15",
+      "createdAt": "2026-10-07T02:11:11.788Z",
+      "proofUrl": "https://github.com/Enterprenex-Solutions/Enx-Money",
+      "workNotes": "Updated manifest with modern permission scopes and validated flutter test build."
+    },
+    {
+      "id": "TSK-102",
+      "title": "Finalize Q4 Settlement Reports & GST Filing Ledger",
+      "description": "Audit monthly merchant payout batches and ensure Jio Payments Bank URN records balance accurately.",
+      "department": "FINANCE",
+      "priority": "URGENT",
+      "status": "TODO",
+      "assignedBy": "EMP-001",
+      "assignedByName": "Rohit Pawar (CEO)",
+      "assignedTo": "EMP-003",
+      "assignedToName": "Aniket Tambe",
+      "dueDate": "2026-10-10",
+      "createdAt": "2026-10-07T02:11:11.788Z",
+      "proofUrl": "",
+      "workNotes": ""
+    },
+    {
+      "id": "TSK-103",
+      "title": "Complete Onboarding & Device Approvals for New Field Staff",
+      "description": "Issue official employee IDs, activate email aliases, and verify biometric multi-device auth keys.",
+      "department": "HUMAN_RESOURCES",
+      "priority": "MEDIUM",
+      "status": "DONE",
+      "assignedBy": "EMP-001",
+      "assignedByName": "Rohit Pawar (CEO)",
+      "assignedTo": "EMP-004",
+      "assignedToName": "Jyothi Sharma",
+      "dueDate": "2026-10-05",
+      "completedAt": "2026-10-07T02:11:11.788Z",
+      "createdAt": "2026-10-05T02:11:11.788Z",
+      "proofUrl": "",
+      "workNotes": "Completed verification for all field operators."
+    }
+  ],
+  "updatedAt": "2026-10-07T02:11:11.788Z"
+}
