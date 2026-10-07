@@ -444,7 +444,7 @@ app.get([
 });
 
 // ─── Interactive Financial Hub & WhatsApp Statements Portal ──────────────────
-app.get(['/portal', '/financial-hub', '/financial-portal', '/statement-hub', '/statements', '/khata-portal'], (req, res) => {
+app.get(['/financial-hub', '/financial-portal', '/statement-hub', '/statements', '/khata-portal'], (req, res) => {
   const portalPath = path.join(__dirname, '../public', 'portal.html');
   if (fs.existsSync(portalPath)) {
     return res.sendFile(portalPath);
