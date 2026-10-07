@@ -13,12 +13,11 @@ export const Footer: React.FC = () => {
           {/* Brand Info (4 Cols) */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-navy-800 to-navy-700 p-0.5 shadow-md flex items-center justify-center text-white font-bold border border-navy-600">
-                <div className="w-full h-full bg-navy-900 rounded-[10px] flex items-center justify-center">
-                  <span className="text-xl font-extrabold text-white">E</span>
-                  <span className="text-lg font-black text-emerald-400 -ml-0.5">X</span>
-                </div>
-              </div>
+              <img
+                src="/enterprenex-badge.png"
+                alt="Enterprenex Solutions"
+                className="w-12 h-12 object-contain rounded-full shadow-md bg-white p-1"
+              />
               <div className="flex flex-col">
                 <span className="text-xl font-extrabold tracking-tight text-white font-display">
                   {SITE_CONFIG.brandName}
@@ -32,6 +31,23 @@ export const Footer: React.FC = () => {
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               Smart business management for growing businesses. ENX Money brings billing, khata, inventory, payments and business insights together in one simple platform.
             </p>
+
+            {/* Official Parent Brand Logo */}
+            <div className="pt-1">
+              <a
+                href="https://enterprenex.solutions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow hover:opacity-95 transition-opacity"
+                title="Enterprenex Solutions Pvt. Ltd."
+              >
+                <img
+                  src="/enterprenex-logo.png"
+                  alt="Enterprenex Solutions"
+                  className="h-6 w-auto object-contain"
+                />
+              </a>
+            </div>
 
             <div className="space-y-2 pt-2 text-xs text-slate-400">
               <div className="flex items-start gap-2.5">

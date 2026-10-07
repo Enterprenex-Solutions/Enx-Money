@@ -11,6 +11,7 @@ function getWorkforcePortalHtml() {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enterprenex Workforce — Task & Attendance Portal</title>
+  <link rel="icon" type="image/png" href="/enterprenex-badge.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -77,15 +78,11 @@ function getWorkforcePortalHtml() {
     .brand-logo {
       width: 40px;
       height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #10b981, #6366f1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-      color: #fff;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 2px;
+      object-fit: contain;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
     }
 
     .brand-info h1 {
@@ -672,7 +669,7 @@ function getWorkforcePortalHtml() {
   <!-- Header -->
   <header>
     <a href="/workforce" class="brand">
-      <div class="brand-logo">EX</div>
+      <img src="/enterprenex-badge.png" alt="Enterprenex Solutions" class="brand-logo" />
       <div class="brand-info">
         <h1>ENTERPRENEX WORKFORCE</h1>
         <p>Enterprise People Ops & Task Management</p>

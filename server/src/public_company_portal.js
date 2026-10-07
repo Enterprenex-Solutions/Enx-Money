@@ -22,6 +22,7 @@ function getCompanyPortalHtml() {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enterprenex — Company Management Portal</title>
+  <link rel="icon" type="image/png" href="/enterprenex-badge.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -285,14 +286,11 @@ function getCompanyPortalHtml() {
     .sidebar-brand-badge {
       width: 38px;
       height: 38px;
-      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #fff;
-      font-size: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 2px;
+      object-fit: contain;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .sidebar-brand-name {
@@ -719,7 +717,7 @@ function getCompanyPortalHtml() {
   <div id="login-view">
     <div class="login-card">
       <div class="brand-header">
-        <div class="brand-badge">E</div>
+        <img src="/enterprenex-logo.png" alt="Enterprenex Solutions" style="max-height: 52px; max-width: 260px; object-fit: contain; margin-bottom: 14px; background: #ffffff; padding: 6px 14px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);" />
         <h1 class="brand-title">Enterprenex Solutions</h1>
         <p class="brand-subtitle">Company Management Portal • portal.enterprenex.solutions</p>
       </div>
@@ -774,7 +772,7 @@ function getCompanyPortalHtml() {
     <!-- Dynamic Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <div class="sidebar-brand-badge">E</div>
+        <img src="/enterprenex-badge.png" alt="Enterprenex Solutions" class="sidebar-brand-badge" />
         <div>
           <div class="sidebar-brand-name">Enterprenex</div>
           <div class="sidebar-brand-sub" id="sidebar-role-indicator">PORTAL</div>

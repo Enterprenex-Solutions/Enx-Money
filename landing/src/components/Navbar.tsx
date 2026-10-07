@@ -37,18 +37,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Brand Logo & Name (OkCredit style) */}
+          {/* Official Enterprenex Solutions Brand Logo */}
           <a href="#hero" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/25 group-hover:scale-105 transition-transform">
-              <span className="text-xl font-black tracking-tighter">E</span>
-              <span className="text-sm font-extrabold text-emerald-200">X</span>
-            </div>
+            <img
+              src="/enterprenex-badge.png"
+              alt="Enterprenex Solutions"
+              className="w-10 h-10 object-contain rounded-full shadow-sm group-hover:scale-105 transition-transform bg-white p-0.5 border border-slate-100"
+            />
             <div className="flex flex-col">
               <span className="text-xl font-black tracking-tight text-slate-900 font-display flex items-center gap-1.5">
                 {SITE_CONFIG.brandName}
               </span>
-              <span className="text-[11px] font-medium text-slate-500 tracking-tight">
-                Simple • Paperless • Secure
+              <span className="text-[11px] font-semibold text-slate-500 tracking-tight">
+                by Enterprenex Solutions
               </span>
             </div>
           </a>

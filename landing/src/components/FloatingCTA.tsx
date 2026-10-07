@@ -31,9 +31,11 @@ export const FloatingCTA: React.FC<FloatingCTAProps> = ({ onDownloadClick, onWeb
       {/* Mobile Floating Bottom Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2.5 shadow-2xl flex items-center justify-between gap-3 animate-slideUp">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-            EX
-          </div>
+          <img
+            src="/enterprenex-badge.png"
+            alt="Enterprenex"
+            className="w-8 h-8 rounded-full object-contain shrink-0 shadow-sm bg-white p-0.5 border border-slate-100"
+          />
           <div className="leading-tight">
             <span className="text-xs font-black text-slate-900 block">ENX Money</span>
             <span className="text-[10px] text-emerald-700 font-bold block">100% Free Udhar Khata</span>
@@ -66,9 +68,11 @@ export const FloatingCTA: React.FC<FloatingCTAProps> = ({ onDownloadClick, onWeb
       {/* Desktop Floating Pill Dock (OkCredit Style) */}
       <div className="hidden md:flex fixed bottom-6 right-6 z-40 bg-white/95 text-slate-900 backdrop-blur-xl border border-emerald-200/90 py-2.5 px-4 rounded-full shadow-2xl items-center gap-3.5 animate-slideUp ring-1 ring-emerald-500/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-xs shadow-sm">
-            EX
-          </div>
+          <img
+            src="/enterprenex-badge.png"
+            alt="Enterprenex"
+            className="w-8 h-8 rounded-full object-contain shrink-0 shadow-sm bg-white p-0.5 border border-slate-100"
+          />
           <div>
             <div className="text-xs font-black text-slate-900 flex items-center gap-1">
               <span>ENX Money</span>
