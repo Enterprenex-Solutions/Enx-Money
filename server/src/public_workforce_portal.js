@@ -18,18 +18,16 @@ function getWorkforcePortalHtml() {
   <style>
     :root {
       --bg: #090d16;
-      --card: #111726;
-      --card-hover: #161e31;
+      --card: #0f172a;
+      --card-hover: #131d35;
       --card-border: #1e293b;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --primary: #10b981;
-      --primary-glow: rgba(16, 185, 129, 0.2);
-      --accent: #6366f1;
+      --accent: #3b82f6;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --blue: #0ea5e9;
-      --radius: 14px;
+      --radius: 10px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,22 +41,15 @@ function getWorkforcePortalHtml() {
       overflow-x: hidden;
     }
 
-    /* Background Glow */
-    .bg-ambient {
-      position: fixed;
-      top: 0; left: 0; right: 0; height: 350px;
-      background: radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.15), transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
+    /* Ambient Background Glow removed for clean minimalist look */
+    .bg-ambient { display: none; }
 
     /* Header */
     header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(9, 13, 22, 0.85);
-      backdrop-filter: blur(16px);
+      background: var(--card);
       border-bottom: 1px solid var(--card-border);
       padding: 16px 28px;
       display: flex;
@@ -269,25 +260,21 @@ function getWorkforcePortalHtml() {
     }
 
     .punch-btn.in {
-      background: linear-gradient(135deg, #10b981, #059669);
+      background: #10b981;
       color: #fff;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
     }
 
     .punch-btn.in:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5);
+      background: #059669;
     }
 
     .punch-btn.out {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
+      background: #ef4444;
       color: #fff;
-      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
     }
 
     .punch-btn.out:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(239, 68, 68, 0.5);
+      background: #dc2626;
     }
 
     .punch-meta {
