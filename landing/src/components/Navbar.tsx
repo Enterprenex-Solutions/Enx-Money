@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, Download, Globe, LogIn } from 'lucide-react';
+import { Menu, X, Download, Globe, LogIn } from 'lucide-react';
 import { SITE_CONFIG } from '../data/content';
 
 interface NavbarProps {
@@ -68,16 +68,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
           </nav>
 
           {/* Right Action Icons & Web CTA */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2.5">
             {/* Enterprenex Company Portal Login Link */}
             <a
               href="/portal"
-              className="text-sm font-bold text-emerald-900 hover:text-emerald-950 transition-colors flex items-center gap-2 py-2 px-4 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 shadow-sm hover:shadow"
-              title="Enterprenex Company Management Portal (CEO, CTO, CFO, HR & Staff Login)"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5 py-2 px-3 rounded-lg hover:bg-slate-100"
+              title="Enterprenex Company Management Portal"
             >
-              <LogIn className="w-4 h-4 text-emerald-600" />
-              <span>Portal Login</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <LogIn className="w-3.5 h-3.5 text-slate-500" />
+              <span>Portal</span>
             </a>
 
             {/* Quick Web app link (Desktop / Laptop) */}
@@ -86,12 +85,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
               onClick={onWebClick}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-bold text-slate-700 hover:text-emerald-700 transition-colors flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-emerald-50/60 border border-transparent hover:border-emerald-200"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5 py-2 px-3 rounded-lg hover:bg-slate-100"
               title="Open ENX Money in Browser (Desktop / Laptop)"
             >
-              <Globe className="w-4 h-4 text-emerald-600" />
-              <span>Web par chalayein</span>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+              <Globe className="w-3.5 h-3.5 text-slate-500" />
+              <span>Web App</span>
             </a>
 
             {/* Download Android App Button (Direct APK) */}
@@ -99,11 +97,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
               href={SITE_CONFIG.apkDirectDownloadUrl}
               download="ENX-Money-Consumer.apk"
               onClick={onDownloadClick}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-white bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-sm shadow-emerald-600/30 hover:shadow-md hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold text-xs text-white bg-slate-900 hover:bg-slate-800 transition-all shadow-sm"
               title="Direct APK Download for Android"
             >
-              <Download className="w-4 h-4" />
-              <span>Download Android App</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Download App</span>
             </a>
           </div>
 

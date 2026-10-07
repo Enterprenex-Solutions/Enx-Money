@@ -53,12 +53,8 @@ export const LivePhoneDemo: React.FC<LivePhoneDemoProps> = () => {
 
   return (
     <div className="relative w-full max-w-[340px] sm:max-w-[365px] select-none">
-      {/* Decorative Glow */}
-      <div className="absolute -top-6 -right-6 w-36 h-36 bg-emerald-400/25 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
-      <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-cyan-400/20 rounded-full blur-2xl pointer-events-none"></div>
-
       {/* ── Realistic Smartphone Frame ── */}
-      <div className="relative bg-slate-950 rounded-[46px] p-3 shadow-2xl ring-2 ring-slate-800/80 shadow-emerald-950/30">
+      <div className="relative bg-slate-950 rounded-[44px] p-2.5 shadow-xl ring-1 ring-slate-800">
         
         {/* Dynamic Island / Notch */}
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-950 rounded-full z-40 flex items-center justify-between px-3 border border-slate-800/60 shadow-inner">
