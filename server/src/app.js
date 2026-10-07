@@ -24,6 +24,7 @@ const {
 } = require('./public_legal_pages');
 const { getSaasLandingHtml } = require('./public_saas_landing');
 const { getAdminDashboardHtml } = require('./public_admin_dashboard');
+const { getWorkforcePortalHtml } = require('./public_workforce_portal');
 const DownloadModel = require('./models/download.model');
 const compression = require('compression');
 
@@ -307,6 +308,13 @@ app.get(['/admin', '/admin/dashboard', '/admin/analytics-portal'], (req, res) =>
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(getAdminDashboardHtml());
 });
+
+// Interactive Workforce & Task Management Portal (Internal HRMS & Work Delivery)
+app.get(['/workforce', '/workforce/dashboard', '/portal/workforce', '/hrms'], (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(getWorkforcePortalHtml());
+});
+
 
 // Direct Android APK Download Endpoints (with real-time download tracking)
 app.get(['/download-apk', '/enx-money.apk', '/ENX-Money.apk', '/app-release.apk', '/api/download-apk'], (req, res) => {

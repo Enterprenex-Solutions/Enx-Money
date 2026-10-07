@@ -148,7 +148,12 @@ router.post(['/verify-payment', '/v1/verify-payment'], (req, res, next) => {
 
 router.use(['/payment', '/v1/payment'], paymentRoutes);
 
+// 19. Workforce & Task Management (Enterprenex Internal HRMS & Work Delivery)
+const workforceRoutes = require('./workforce.routes');
+router.use(['/workforce', '/v1/workforce'], workforceRoutes);
+
 module.exports = router;
+
 
 
 
