@@ -1,15 +1,17 @@
 /**
  * Enterprenex Solutions — Company Management Portal Web Application
  * 
- * Minimalist, Modern, Production-Ready SaaS UI:
- * - Ultra-clean slate/neutral palette (no gaudy gradients or neon glows)
- * - Crisp typography & structured hierarchy (Plus Jakarta Sans + JetBrains Mono)
- * - Role-tailored navigation (Employee, HR, CEO, CTO, CFO, Lead, Intern)
- * - Focused dashboard summary cards and actionable metrics
- * - Enhanced tables with live search, filtering, status badges & empty states
- * - Fully responsive layout with mobile drawer toggle
- * - Toast notification system and confirmation dialogs
- * - 100% preservation of all existing backend APIs, RBAC logic & authentication
+ * Production-ready Minimalist SaaS Interface:
+ * - Clean, modern, distraction-free aesthetic with subtle borders & muted surfaces
+ * - Strict role-based navigation matching user specification:
+ *     Employee: Dashboard, My Tasks, My Projects, Attendance, Documents, Notifications, Profile
+ *     HR:       Dashboard, Employees, Departments, Tasks, Attendance, Leave, Reports, Documents, Notifications
+ *     Executive: Cockpit, Financials, Tech Command, Documents, Security Trail
+ * - Clean summary cards & focused metrics (no gaudy gradients or neon glows)
+ * - Tables with real-time search, filters, status badges, clean actions & empty states
+ * - In-app Toast notifications & confirmation dialogs (no browser alerts)
+ * - Responsive layout with mobile drawer toggle
+ * - 100% preservation of all backend APIs, authentication, RBAC, and workflows
  */
 
 function getCompanyPortalHtml() {
@@ -24,12 +26,12 @@ function getCompanyPortalHtml() {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* ─── DESIGN TOKENS & RESET ─────────────────────────── */
+    /* ─── DESIGN SYSTEM VARIABLES ───────────────────────── */
     :root {
       --bg: #090d16;
       --surface: #0f172a;
       --surface-elevated: #131d35;
-      --surface-hover: #1a2644;
+      --surface-hover: #18233e;
       --border: #1e293b;
       --border-subtle: #162032;
       --border-focus: #3b82f6;
@@ -40,14 +42,14 @@ function getCompanyPortalHtml() {
 
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --primary-subtle: rgba(37, 99, 235, 0.1);
+      --primary-subtle: rgba(37, 99, 235, 0.12);
 
       --success: #10b981;
-      --success-subtle: rgba(16, 185, 129, 0.1);
+      --success-subtle: rgba(16, 185, 129, 0.12);
       --warning: #f59e0b;
-      --warning-subtle: rgba(245, 158, 11, 0.1);
+      --warning-subtle: rgba(245, 158, 11, 0.12);
       --danger: #ef4444;
-      --danger-subtle: rgba(239, 68, 68, 0.1);
+      --danger-subtle: rgba(239, 68, 68, 0.12);
 
       --sidebar-w: 250px;
       --topbar-h: 64px;
@@ -60,16 +62,15 @@ function getCompanyPortalHtml() {
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      font-size: 14px;
+      font-size: 13.5px;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
     }
 
@@ -99,7 +100,7 @@ function getCompanyPortalHtml() {
       align-items: center;
       gap: 10px;
       min-width: 280px;
-      max-width: 400px;
+      max-width: 420px;
       animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -433,6 +434,7 @@ function getCompanyPortalHtml() {
       align-items: center;
       gap: 10px;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .user-avatar {
@@ -801,7 +803,7 @@ function getCompanyPortalHtml() {
       letter-spacing: 0.3px;
     }
 
-    .status-active, .status-working, .status-healthy {
+    .status-active, .status-working, .status-healthy, .status-approved {
       background: var(--success-subtle);
       color: var(--success);
       border: 1px solid rgba(16, 185, 129, 0.2);
@@ -813,13 +815,13 @@ function getCompanyPortalHtml() {
       border: 1px solid rgba(37, 99, 235, 0.2);
     }
 
-    .status-todo, .status-notin {
+    .status-todo, .status-notin, .status-pending {
       background: rgba(148, 163, 184, 0.1);
       color: #94a3b8;
       border: 1px solid rgba(148, 163, 184, 0.2);
     }
 
-    .status-inprogress, .status-urgent {
+    .status-inprogress, .status-urgent, .status-rejected {
       background: var(--warning-subtle);
       color: var(--warning);
       border: 1px solid rgba(245, 158, 11, 0.2);
@@ -844,6 +846,114 @@ function getCompanyPortalHtml() {
     .empty-state p {
       font-size: 13px;
       margin-top: 6px;
+    }
+
+    /* Card Grids for Projects & Departments */
+    .card-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.15s;
+    }
+
+    .info-card:hover {
+      border-color: var(--text-subtle);
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .info-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .info-card-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .info-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 11.5px;
+      color: var(--text-subtle);
+    }
+
+    /* Progress bar */
+    .progress-bar-bg {
+      height: 6px;
+      background: var(--bg);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 9999px;
+    }
+
+    /* Notifications List */
+    .notification-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: background-color 0.15s;
+    }
+
+    .notification-item:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .notification-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .notification-time {
+      font-size: 11px;
+      color: var(--text-subtle);
     }
 
     /* ─── MODAL DIALOGS ──────────────────────────────────── */
@@ -1027,11 +1137,11 @@ function getCompanyPortalHtml() {
       </div>
 
       <nav class="sidebar-nav" id="sidebar-dynamic-menu">
-        <!-- Rendered dynamically based on permissions -->
+        <!-- Rendered dynamically based strictly on role -->
       </nav>
 
       <div class="sidebar-footer">
-        <div class="user-profile-badge">
+        <div class="user-profile-badge" onclick="switchView('profile', 'My Account Profile')">
           <div class="user-avatar" id="sidebar-user-avatar">U</div>
           <div class="user-meta">
             <span class="user-meta-name" id="sidebar-user-name">Loading...</span>
@@ -1064,49 +1174,60 @@ function getCompanyPortalHtml() {
         </div>
       </header>
 
-      <!-- ─── VIEW: EMPLOYEE DASHBOARD ──────────────────── -->
-      <section id="view-employee" class="view-content">
+      <!-- ─── VIEW 1: EMPLOYEE DASHBOARD ────────────────── -->
+      <section id="view-emp-dashboard" class="view-content">
         <div class="metric-grid">
           <div class="metric-card">
-            <div class="metric-header">
-              <span>Shift Status</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
+            <div class="metric-header"><span>Shift Status</span></div>
             <div class="metric-value" id="emp-punch-status">CLOCKED OUT</div>
             <div class="metric-footer" id="emp-punch-time">Click top right button to punch in</div>
           </div>
-
           <div class="metric-card">
-            <div class="metric-header">
-              <span>Assigned Tasks</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-            </div>
-            <div class="metric-value" id="emp-task-count">0</div>
-            <div class="metric-footer">Active sprint responsibilities</div>
+            <div class="metric-header"><span>Pending Tasks</span></div>
+            <div class="metric-value" id="emp-dash-task-count">0</div>
+            <div class="metric-footer">Deliverables pending</div>
           </div>
-
           <div class="metric-card">
-            <div class="metric-header">
-              <span>Active Projects</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            </div>
+            <div class="metric-header"><span>Active Projects</span></div>
             <div class="metric-value">3</div>
-            <div class="metric-footer">Core platform deliverables</div>
+            <div class="metric-footer">Sprint assignments</div>
           </div>
-
           <div class="metric-card">
-            <div class="metric-header">
-              <span>Leave Balance</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            </div>
+            <div class="metric-header"><span>Leave Balance</span></div>
             <div class="metric-value">14 Days</div>
-            <div class="metric-footer">Annual paid balance remaining</div>
+            <div class="metric-footer">Annual balance remaining</div>
           </div>
         </div>
 
         <div class="panel">
           <div class="panel-header">
-            <h3 class="panel-title">My Priority Tasks</h3>
+            <h3 class="panel-title">Recent Activity & Tasks</h3>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="switchView('emp-tasks', 'My Tasks')">View All Tasks</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Priority</th>
+                  <th>Deadline</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="emp-recent-tasks-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 2: EMPLOYEE MY TASKS ─────────────────── -->
+      <section id="view-emp-tasks" class="view-content">
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">My Tasks</h3>
             <div class="panel-actions">
               <input type="text" class="table-search-input" placeholder="Search tasks..." onkeyup="filterTable('emp-tasks-tbody', this.value)" />
             </div>
@@ -1122,9 +1243,7 @@ function getCompanyPortalHtml() {
                   <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
-              <tbody id="emp-tasks-tbody">
-                <!-- Rendered dynamically -->
-              </tbody>
+              <tbody id="emp-tasks-tbody"></tbody>
             </table>
           </div>
           <div class="table-footer">
@@ -1133,36 +1252,157 @@ function getCompanyPortalHtml() {
         </div>
       </section>
 
-      <!-- ─── VIEW: HR & STAFF DIRECTORY ───────────────── -->
-      <section id="view-hr" class="view-content">
+      <!-- ─── VIEW 3: EMPLOYEE MY PROJECTS ──────────────── -->
+      <section id="view-emp-projects" class="view-content">
+        <div class="card-grid-3">
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">ENX Money Mobile App</span>
+                <span class="badge-status status-working">In Progress</span>
+              </div>
+              <p class="info-card-desc">React Native Android/iOS fintech app with Razorpay checkout & offline khata reconciliation.</p>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 82%;"></div></div>
+            </div>
+            <div class="info-card-meta">
+              <span>Code: PRJ-101</span>
+              <span>Deadline: Dec 2026</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">Company Portal & HRMS</span>
+                <span class="badge-status status-completed">Active Sprint</span>
+              </div>
+              <p class="info-card-desc">Unified enterprise portal with RBAC dashboards, attendance logging, and staff management.</p>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 95%;"></div></div>
+            </div>
+            <div class="info-card-meta">
+              <span>Code: PRJ-102</span>
+              <span>Deadline: Nov 2026</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">WhatsApp Cloud Billing</span>
+                <span class="badge-status status-working">In Progress</span>
+              </div>
+              <p class="info-card-desc">Automated debtor reminder dispatch, statements delivery, and AI conversational bot.</p>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 68%;"></div></div>
+            </div>
+            <div class="info-card-meta">
+              <span>Code: PRJ-103</span>
+              <span>Deadline: Jan 2027</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 4: ATTENDANCE (EMPLOYEE / LIVE ROSTER) ── -->
+      <section id="view-attendance" class="view-content">
         <div class="metric-grid">
           <div class="metric-card">
-            <div class="metric-header"><span>Total Employees</span></div>
-            <div class="metric-value" id="hr-total-emp">8</div>
-            <div class="metric-footer">Active personnel across departments</div>
+            <div class="metric-header"><span>Today's Shift</span></div>
+            <div class="metric-value" id="att-shift-val">0h 0m</div>
+            <div class="metric-footer" id="att-shift-sub">Logged duration</div>
           </div>
           <div class="metric-card">
-            <div class="metric-header"><span>Present Today</span></div>
-            <div class="metric-value" id="hr-present-today">0</div>
-            <div class="metric-footer">Clocked in right now</div>
+            <div class="metric-header"><span>Present This Month</span></div>
+            <div class="metric-value">22 / 24</div>
+            <div class="metric-footer">91.6% Attendance score</div>
           </div>
           <div class="metric-card">
-            <div class="metric-header"><span>Pending Leaves</span></div>
-            <div class="metric-value">0</div>
-            <div class="metric-footer">All requests up to date</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-header"><span>Policy Compliance</span></div>
+            <div class="metric-header"><span>Punctuality</span></div>
             <div class="metric-value" style="color: var(--success);">100%</div>
-            <div class="metric-footer">Verified documentation</div>
+            <div class="metric-footer">Zero late punches</div>
           </div>
         </div>
 
         <div class="panel">
           <div class="panel-header">
+            <h3 class="panel-title">Attendance Records & Live Roster</h3>
+            <div class="panel-actions">
+              <input type="text" class="table-search-input" placeholder="Search roster..." onkeyup="filterTable('att-history-tbody', this.value)" />
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Department / Role</th>
+                  <th>Clock In</th>
+                  <th>Clock Out</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="att-history-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 5: HR DASHBOARD ──────────────────────── -->
+      <section id="view-hr-dashboard" class="view-content">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-header"><span>Total Headcount</span></div>
+            <div class="metric-value" id="hr-dash-total">8</div>
+            <div class="metric-footer">Registered company staff</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header"><span>Active Working Today</span></div>
+            <div class="metric-value" id="hr-dash-present">0</div>
+            <div class="metric-footer">Live shift records</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header"><span>Departments</span></div>
+            <div class="metric-value">5</div>
+            <div class="metric-footer">Operational units</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header"><span>Pending Leaves</span></div>
+            <div class="metric-value">0</div>
+            <div class="metric-footer">All applications reviewed</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Company Staff Overview</h3>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="switchView('hr-employees', 'Employees')">Manage Staff</button>
+              <button class="btn-secondary" onclick="showAddEmployeeModal()">+ Onboard</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="hr-dash-emp-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 6: HR EMPLOYEES DIRECTORY ────────────── -->
+      <section id="view-hr-employees" class="view-content">
+        <div class="panel">
+          <div class="panel-header">
             <h3 class="panel-title">Staff Directory</h3>
             <div class="panel-actions">
-              <input type="text" class="table-search-input" placeholder="Search employee..." onkeyup="filterTable('hr-employees-tbody', this.value)" />
+              <input type="text" class="table-search-input" placeholder="Search staff..." onkeyup="filterTable('hr-employees-tbody', this.value)" />
               <button class="btn-secondary" onclick="showAddEmployeeModal()">+ Onboard Employee</button>
             </div>
           </div>
@@ -1178,9 +1418,7 @@ function getCompanyPortalHtml() {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="hr-employees-tbody">
-                <!-- Rendered dynamically -->
-              </tbody>
+              <tbody id="hr-employees-tbody"></tbody>
             </table>
           </div>
           <div class="table-footer">
@@ -1189,7 +1427,232 @@ function getCompanyPortalHtml() {
         </div>
       </section>
 
-      <!-- ─── VIEW: CEO EXECUTIVE COCKPIT ──────────────── -->
+      <!-- ─── VIEW 7: HR DEPARTMENTS ────────────────────── -->
+      <section id="view-hr-departments" class="view-content">
+        <div class="card-grid-3">
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">Software & Engineering</span>
+                <span class="badge-status status-working">5 Staff</span>
+              </div>
+              <p class="info-card-desc">Full-Stack, Mobile (React Native/Flutter), DevOps, Cloud Infrastructure, and QA automation.</p>
+            </div>
+            <div class="info-card-meta">
+              <span>Budget: ₹12,00,000 / mo</span>
+              <span>Lead: Revanth Reddy (CTO)</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">Growth & Marketing</span>
+                <span class="badge-status status-working">1 Staff</span>
+              </div>
+              <p class="info-card-desc">Customer acquisition, B2B merchant partnerships, digital campaigns, and community engagement.</p>
+            </div>
+            <div class="info-card-meta">
+              <span>Budget: ₹4,50,000 / mo</span>
+              <span>Lead: Amit Kumar</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">Finance & Accounts</span>
+                <span class="badge-status status-working">1 Staff</span>
+              </div>
+              <p class="info-card-desc">Capital allocation, statutory compliance (GST/TDS), merchant settlements, and treasury oversight.</p>
+            </div>
+            <div class="info-card-meta">
+              <span>Budget: ₹3,00,000 / mo</span>
+              <span>Lead: Aniket Sharma (CFO)</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div>
+              <div class="info-card-header">
+                <span class="info-card-title">People & Culture</span>
+                <span class="badge-status status-working">1 Staff</span>
+              </div>
+              <p class="info-card-desc">Talent acquisition, onboarding, payroll processing, statutory labor compliance, and employee success.</p>
+            </div>
+            <div class="info-card-meta">
+              <span>Budget: ₹1,80,000 / mo</span>
+              <span>Lead: Jyothi Patil (HR)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 8: LEAVE MANAGEMENT ──────────────────── -->
+      <section id="view-leave" class="view-content">
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Leave Applications & Approvals</h3>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="showApplyLeaveModal()">+ Apply Leave</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Leave Type</th>
+                  <th>Duration</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="leaves-tbody">
+                <tr><td colspan="6" class="empty-state">No pending leave applications.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 9: REPORTS & INSIGHTS ────────────────── -->
+      <section id="view-reports" class="view-content">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-header"><span>Monthly Output</span></div>
+            <div class="metric-value">96.4%</div>
+            <div class="metric-footer">Sprint deliverables completed</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header"><span>Average Shift Hours</span></div>
+            <div class="metric-value">8.4h</div>
+            <div class="metric-footer">Per employee daily average</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header"><span>Employee Retention</span></div>
+            <div class="metric-value" style="color: var(--success);">100%</div>
+            <div class="metric-footer">Zero voluntary churn in FY26</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header"><span>Budget Variance</span></div>
+            <div class="metric-value">-4.2%</div>
+            <div class="metric-footer">Under budgeted projections</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 10: DOCUMENTS VAULT ──────────────────── -->
+      <section id="view-documents" class="view-content">
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">Document Vault</h3>
+            <div class="panel-actions">
+              <input type="text" class="table-search-input" placeholder="Search documents..." onkeyup="filterTable('docs-tbody', this.value)" />
+              <button class="btn-secondary" onclick="showUploadDocModal()">+ Upload Document</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Document Title</th>
+                  <th>Category</th>
+                  <th>Confidentiality</th>
+                  <th>Uploaded By</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="docs-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="docs-count">Enterprise document records</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 11: NOTIFICATIONS CENTER ─────────────── -->
+      <section id="view-notifications" class="view-content">
+        <div class="panel" style="max-width: 800px;">
+          <div class="panel-header">
+            <h3 class="panel-title">System & Company Notifications</h3>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="showToast('All notifications marked as read', 'info')">Mark All as Read</button>
+            </div>
+          </div>
+          <div id="notifications-list">
+            <div class="notification-item">
+              <div class="notification-dot"></div>
+              <div class="notification-content">
+                <div class="notification-title">Scheduled System Maintenance Completed</div>
+                <p style="font-size: 12.5px; color: var(--text-muted);">Database indexing and automated backup verification succeeded on Render.</p>
+                <div class="notification-time">Today, 04:00 AM</div>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-dot" style="background: var(--success);"></div>
+              <div class="notification-content">
+                <div class="notification-title">Sprint 4 Milestones Finalized</div>
+                <p style="font-size: 12.5px; color: var(--text-muted);">All team members can review assigned deliverables in the My Tasks view.</p>
+                <div class="notification-time">Yesterday, 06:30 PM</div>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-dot" style="background: var(--text-subtle);"></div>
+              <div class="notification-content">
+                <div class="notification-title">Payroll Remittance Processed</div>
+                <p style="font-size: 12.5px; color: var(--text-muted);">Monthly payroll disbursements for active staff have been initiated via bank integration.</p>
+                <div class="notification-time">3 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 12: USER ACCOUNT PROFILE ─────────────── -->
+      <section id="view-profile" class="view-content">
+        <div class="panel" style="max-width: 680px;">
+          <div class="panel-header">
+            <h3 class="panel-title">User Account Details</h3>
+          </div>
+          <div style="padding: 24px;">
+            <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+              <div class="user-avatar" id="profile-avatar" style="width: 52px; height: 52px; font-size: 18px;">U</div>
+              <div>
+                <h3 id="profile-name" style="font-size: 16px; font-weight: 700;">User Name</h3>
+                <p id="profile-email" style="color: var(--text-muted); font-size: 13px;">user@enterprenex.solutions</p>
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+              <div>
+                <div class="form-label">Role</div>
+                <div id="profile-role" class="table-primary-text">ROLE</div>
+              </div>
+              <div>
+                <div class="form-label">Department</div>
+                <div id="profile-dept" class="table-primary-text">DEPARTMENT</div>
+              </div>
+              <div>
+                <div class="form-label">Designation</div>
+                <div id="profile-designation" class="table-primary-text">DESIGNATION</div>
+              </div>
+              <div>
+                <div class="form-label">Account Status</div>
+                <div><span class="badge-status status-working">Active Account</span></div>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
+              <button class="btn-secondary" onclick="confirmLogout()">Sign Out from Portal</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VIEW 13: CEO EXECUTIVE COCKPIT ────────────── -->
       <section id="view-ceo" class="view-content">
         <div class="metric-grid">
           <div class="metric-card">
@@ -1200,11 +1663,11 @@ function getCompanyPortalHtml() {
           <div class="metric-card">
             <div class="metric-header"><span>Active Working</span></div>
             <div class="metric-value" id="ceo-active-punch">0</div>
-            <div class="metric-footer">Live shift attendance</div>
+            <div class="metric-footer">Live shift records</div>
           </div>
           <div class="metric-card">
-            <div class="metric-header"><span>Key Projects</span></div>
-            <div class="metric-value" id="ceo-active-proj">3</div>
+            <div class="metric-header"><span>Projects</span></div>
+            <div class="metric-value">3</div>
             <div class="metric-footer">Fintech & Internal systems</div>
           </div>
           <div class="metric-card">
@@ -1232,18 +1695,13 @@ function getCompanyPortalHtml() {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="ceo-roster-tbody">
-                <!-- Rendered dynamically -->
-              </tbody>
+              <tbody id="ceo-roster-tbody"></tbody>
             </table>
-          </div>
-          <div class="table-footer">
-            <span>Real-time punch records</span>
           </div>
         </div>
       </section>
 
-      <!-- ─── VIEW: CTO TECHNICAL COMMAND ──────────────── -->
+      <!-- ─── VIEW 14: CTO TECHNICAL COMMAND ────────────── -->
       <section id="view-cto" class="view-content">
         <div class="metric-grid">
           <div class="metric-card">
@@ -1252,7 +1710,7 @@ function getCompanyPortalHtml() {
             <div class="metric-footer">Engineers & QA Staff</div>
           </div>
           <div class="metric-card">
-            <div class="metric-header"><span>Production Uptime</span></div>
+            <div class="metric-header"><span>Production Health</span></div>
             <div class="metric-value" style="color: var(--success);">99.98%</div>
             <div class="metric-footer">Render & MySQL operational</div>
           </div>
@@ -1264,7 +1722,7 @@ function getCompanyPortalHtml() {
           <div class="metric-card">
             <div class="metric-header"><span>Active Tasks</span></div>
             <div class="metric-value" id="cto-open-tasks">2</div>
-            <div class="metric-footer">Current engineering sprint</div>
+            <div class="metric-footer">Current sprint milestones</div>
           </div>
         </div>
 
@@ -1286,18 +1744,13 @@ function getCompanyPortalHtml() {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="cto-tasks-tbody">
-                <!-- Rendered dynamically -->
-              </tbody>
+              <tbody id="cto-tasks-tbody"></tbody>
             </table>
-          </div>
-          <div class="table-footer">
-            <span>Engineering task allocation</span>
           </div>
         </div>
       </section>
 
-      <!-- ─── VIEW: CFO FINANCIAL COMMAND ──────────────── -->
+      <!-- ─── VIEW 15: CFO FINANCIAL COMMAND ────────────── -->
       <section id="view-cfo" class="view-content">
         <div class="metric-grid">
           <div class="metric-card">
@@ -1316,9 +1769,9 @@ function getCompanyPortalHtml() {
             <div class="metric-footer">Prudent capital allocation</div>
           </div>
           <div class="metric-card">
-            <div class="metric-header"><span>Compliance</span></div>
-            <div class="metric-value" style="font-size: 18px; color: var(--success);">CLEAR</div>
-            <div class="metric-footer">GST, TDS & statutory remit</div>
+            <div class="metric-header"><span>Statutory Compliance</span></div>
+            <div class="metric-value" style="font-size: 16px; color: var(--success);">CLEAR</div>
+            <div class="metric-footer">GST, TDS & regulatory remit</div>
           </div>
         </div>
 
@@ -1364,45 +1817,10 @@ function getCompanyPortalHtml() {
               </tbody>
             </table>
           </div>
-          <div class="table-footer">
-            <span>Fiscal Year 2026 budget utilization</span>
-          </div>
         </div>
       </section>
 
-      <!-- ─── VIEW: DOCUMENT VAULT ─────────────────────── -->
-      <section id="view-documents" class="view-content">
-        <div class="panel">
-          <div class="panel-header">
-            <h3 class="panel-title">Document Vault</h3>
-            <div class="panel-actions">
-              <input type="text" class="table-search-input" placeholder="Search documents..." onkeyup="filterTable('docs-tbody', this.value)" />
-              <button class="btn-secondary" onclick="showUploadDocModal()">+ Upload Document</button>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Document Title</th>
-                  <th>Category</th>
-                  <th>Confidentiality</th>
-                  <th>Uploaded By</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody id="docs-tbody">
-                <!-- Rendered dynamically -->
-              </tbody>
-            </table>
-          </div>
-          <div class="table-footer">
-            <span id="docs-count">Enterprise document records</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ─── VIEW: SECURITY AUDIT TRAIL ───────────────── -->
+      <!-- ─── VIEW 16: SECURITY AUDIT TRAIL ─────────────── -->
       <section id="view-audit" class="view-content">
         <div class="panel">
           <div class="panel-header">
@@ -1423,54 +1841,8 @@ function getCompanyPortalHtml() {
                   <th>IP Address</th>
                 </tr>
               </thead>
-              <tbody id="audit-tbody">
-                <!-- Rendered dynamically -->
-              </tbody>
+              <tbody id="audit-tbody"></tbody>
             </table>
-          </div>
-          <div class="table-footer">
-            <span>Immutable security trail</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- ─── VIEW: USER PROFILE ───────────────────────── -->
-      <section id="view-profile" class="view-content">
-        <div class="panel" style="max-width: 680px;">
-          <div class="panel-header">
-            <h3 class="panel-title">User Account Details</h3>
-          </div>
-          <div style="padding: 24px;">
-            <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
-              <div class="user-avatar" id="profile-avatar" style="width: 52px; height: 52px; font-size: 18px;">U</div>
-              <div>
-                <h3 id="profile-name" style="font-size: 16px; font-weight: 700;">User Name</h3>
-                <p id="profile-email" style="color: var(--text-muted); font-size: 13px;">user@enterprenex.solutions</p>
-              </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
-              <div>
-                <div class="form-label">Role</div>
-                <div id="profile-role" class="table-primary-text">ROLE</div>
-              </div>
-              <div>
-                <div class="form-label">Department</div>
-                <div id="profile-dept" class="table-primary-text">DEPARTMENT</div>
-              </div>
-              <div>
-                <div class="form-label">Designation</div>
-                <div id="profile-designation" class="table-primary-text">DESIGNATION</div>
-              </div>
-              <div>
-                <div class="form-label">Status</div>
-                <div><span class="badge-status status-working">Active Account</span></div>
-              </div>
-            </div>
-
-            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle);">
-              <button class="btn-secondary" onclick="confirmLogout()">Sign Out from Portal</button>
-            </div>
           </div>
         </div>
       </section>
@@ -1519,6 +1891,44 @@ function getCompanyPortalHtml() {
         <div class="modal-actions">
           <button type="button" class="btn-secondary" onclick="closeModal('modal-add-employee')">Cancel</button>
           <button type="submit" class="btn-primary" style="width: auto;">Onboard Staff</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── MODAL: APPLY LEAVE ───────────────────────────── -->
+  <div id="modal-apply-leave" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Apply for Leave</h3>
+        <button class="modal-close" onclick="closeModal('modal-apply-leave')">&times;</button>
+      </div>
+      <form onsubmit="submitApplyLeave(event)">
+        <div class="form-group">
+          <label class="form-label" for="leave-type">Leave Type</label>
+          <select id="leave-type" class="form-control">
+            <option value="CASUAL">Casual Leave (Paid)</option>
+            <option value="SICK">Medical / Sick Leave</option>
+            <option value="PRIVILEGE">Privilege / Annual Leave</option>
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="leave-start">Start Date</label>
+            <input type="date" id="leave-start" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="leave-end">End Date</label>
+            <input type="date" id="leave-end" class="form-control" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="leave-reason">Reason</label>
+          <textarea id="leave-reason" class="form-control" rows="3" placeholder="Reason for leave application..." required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeModal('modal-apply-leave')">Cancel</button>
+          <button type="submit" class="btn-primary" style="width: auto;">Submit Application</button>
         </div>
       </form>
     </div>
@@ -1685,7 +2095,7 @@ function getCompanyPortalHtml() {
       document.getElementById('profile-dept').innerText = user.department || 'All Departments';
       document.getElementById('profile-designation').innerText = user.designation || user.role;
 
-      // Build Clean Role-Based Navigation
+      // Build Clean Role-Based Navigation strictly adhering to user request
       buildRoleNavigation(user);
 
       // Route to initial role view
@@ -1695,7 +2105,7 @@ function getCompanyPortalHtml() {
       loadDashboardData(user);
     }
 
-    // Icons
+    // SVG Icons
     const ICONS = {
       dashboard: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
       tasks: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>',
@@ -1703,7 +2113,10 @@ function getCompanyPortalHtml() {
       attendance: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
       employees: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
       departments: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>',
+      leave: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+      reports: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
       documents: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>',
+      notifications: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>',
       finance: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>',
       tech: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
       security: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
@@ -1714,57 +2127,65 @@ function getCompanyPortalHtml() {
       const menu = document.getElementById('sidebar-dynamic-menu');
       menu.innerHTML = '';
       const role = user.role;
-      const perms = user.permissions || [];
 
-      // 1. Navigation items based strictly on role
       if (role === 'EMPLOYEE' || role === 'INTERN' || role === 'DEVELOPER') {
-        // Employee Role Spec: Dashboard, My Tasks, My Projects, Attendance, Documents, Profile
+        // EXACT EMPLOYEE SPEC: Dashboard, My Tasks, My Projects, Attendance, Documents, Notifications, Profile
         addNavSection(menu, 'Workstation');
-        addNavItem(menu, ICONS.dashboard, 'Dashboard', () => switchView('employee', 'Employee Dashboard'), true);
-        addNavItem(menu, ICONS.tasks, 'My Tasks', () => switchView('employee', 'My Tasks'));
-        addNavItem(menu, ICONS.attendance, 'Attendance', () => switchView('employee', 'My Attendance'));
-        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Document Vault'));
-        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'My Account Profile'));
+        addNavItem(menu, ICONS.dashboard, 'Dashboard', () => switchView('emp-dashboard', 'Dashboard'), true);
+        addNavItem(menu, ICONS.tasks, 'My Tasks', () => switchView('emp-tasks', 'My Tasks'));
+        addNavItem(menu, ICONS.projects, 'My Projects', () => switchView('emp-projects', 'My Projects'));
+        addNavItem(menu, ICONS.attendance, 'Attendance', () => switchView('attendance', 'Attendance'));
+        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Documents'));
+        addNavItem(menu, ICONS.notifications, 'Notifications', () => switchView('notifications', 'Notifications'));
+        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'Profile'));
       } else if (role === 'HR') {
-        // HR Role Spec: Dashboard, Employees, Tasks, Attendance, Documents, Profile
+        // EXACT HR SPEC: Dashboard, Employees, Departments, Tasks, Attendance, Leave, Reports, Documents, Notifications
         addNavSection(menu, 'People Operations');
-        addNavItem(menu, ICONS.dashboard, 'Dashboard', () => switchView('hr', 'HR Dashboard'), true);
-        addNavItem(menu, ICONS.employees, 'Employees', () => switchView('hr', 'Staff Directory'));
-        addNavItem(menu, ICONS.tasks, 'Tasks', () => switchView('employee', 'Company Tasks'));
-        addNavItem(menu, ICONS.attendance, 'Attendance', () => switchView('ceo', 'Live Roster'));
-        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Document Vault'));
-        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'HR Profile'));
+        addNavItem(menu, ICONS.dashboard, 'Dashboard', () => switchView('hr-dashboard', 'HR Dashboard'), true);
+        addNavItem(menu, ICONS.employees, 'Employees', () => switchView('hr-employees', 'Employees'));
+        addNavItem(menu, ICONS.departments, 'Departments', () => switchView('hr-departments', 'Departments'));
+        addNavItem(menu, ICONS.tasks, 'Tasks', () => switchView('emp-tasks', 'Tasks'));
+        addNavItem(menu, ICONS.attendance, 'Attendance', () => switchView('attendance', 'Attendance'));
+        addNavItem(menu, ICONS.leave, 'Leave', () => switchView('leave', 'Leave Management'));
+        addNavItem(menu, ICONS.reports, 'Reports', () => switchView('reports', 'Reports & Insights'));
+        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Documents'));
+        addNavItem(menu, ICONS.notifications, 'Notifications', () => switchView('notifications', 'Notifications'));
       } else if (role === 'CEO' || role === 'SUPER_ADMIN') {
         // Executive Role Spec
         addNavSection(menu, 'Executive Command');
         addNavItem(menu, ICONS.dashboard, 'Cockpit', () => switchView('ceo', 'CEO Executive Cockpit'), true);
-        addNavItem(menu, ICONS.employees, 'Staff Directory', () => switchView('hr', 'Company Staff Directory'));
-        addNavItem(menu, ICONS.finance, 'Financials', () => switchView('cfo', 'CFO Financial Command'));
-        addNavItem(menu, ICONS.tech, 'Engineering Hub', () => switchView('cto', 'CTO Technical Command'));
-        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Document Vault'));
+        addNavItem(menu, ICONS.employees, 'Employees', () => switchView('hr-employees', 'Company Staff'));
+        addNavItem(menu, ICONS.finance, 'Financials', () => switchView('cfo', 'Financial Command'));
+        addNavItem(menu, ICONS.tech, 'Engineering Hub', () => switchView('cto', 'Engineering Command'));
+        addNavItem(menu, ICONS.reports, 'Reports', () => switchView('reports', 'Reports & Insights'));
+        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Documents'));
         addNavItem(menu, ICONS.security, 'Security Trail', () => switchView('audit', 'Security Audit Trail'));
       } else if (role === 'CTO') {
-        // Technical Leadership
+        // Technical Leadership Spec
         addNavSection(menu, 'Engineering Command');
         addNavItem(menu, ICONS.dashboard, 'Engineering Hub', () => switchView('cto', 'CTO Technical Command'), true);
-        addNavItem(menu, ICONS.tasks, 'Sprints & Tasks', () => switchView('cto', 'Engineering Sprints'));
-        addNavItem(menu, ICONS.attendance, 'Team Availability', () => switchView('ceo', 'Team Roster'));
-        addNavItem(menu, ICONS.documents, 'Tech Vault', () => switchView('documents', 'Document Vault'));
-        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'My Account Profile'));
+        addNavItem(menu, ICONS.tasks, 'Sprints & Tasks', () => switchView('cto', 'Sprints & Backlog'));
+        addNavItem(menu, ICONS.projects, 'Projects', () => switchView('emp-projects', 'Architecture Projects'));
+        addNavItem(menu, ICONS.attendance, 'Attendance', () => switchView('attendance', 'Team Availability'));
+        addNavItem(menu, ICONS.documents, 'Tech Vault', () => switchView('documents', 'Tech Documentation'));
+        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'Profile'));
       } else if (role === 'CFO') {
-        // Financial Leadership
+        // Financial Leadership Spec
         addNavSection(menu, 'Financial Command');
         addNavItem(menu, ICONS.dashboard, 'Financial Hub', () => switchView('cfo', 'CFO Financial Command'), true);
-        addNavItem(menu, ICONS.employees, 'Payroll Outlay', () => switchView('cfo', 'Payroll & Budgets'));
-        addNavItem(menu, ICONS.documents, 'Fiscal Vault', () => switchView('documents', 'Document Vault'));
-        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'My Account Profile'));
+        addNavItem(menu, ICONS.finance, 'Payroll & Budgets', () => switchView('cfo', 'Department Budgets'));
+        addNavItem(menu, ICONS.reports, 'Reports', () => switchView('reports', 'Fiscal Reports'));
+        addNavItem(menu, ICONS.documents, 'Fiscal Vault', () => switchView('documents', 'Financial Documents'));
+        addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'Profile'));
       } else {
-        // General Department Head or Lead
-        addNavSection(menu, 'Management');
-        addNavItem(menu, ICONS.dashboard, 'Dashboard', () => switchView('employee', 'Dashboard'), true);
-        addNavItem(menu, ICONS.tasks, 'Tasks', () => switchView('employee', 'Tasks'));
-        addNavItem(menu, ICONS.employees, 'Team Directory', () => switchView('hr', 'Team Directory'));
-        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Document Vault'));
+        // Default Lead
+        addNavSection(menu, 'Workstation');
+        addNavItem(menu, ICONS.dashboard, 'Dashboard', () => switchView('emp-dashboard', 'Dashboard'), true);
+        addNavItem(menu, ICONS.tasks, 'Tasks', () => switchView('emp-tasks', 'Tasks'));
+        addNavItem(menu, ICONS.projects, 'Projects', () => switchView('emp-projects', 'Projects'));
+        addNavItem(menu, ICONS.attendance, 'Attendance', () => switchView('attendance', 'Attendance'));
+        addNavItem(menu, ICONS.documents, 'Documents', () => switchView('documents', 'Documents'));
+        addNavItem(menu, ICONS.notifications, 'Notifications', () => switchView('notifications', 'Notifications'));
         addNavItem(menu, ICONS.profile, 'Profile', () => switchView('profile', 'Profile'));
       }
     }
@@ -1800,9 +2221,9 @@ function getCompanyPortalHtml() {
       } else if (role === 'CFO') {
         switchView('cfo', 'CFO Financial Command');
       } else if (role === 'HR') {
-        switchView('hr', 'HR & People Operations');
+        switchView('hr-dashboard', 'HR Dashboard');
       } else {
-        switchView('employee', 'Employee Dashboard');
+        switchView('emp-dashboard', 'Dashboard');
       }
     }
 
@@ -1871,7 +2292,18 @@ function getCompanyPortalHtml() {
         }
       } catch (_) {}
 
-      // 5. Security Audit Logs (if authorized)
+      // 5. Leaves
+      try {
+        const res = await fetch('/api/v1/portal/leaves', {
+          headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          renderLeaves(json.data || []);
+        }
+      } catch (_) {}
+
+      // 6. Security Audit Logs (if authorized)
       try {
         const res = await fetch('/api/v1/portal/audit-logs', {
           headers: { 'Authorization': 'Bearer ' + authToken }
@@ -1884,15 +2316,10 @@ function getCompanyPortalHtml() {
     }
 
     function renderRoster(roster) {
-      const tbody = document.getElementById('ceo-roster-tbody');
-      if (!tbody) return;
+      const tbodyCeo = document.getElementById('ceo-roster-tbody');
+      const tbodyAtt = document.getElementById('att-history-tbody');
       
-      if (!roster.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No attendance records logged today.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = roster.map(r => {
+      const rowsHtml = roster.length ? roster.map(r => {
         const statusCls = r.workStatus === 'WORKING' ? 'working' : (r.workStatus === 'COMPLETED' ? 'completed' : 'notin');
         return '<tr>' +
           '<td><span class="table-primary-text">' + r.name + '</span><br><span class="table-sub-text">' + r.email + '</span></td>' +
@@ -1901,39 +2328,58 @@ function getCompanyPortalHtml() {
           '<td>' + (r.clockOutTime ? new Date(r.clockOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '—') + '</td>' +
           '<td><span class="badge-status status-' + statusCls + '">' + r.workStatus + '</span></td>' +
         '</tr>';
-      }).join('');
+      }).join('') : '<tr><td colspan="5" class="empty-state">No attendance records logged today.</td></tr>';
+
+      if (tbodyCeo) tbodyCeo.innerHTML = rowsHtml;
+      if (tbodyAtt) tbodyAtt.innerHTML = rowsHtml;
 
       const workingCount = roster.filter(r => r.workStatus === 'WORKING').length;
       const kpiCeo = document.getElementById('ceo-active-punch');
       if (kpiCeo) kpiCeo.innerText = workingCount;
-      const kpiHr = document.getElementById('hr-present-today');
+      const kpiHr = document.getElementById('hr-dash-present');
       if (kpiHr) kpiHr.innerText = workingCount;
     }
 
     function renderEmployees(emps) {
-      const tbody = document.getElementById('hr-employees-tbody');
-      if (!tbody) return;
+      const tbodyDir = document.getElementById('hr-employees-tbody');
+      const tbodyDash = document.getElementById('hr-dash-emp-tbody');
 
       if (!emps.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No employee records found.</td></tr>';
+        if (tbodyDir) tbodyDir.innerHTML = '<tr><td colspan="6" class="empty-state">No employee records found.</td></tr>';
+        if (tbodyDash) tbodyDash.innerHTML = '<tr><td colspan="5" class="empty-state">No employee records found.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = emps.map(e => {
-        const statusCls = e.status === 'ACTIVE' ? 'working' : 'notin';
-        return '<tr>' +
-          '<td><span class="table-primary-text">' + e.name + '</span><br><span class="table-sub-text">' + e.email + '</span></td>' +
-          '<td><span class="badge-status status-working">' + e.role + '</span></td>' +
-          '<td>' + e.department + '</td>' +
-          '<td>' + e.designation + '</td>' +
-          '<td>' + (e.phone || '—') + '</td>' +
-          '<td><span class="badge-status status-' + statusCls + '">' + e.status + '</span></td>' +
-        '</tr>';
-      }).join('');
+      if (tbodyDir) {
+        tbodyDir.innerHTML = emps.map(e => {
+          const statusCls = e.status === 'ACTIVE' ? 'working' : 'notin';
+          return '<tr>' +
+            '<td><span class="table-primary-text">' + e.name + '</span><br><span class="table-sub-text">' + e.email + '</span></td>' +
+            '<td><span class="badge-status status-working">' + e.role + '</span></td>' +
+            '<td>' + e.department + '</td>' +
+            '<td>' + e.designation + '</td>' +
+            '<td>' + (e.phone || '—') + '</td>' +
+            '<td><span class="badge-status status-' + statusCls + '">' + e.status + '</span></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      if (tbodyDash) {
+        tbodyDash.innerHTML = emps.slice(0, 5).map(e => {
+          const statusCls = e.status === 'ACTIVE' ? 'working' : 'notin';
+          return '<tr>' +
+            '<td><span class="table-primary-text">' + e.name + '</span><br><span class="table-sub-text">' + e.email + '</span></td>' +
+            '<td>' + e.role + '</td>' +
+            '<td>' + e.department + '</td>' +
+            '<td>' + e.designation + '</td>' +
+            '<td><span class="badge-status status-' + statusCls + '">' + e.status + '</span></td>' +
+          '</tr>';
+        }).join('');
+      }
 
       const countEl = document.getElementById('hr-emp-count');
       if (countEl) countEl.innerText = 'Showing ' + emps.length + ' registered employees';
-      const kpiHr = document.getElementById('hr-total-emp');
+      const kpiHr = document.getElementById('hr-dash-total');
       if (kpiHr) kpiHr.innerText = emps.length;
       const kpiCeo = document.getElementById('ceo-total-emp');
       if (kpiCeo) kpiCeo.innerText = emps.length;
@@ -1943,59 +2389,55 @@ function getCompanyPortalHtml() {
       // 1. CTO Tasks
       const ctoTbody = document.getElementById('cto-tasks-tbody');
       if (ctoTbody) {
-        if (!tasks.length) {
-          ctoTbody.innerHTML = '<tr><td colspan="5" class="empty-state">No engineering tasks found.</td></tr>';
-        } else {
-          ctoTbody.innerHTML = tasks.map(t => {
-            const prioCls = t.priority === 'URGENT' ? 'urgent' : 'inprogress';
-            const statCls = t.status === 'COMPLETED' ? 'completed' : 'todo';
-            return '<tr>' +
-              '<td><span class="table-primary-text">' + t.title + '</span></td>' +
-              '<td>' + t.assigneeId + '</td>' +
-              '<td><span class="badge-status status-' + prioCls + '">' + t.priority + '</span></td>' +
-              '<td>' + new Date(t.deadline).toLocaleDateString() + '</td>' +
-              '<td><span class="badge-status status-' + statCls + '">' + t.status + '</span></td>' +
-            '</tr>';
-          }).join('');
-        }
+        ctoTbody.innerHTML = tasks.length ? tasks.map(t => {
+          const prioCls = t.priority === 'URGENT' ? 'urgent' : 'inprogress';
+          const statCls = t.status === 'COMPLETED' ? 'completed' : 'todo';
+          return '<tr>' +
+            '<td><span class="table-primary-text">' + t.title + '</span></td>' +
+            '<td>' + t.assigneeId + '</td>' +
+            '<td><span class="badge-status status-' + prioCls + '">' + t.priority + '</span></td>' +
+            '<td>' + new Date(t.deadline).toLocaleDateString() + '</td>' +
+            '<td><span class="badge-status status-' + statCls + '">' + t.status + '</span></td>' +
+          '</tr>';
+        }).join('') : '<tr><td colspan="5" class="empty-state">No engineering tasks found.</td></tr>';
       }
 
       // 2. Employee Workstation Tasks
       const empTbody = document.getElementById('emp-tasks-tbody');
+      const recentTbody = document.getElementById('emp-recent-tasks-tbody');
+
+      const renderEmpRows = (list) => list.map(t => {
+        const prioCls = t.priority === 'URGENT' ? 'urgent' : 'inprogress';
+        const statCls = t.status === 'COMPLETED' ? 'completed' : 'todo';
+        const actionBtn = t.status !== 'COMPLETED'
+          ? '<button class="btn-secondary" style="padding: 4px 10px; font-size: 11.5px;" onclick="advanceTaskStatus(\\'' + t.id + '\\')">Mark Done</button>'
+          : '<span style="color: var(--success); font-weight: 600; font-size: 12px;">✓ Completed</span>';
+        return '<tr>' +
+          '<td><span class="table-primary-text">' + t.title + '</span></td>' +
+          '<td><span class="badge-status status-' + prioCls + '">' + t.priority + '</span></td>' +
+          '<td>' + new Date(t.deadline).toLocaleDateString() + '</td>' +
+          '<td><span class="badge-status status-' + statCls + '">' + t.status + '</span></td>' +
+          '<td style="text-align: right;">' + actionBtn + '</td>' +
+        '</tr>';
+      }).join('');
+
       if (empTbody) {
-        if (!tasks.length) {
-          empTbody.innerHTML = '<tr><td colspan="5" class="empty-state">No pending tasks assigned.</td></tr>';
-        } else {
-          empTbody.innerHTML = tasks.map(t => {
-            const prioCls = t.priority === 'URGENT' ? 'urgent' : 'inprogress';
-            const statCls = t.status === 'COMPLETED' ? 'completed' : 'todo';
-            const actionBtn = t.status !== 'COMPLETED'
-              ? '<button class="btn-secondary" style="padding: 4px 10px; font-size: 11.5px;" onclick="advanceTaskStatus(\\'' + t.id + '\\')">Mark Done</button>'
-              : '<span style="color: var(--success); font-weight: 600; font-size: 12px;">✓ Completed</span>';
-            return '<tr>' +
-              '<td><span class="table-primary-text">' + t.title + '</span></td>' +
-              '<td><span class="badge-status status-' + prioCls + '">' + t.priority + '</span></td>' +
-              '<td>' + new Date(t.deadline).toLocaleDateString() + '</td>' +
-              '<td><span class="badge-status status-' + statCls + '">' + t.status + '</span></td>' +
-              '<td style="text-align: right;">' + actionBtn + '</td>' +
-            '</tr>';
-          }).join('');
-        }
-        const taskCountEl = document.getElementById('emp-task-count');
-        if (taskCountEl) taskCountEl.innerText = tasks.filter(t => t.status !== 'COMPLETED').length;
+        empTbody.innerHTML = tasks.length ? renderEmpRows(tasks) : '<tr><td colspan="5" class="empty-state">No tasks assigned.</td></tr>';
       }
+      if (recentTbody) {
+        recentTbody.innerHTML = tasks.length ? renderEmpRows(tasks.slice(0, 4)) : '<tr><td colspan="5" class="empty-state">No recent tasks.</td></tr>';
+      }
+
+      const pendingCount = tasks.filter(t => t.status !== 'COMPLETED').length;
+      const countEl = document.getElementById('emp-dash-task-count');
+      if (countEl) countEl.innerText = pendingCount;
     }
 
     function renderDocuments(docs) {
       const tbody = document.getElementById('docs-tbody');
       if (!tbody) return;
 
-      if (!docs.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No documents stored in vault.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = docs.map(d => {
+      tbody.innerHTML = docs.length ? docs.map(d => {
         return '<tr>' +
           '<td><span class="table-primary-text">' + d.title + '</span></td>' +
           '<td><span class="badge-status status-todo">' + d.category + '</span></td>' +
@@ -2003,22 +2445,38 @@ function getCompanyPortalHtml() {
           '<td>' + d.uploadedBy + '</td>' +
           '<td>' + new Date(d.createdAt).toLocaleDateString() + '</td>' +
         '</tr>';
-      }).join('');
+      }).join('') : '<tr><td colspan="5" class="empty-state">No documents stored in vault.</td></tr>';
 
       const docsCountEl = document.getElementById('docs-count');
       if (docsCountEl) docsCountEl.innerText = 'Showing ' + docs.length + ' documents';
+    }
+
+    function renderLeaves(leaves) {
+      const tbody = document.getElementById('leaves-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = leaves.length ? leaves.map(l => {
+        const statCls = l.status === 'APPROVED' ? 'approved' : (l.status === 'REJECTED' ? 'rejected' : 'pending');
+        const actions = l.status === 'PENDING' && (currentUser.role === 'HR' || currentUser.role === 'CEO')
+          ? '<button class="btn-secondary" style="padding: 3px 8px; font-size: 11px; margin-right: 4px;" onclick="updateLeave(\\'' + l.id + '\\', \\'APPROVED\\')">Approve</button>' +
+            '<button class="btn-secondary" style="padding: 3px 8px; font-size: 11px;" onclick="updateLeave(\\'' + l.id + '\\', \\'REJECTED\\')">Reject</button>'
+          : '—';
+        return '<tr>' +
+          '<td><span class="table-primary-text">' + (l.employeeName || l.employeeId) + '</span></td>' +
+          '<td>' + l.leaveType + '</td>' +
+          '<td>' + new Date(l.startDate).toLocaleDateString() + ' to ' + new Date(l.endDate).toLocaleDateString() + '</td>' +
+          '<td>' + l.reason + '</td>' +
+          '<td><span class="badge-status status-' + statCls + '">' + l.status + '</span></td>' +
+          '<td style="text-align: right;">' + actions + '</td>' +
+        '</tr>';
+      }).join('') : '<tr><td colspan="6" class="empty-state">No leave applications registered.</td></tr>';
     }
 
     function renderAuditLogs(logs) {
       const tbody = document.getElementById('audit-tbody');
       if (!tbody) return;
 
-      if (!logs.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No security audit logs found.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = logs.map(l => {
+      tbody.innerHTML = logs.length ? logs.map(l => {
         return '<tr>' +
           '<td style="font-family: monospace; font-size: 11.5px;">' + new Date(l.timestamp).toLocaleTimeString() + '</td>' +
           '<td>' + l.userEmail + '</td>' +
@@ -2027,7 +2485,7 @@ function getCompanyPortalHtml() {
           '<td>' + l.resourceType + '</td>' +
           '<td style="font-family: monospace; font-size: 11.5px;">' + l.ipAddress + '</td>' +
         '</tr>';
-      }).join('');
+      }).join('') : '<tr><td colspan="6" class="empty-state">No security audit logs found.</td></tr>';
     }
 
     // Punch Clock Flow
@@ -2090,18 +2548,33 @@ function getCompanyPortalHtml() {
       }
     }
 
-    // Modal helpers
-    function showAddEmployeeModal() {
-      document.getElementById('modal-add-employee').classList.add('active');
+    // Leave Status Update
+    async function updateLeave(leaveId, status) {
+      try {
+        const res = await fetch('/api/v1/portal/leaves/' + leaveId, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ status, note: 'Reviewed via HR portal' })
+        });
+        if (!res.ok) {
+          const json = await res.json();
+          throw new Error(json.error || json.message);
+        }
+        showToast('Leave marked as ' + status, 'success');
+        loadDashboardData(currentUser);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
     }
 
-    function showUploadDocModal() {
-      document.getElementById('modal-upload-doc').classList.add('active');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
+    // Modal Helpers
+    function showAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('active'); }
+    function showUploadDocModal() { document.getElementById('modal-upload-doc').classList.add('active'); }
+    function showApplyLeaveModal() { document.getElementById('modal-apply-leave').classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
     async function submitNewEmployee(e) {
       e.preventDefault();
@@ -2132,6 +2605,34 @@ function getCompanyPortalHtml() {
 
         showToast('Staff member onboarded! Password: ' + data.data.defaultPassword, 'success');
         closeModal('modal-add-employee');
+        e.target.reset();
+        loadDashboardData(currentUser);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function submitApplyLeave(e) {
+      e.preventDefault();
+      const leaveType = document.getElementById('leave-type').value;
+      const startDate = document.getElementById('leave-start').value;
+      const endDate = document.getElementById('leave-end').value;
+      const reason = document.getElementById('leave-reason').value.trim();
+
+      try {
+        const res = await fetch('/api/v1/portal/leaves', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ leaveType, startDate, endDate, reason })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || data.message);
+
+        showToast('Leave application submitted for approval', 'success');
+        closeModal('modal-apply-leave');
         e.target.reset();
         loadDashboardData(currentUser);
       } catch (err) {

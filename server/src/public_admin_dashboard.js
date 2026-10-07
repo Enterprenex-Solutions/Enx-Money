@@ -49,15 +49,10 @@ function getAdminDashboardHtml() {
     .brand-logo {
       width: 44px;
       height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 4px 15px var(--brand-glow);
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 2px;
+      object-fit: contain;
     }
     .brand-info h1 { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
     .brand-info p { font-size: 12px; color: var(--text-muted); }
@@ -89,7 +84,7 @@ function getAdminDashboardHtml() {
       align-items: center;
       gap: 6px;
     }
-    .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; box-shadow: 0 4px 12px var(--brand-glow); }
+    .btn-primary { background: var(--brand); color: #fff; }
     .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
     .btn-outline { background: transparent; border: 1px solid var(--card-border); color: var(--text-muted); }
     .btn-outline:hover { background: rgba(255,255,255,0.05); color: #fff; }
@@ -306,7 +301,7 @@ function getAdminDashboardHtml() {
     <!-- Header -->
     <header>
       <div class="brand-group">
-        <div class="brand-logo">₹</div>
+        <img src="/enterprenex-badge.png" alt="Enterprenex" class="brand-logo" />
         <div class="brand-info">
           <h1>ENX MONEY &bull; Admin Analytics</h1>
           <p>Real-Time Financial Platform & Distribution Intelligence</p>
