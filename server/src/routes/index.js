@@ -152,6 +152,10 @@ router.use(['/payment', '/v1/payment'], paymentRoutes);
 const workforceRoutes = require('./workforce.routes');
 router.use(['/workforce', '/v1/workforce'], workforceRoutes);
 
+// 20. Enterprenex Company Management Portal (Unified RBAC System across CEO, CTO, CFO, HR, Staff)
+const portalRoutes = require('./portal.routes');
+router.use(['/portal', '/v1/portal'], portalRoutes);
+
 module.exports = router;
 
 

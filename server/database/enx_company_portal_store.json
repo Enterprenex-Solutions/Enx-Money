@@ -1,0 +1,344 @@
+{
+  "users": [
+    {
+      "id": "EMP-001",
+      "email": "rohit@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "CEO",
+      "status": "ACTIVE",
+      "employeeId": "EMP-001",
+      "createdAt": "2026-10-07T02:44:39.182Z"
+    },
+    {
+      "id": "EMP-002",
+      "email": "revanth.reddy@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "CTO",
+      "status": "ACTIVE",
+      "employeeId": "EMP-002",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-003",
+      "email": "aniket@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "CFO",
+      "status": "ACTIVE",
+      "employeeId": "EMP-003",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-004",
+      "email": "jyothi@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "HR",
+      "status": "ACTIVE",
+      "employeeId": "EMP-004",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-005",
+      "email": "amit.marketing@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "DEPT_HEAD",
+      "status": "ACTIVE",
+      "employeeId": "EMP-005",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-006",
+      "email": "piyush@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "PROJECT_MANAGER",
+      "status": "ACTIVE",
+      "employeeId": "EMP-006",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-007",
+      "email": "kishore@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "EMPLOYEE",
+      "status": "ACTIVE",
+      "employeeId": "EMP-007",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "EMP-008",
+      "email": "sneha.intern@enterprenex.solutions",
+      "passwordHash": "$2a$10$bC7gr2Dq2nnAp3VqRo8dfej9zfncc29c3TTl8ROa/J/g4QaolVstW",
+      "role": "INTERN",
+      "status": "ACTIVE",
+      "employeeId": "EMP-008",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    }
+  ],
+  "employees": [
+    {
+      "id": "EMP-001",
+      "email": "rohit@enterprenex.solutions",
+      "name": "Rohit Pawar",
+      "role": "CEO",
+      "department": "EXECUTIVE",
+      "designation": "Chief Executive Officer",
+      "phone": "+91-9226860060",
+      "status": "ACTIVE",
+      "salaryAmount": 250000,
+      "joiningDate": "2025-01-01"
+    },
+    {
+      "id": "EMP-002",
+      "email": "revanth.reddy@enterprenex.solutions",
+      "name": "Revanth Reddy",
+      "role": "CTO",
+      "department": "ENGINEERING",
+      "designation": "Chief Technology Officer",
+      "phone": "+91-9440829762",
+      "status": "ACTIVE",
+      "salaryAmount": 220000,
+      "joiningDate": "2025-01-15"
+    },
+    {
+      "id": "EMP-003",
+      "email": "aniket@enterprenex.solutions",
+      "name": "Aniket Tambe",
+      "role": "CFO",
+      "department": "FINANCE",
+      "designation": "Chief Financial Officer",
+      "phone": "+91-9876543210",
+      "status": "ACTIVE",
+      "salaryAmount": 210000,
+      "joiningDate": "2025-02-01"
+    },
+    {
+      "id": "EMP-004",
+      "email": "jyothi@enterprenex.solutions",
+      "name": "Jyothi Sharma",
+      "role": "HR",
+      "department": "HUMAN_RESOURCES",
+      "designation": "Head of Human Resources & People Ops",
+      "phone": "+91-9811223344",
+      "status": "ACTIVE",
+      "salaryAmount": 140000,
+      "joiningDate": "2025-03-01"
+    },
+    {
+      "id": "EMP-005",
+      "email": "amit.marketing@enterprenex.solutions",
+      "name": "Amit Verma",
+      "role": "DEPT_HEAD",
+      "department": "MARKETING",
+      "designation": "Head of Growth & Marketing",
+      "phone": "+91-9833445566",
+      "status": "ACTIVE",
+      "salaryAmount": 125000,
+      "joiningDate": "2025-03-15"
+    },
+    {
+      "id": "EMP-006",
+      "email": "piyush@enterprenex.solutions",
+      "name": "Piyush Jadhav",
+      "role": "PROJECT_MANAGER",
+      "department": "ENGINEERING",
+      "designation": "Lead Engineering Manager",
+      "phone": "+91-9822334455",
+      "status": "ACTIVE",
+      "salaryAmount": 110000,
+      "joiningDate": "2025-04-01"
+    },
+    {
+      "id": "EMP-007",
+      "email": "kishore@enterprenex.solutions",
+      "name": "Kishore Kumar",
+      "role": "EMPLOYEE",
+      "department": "ENGINEERING",
+      "designation": "Full-Stack Software Engineer",
+      "phone": "+91-9766554433",
+      "status": "ACTIVE",
+      "salaryAmount": 75000,
+      "joiningDate": "2025-05-01"
+    },
+    {
+      "id": "EMP-008",
+      "email": "sneha.intern@enterprenex.solutions",
+      "name": "Sneha Patil",
+      "role": "INTERN",
+      "department": "ENGINEERING",
+      "designation": "QA & Engineering Intern",
+      "phone": "+91-9988776655",
+      "status": "ACTIVE",
+      "salaryAmount": 25000,
+      "joiningDate": "2026-01-10"
+    }
+  ],
+  "departments": [
+    {
+      "id": "DEP-EXEC",
+      "code": "EXECUTIVE",
+      "name": "Executive Leadership",
+      "description": "C-Suite Strategy & Corporate Governance"
+    },
+    {
+      "id": "DEP-ENG",
+      "code": "ENGINEERING",
+      "name": "Software & Technology",
+      "description": "Product Development, Architecture & DevOps"
+    },
+    {
+      "id": "DEP-FIN",
+      "code": "FINANCE",
+      "name": "Finance & Accounts",
+      "description": "Corporate Treasury, Compliance & Auditing"
+    },
+    {
+      "id": "DEP-HR",
+      "code": "HUMAN_RESOURCES",
+      "name": "People & Culture",
+      "description": "Talent Acquisition, Welfare & Operations"
+    },
+    {
+      "id": "DEP-MKT",
+      "code": "MARKETING",
+      "name": "Growth & Marketing",
+      "description": "MSME Outreach, Branding & Partnerships"
+    },
+    {
+      "id": "DEP-OPS",
+      "code": "OPERATIONS",
+      "name": "Business Operations",
+      "description": "Customer Success & Field Implementation"
+    }
+  ],
+  "projects": [
+    {
+      "id": "PRJ-101",
+      "name": "ENX Money — NextGen Fintech Platform",
+      "code": "ENX-FIN",
+      "department": "ENGINEERING",
+      "managerId": "EMP-006",
+      "status": "IN_PROGRESS",
+      "progress": 88,
+      "startDate": "2025-06-01",
+      "deadline": "2026-11-30",
+      "budget": 1500000,
+      "members": [
+        "EMP-002",
+        "EMP-006",
+        "EMP-007",
+        "EMP-008"
+      ],
+      "description": "Complete cloud architecture, payment settlement, UPI khata & mobile flutter client."
+    },
+    {
+      "id": "PRJ-102",
+      "name": "Enterprenex Internal Company Portal",
+      "code": "ENX-PORTAL",
+      "department": "ENGINEERING",
+      "managerId": "EMP-002",
+      "status": "IN_PROGRESS",
+      "progress": 95,
+      "startDate": "2026-09-01",
+      "deadline": "2026-10-31",
+      "budget": 450000,
+      "members": [
+        "EMP-001",
+        "EMP-002",
+        "EMP-003",
+        "EMP-004",
+        "EMP-006"
+      ],
+      "description": "Unified RBAC Company Management Portal across CEO, CTO, CFO, HR & Staff."
+    },
+    {
+      "id": "PRJ-103",
+      "name": "MSME Merchant Acquisition & Brand Campaign",
+      "code": "MKT-MSME",
+      "department": "MARKETING",
+      "managerId": "EMP-005",
+      "status": "IN_PROGRESS",
+      "progress": 62,
+      "startDate": "2026-08-01",
+      "deadline": "2026-12-15",
+      "budget": 350000,
+      "members": [
+        "EMP-005"
+      ],
+      "description": "Digital onboarding campaign targeting 50,000 retail merchants across Maharashtra."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TSK-501",
+      "projectId": "PRJ-102",
+      "title": "Implement Unified Portal RBAC & Permission Verification Middleware",
+      "description": "Build single login entrypoint and protect all endpoints with 403 Forbidden checks.",
+      "creatorId": "EMP-002",
+      "assigneeId": "EMP-007",
+      "priority": "URGENT",
+      "status": "IN_PROGRESS",
+      "deadline": "2026-10-15T18:00:00.000Z",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "TSK-502",
+      "projectId": "PRJ-102",
+      "title": "Review Q3 Engineering Cloud Infrastructure Budget",
+      "description": "Provide monthly cloud billing report and server scaling estimates for CFO.",
+      "creatorId": "EMP-003",
+      "assigneeId": "EMP-002",
+      "priority": "HIGH",
+      "status": "COMPLETED",
+      "deadline": "2026-10-10T12:00:00.000Z",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    },
+    {
+      "id": "TSK-503",
+      "projectId": "PRJ-101",
+      "title": "Automated E2E API Regression Test Suite",
+      "description": "Verify cross-role permission isolation and ensure zero token leaks.",
+      "creatorId": "EMP-006",
+      "assigneeId": "EMP-008",
+      "priority": "MEDIUM",
+      "status": "TODO",
+      "deadline": "2026-10-20T18:00:00.000Z",
+      "createdAt": "2026-10-07T02:44:39.183Z"
+    }
+  ],
+  "attendance": [],
+  "leaves": [],
+  "documents": [
+    {
+      "id": "DOC-101",
+      "title": "Enterprenex Solutions — Company Code of Conduct & HR Policy 2026",
+      "category": "HR",
+      "isConfidential": false,
+      "uploadedBy": "EMP-004",
+      "fileSizeBytes": 245000,
+      "mimeType": "application/pdf",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "DOC-102",
+      "title": "Q3 Financial Audit & Profit-Loss Executive Summary",
+      "category": "FINANCE",
+      "isConfidential": true,
+      "uploadedBy": "EMP-003",
+      "fileSizeBytes": 520000,
+      "mimeType": "application/pdf",
+      "createdAt": "2026-09-30T00:00:00.000Z"
+    },
+    {
+      "id": "DOC-103",
+      "title": "Technical Architecture & API Security Blueprint v2.4",
+      "category": "TECHNICAL",
+      "isConfidential": true,
+      "uploadedBy": "EMP-002",
+      "fileSizeBytes": 890000,
+      "mimeType": "application/pdf",
+      "createdAt": "2026-08-15T00:00:00.000Z"
+    }
+  ],
+  "notifications": [],
+  "auditLogs": [],
+  "updatedAt": "2026-10-07T02:44:39.184Z"
+}
