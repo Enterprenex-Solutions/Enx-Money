@@ -6,7 +6,8 @@ import {
   ChevronRight, 
   Download,
   Laptop,
-  ExternalLink
+  ExternalLink,
+  LogIn
 } from 'lucide-react';
 import { SITE_CONFIG } from '../data/content';
 import { LivePhoneDemo } from './LivePhoneDemo';
@@ -122,6 +123,31 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadClick, onWebClick }) => {
                     </span>
                   </div>
                   <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 shrink-0 transition-colors" />
+                </a>
+
+                {/* 🏢 OPTION: Enterprenex Company Management Portal Login */}
+                <a
+                  href="/portal"
+                  className="order-3 flex-1 sm:flex-initial inline-flex items-center justify-between sm:justify-start gap-3.5 px-5 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold border-2 border-emerald-500/40 hover:border-emerald-400 shadow-md hover:shadow-lg transition-all duration-200 group hover:-translate-y-0.5"
+                  title="Enterprenex Company Management Portal (CEO, CTO, CFO, HR & Staff Login)"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0 text-white group-hover:scale-105 transition-all shadow-sm">
+                    <LogIn className="w-5 h-5" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm sm:text-base font-extrabold tracking-tight text-white group-hover:text-emerald-300 transition-colors">
+                        Portal Login
+                      </span>
+                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/30 text-emerald-300 border border-emerald-400/30">
+                        Staff & Exec
+                      </span>
+                    </div>
+                    <span className="block text-[11px] font-medium text-emerald-200/80">
+                      🏢 Enterprenex Company Portal
+                    </span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-emerald-300 shrink-0" />
                 </a>
 
               </div>
