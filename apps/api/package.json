@@ -1,0 +1,29 @@
+{
+  "name": "@zerocarbonix/api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ZeroCarbonix EWMS — Modular Monolith API",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "node src/main.js",
+    "test": "node ../../server/node_modules/jest/bin/jest.js --runInBand",
+    "test:phase1": "node ../../server/node_modules/jest/bin/jest.js test/phase1_core_workflow.test.js --runInBand",
+    "prisma:generate": "prisma generate --schema=src/database/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=src/database/prisma/schema.prisma",
+    "seed": "node src/database/seeds/seed.js"
+  },
+  "dependencies": {
+    "@zerocarbonix/shared": "workspace:*",
+    "argon2": "^0.40.1",
+    "jsonwebtoken": "^9.0.2",
+    "otplib": "^12.0.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}

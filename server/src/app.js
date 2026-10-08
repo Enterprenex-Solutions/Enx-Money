@@ -506,6 +506,34 @@ app.use(express.static(path.join(__dirname, '../public'), {
   },
 }));
 
+// 5.8 ZeroCarbonix EWMS Modular Monolith Phase 1 API
+try {
+  const { createApp: createEwmsApp } = require('./ewms/app');
+  const ewmsApp = createEwmsApp();
+  app.use('/api/v1', ewmsApp);
+} catch (ewmsErr) {
+  console.warn('[Server] EWMS API mount notice:', ewmsErr.message);
+}
+
+// 5.9 ZeroCarbonix EWMS Next.js Web Application
+app.get([
+  '/ewms',
+  '/ewms/*',
+  '/work-management',
+  '/work-management/*',
+  '/system',
+  '/system/*'
+], (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const ewmsHtmlPath = path.join(__dirname, '../public/ewms/index.html');
+  if (fs.existsSync(ewmsHtmlPath)) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(ewmsHtmlPath);
+  }
+  next();
+});
+
 // 6. Mount API routes (supports /api, /api/v1, /v1, /api/api and root endpoints)
 app.use(['/api', '/api/v1', '/v1', '/api/api'], apiRoutes);
 app.use(apiRoutes);

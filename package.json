@@ -1,0 +1,23 @@
+{
+  "name": "zerocarbonix-ewms-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ZeroCarbonix Employee & Work Management System (EWMS) Monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"@zerocarbonix/*\" dev",
+    "dev:api": "pnpm --filter @zerocarbonix/api dev",
+    "dev:web": "pnpm --filter @zerocarbonix/web dev",
+    "start:api": "node apps/api/src/main.js",
+    "build": "pnpm --recursive run build",
+    "test": "npx jest apps/api/test/phase1_core_workflow.test.js --runInBand --forceExit",
+    "test:phase1": "npx jest apps/api/test/phase1_core_workflow.test.js --runInBand --forceExit",
+    "lint": "pnpm --recursive run lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
