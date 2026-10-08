@@ -71,7 +71,7 @@ class PortalAuthController {
         });
       }
 
-      // Generate signed JWT
+      // Generate signed Access JWT & Refresh JWT
       const expiresIn = rememberMe ? '30d' : (config.JWT?.EXPIRES_IN || config.JWT_EXPIRES_IN || '7d');
       const jwtSecret = config.JWT?.SECRET || config.JWT_SECRET || process.env.JWT_SECRET || 'enx_money_super_secret_jwt_key_2026';
       const token = jwt.sign(
@@ -87,6 +87,31 @@ class PortalAuthController {
         jwtSecret,
         { expiresIn }
       );
+
+      const refreshToken = jwt.sign(
+        { id: user.id, email: user.email, type: 'REFRESH' },
+        jwtSecret,
+        { expiresIn: '30d' }
+      );
+
+      // Track active session & login history
+      PortalModel.createSession({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        token,
+        refreshToken,
+        ipAddress: clientIp,
+        userAgent
+      });
+
+      PortalModel.recordLoginHistory({
+        email: user.email,
+        role: user.role,
+        success: true,
+        ipAddress: clientIp,
+        userAgent
+      });
 
       // Log successful login audit
       PortalModel.logAudit({
@@ -105,6 +130,7 @@ class PortalAuthController {
         message: `Welcome back, ${user.name}! Authenticated as ${user.role}.`,
         data: {
           token,
+          refreshToken,
           user: {
             id: user.id,
             employeeId: user.employeeId,
@@ -124,6 +150,63 @@ class PortalAuthController {
         statusCode: 500,
         message: 'Internal authentication server error'
       });
+    }
+  }
+
+  /**
+   * Token Refresh Endpoint
+   * POST /api/v1/portal/auth/refresh
+   */
+  static async refresh(req, res) {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return errorResponse(res, { statusCode: 400, message: 'Refresh token is required' });
+      }
+
+      const jwtSecret = config.JWT?.SECRET || config.JWT_SECRET || process.env.JWT_SECRET || 'enx_money_super_secret_jwt_key_2026';
+      let decoded;
+      try {
+        decoded = jwt.verify(refreshToken, jwtSecret);
+      } catch (e) {
+        return errorResponse(res, { statusCode: 401, message: 'Invalid or expired refresh token' });
+      }
+
+      const session = PortalModel.getSessionByRefreshToken(refreshToken);
+      if (!session) {
+        return errorResponse(res, { statusCode: 401, message: 'Session revoked or expired' });
+      }
+
+      const user = PortalModel.getUserById(decoded.id || decoded.email);
+      if (!user || user.status !== 'ACTIVE') {
+        return errorResponse(res, { statusCode: 403, message: 'User account disabled' });
+      }
+
+      const permissions = PortalModel.getRolePermissions(user.role);
+      const newToken = jwt.sign(
+        {
+          id: user.id,
+          employeeId: user.employeeId,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          department: user.department,
+          permissions
+        },
+        jwtSecret,
+        { expiresIn: '7d' }
+      );
+
+      session.token = newToken;
+      session.lastActiveAt = new Date().toISOString();
+
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Access token renewed successfully',
+        data: { token: newToken, refreshToken }
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
     }
   }
 
@@ -181,6 +264,95 @@ class PortalAuthController {
       return successResponse(res, {
         statusCode: 200,
         message: 'If your email is registered with Enterprenex Solutions, password reset instructions have been forwarded to your company inbox.'
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  /**
+   * Complete Password Reset
+   * POST /api/v1/portal/auth/reset-password
+   */
+  static async resetPassword(req, res) {
+    try {
+      const { email, newPassword } = req.body;
+      if (!email || !newPassword) {
+        return errorResponse(res, { statusCode: 400, message: 'Email and new password are required' });
+      }
+
+      const user = PortalModel.getUserById(email);
+      if (!user) {
+        return errorResponse(res, { statusCode: 404, message: 'User not found' });
+      }
+
+      PortalModel.updateUser(user.id, { password: newPassword });
+
+      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+      PortalModel.logAudit({
+        userId: user.id,
+        userEmail: user.email,
+        role: user.role,
+        action: 'PASSWORD_RESET_SUCCESS',
+        resourceType: 'AUTH',
+        ipAddress: clientIp
+      });
+
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Password reset successful. Please log in with your new credentials.'
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  /**
+   * List Active Sessions
+   * GET /api/v1/portal/auth/sessions
+   */
+  static async getSessions(req, res) {
+    try {
+      const sessions = PortalModel.getUserSessions(req.portalUser.id);
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Active sessions retrieved',
+        data: sessions
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  /**
+   * Revoke Session
+   * POST /api/v1/portal/auth/sessions/revoke
+   */
+  static async revokeSession(req, res) {
+    try {
+      const { sessionId } = req.body;
+      const revoked = PortalModel.revokeSession(sessionId);
+      return successResponse(res, {
+        statusCode: 200,
+        message: revoked ? 'Session revoked successfully' : 'Session not found'
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  /**
+   * Get Login History
+   * GET /api/v1/portal/auth/login-history
+   */
+  static async getLoginHistory(req, res) {
+    try {
+      const email = req.portalUser.role === 'SUPER_ADMIN' ? null : req.portalUser.email;
+      const history = PortalModel.getLoginHistory(email);
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Login history retrieved',
+        data: history
       });
     } catch (err) {
       return errorResponse(res, { statusCode: 500, message: err.message });

@@ -557,6 +557,455 @@ class PortalManagementController {
     }
   }
 
+  // ─── USER & RBAC MANAGEMENT ───────────────────────────
+  static async getUsers(req, res) {
+    try {
+      const users = PortalModel.getAllUsers();
+      return successResponse(res, { statusCode: 200, message: 'Users retrieved', data: users });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createUser(req, res) {
+    try {
+      const user = PortalModel.createUser(req.body);
+      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+      PortalModel.logAudit({
+        userId: req.portalUser.id,
+        userEmail: req.portalUser.email,
+        role: req.portalUser.role,
+        action: 'CREATE_USER',
+        resourceType: 'USER',
+        resourceId: user.id,
+        ipAddress: clientIp,
+        details: { email: user.email, role: user.role }
+      });
+      return successResponse(res, { statusCode: 201, message: 'User created successfully', data: user });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async updateUser(req, res) {
+    try {
+      const updated = PortalModel.updateUser(req.params.id, req.body);
+      if (!updated) return errorResponse(res, { statusCode: 404, message: 'User not found' });
+      return successResponse(res, { statusCode: 200, message: 'User updated successfully', data: updated });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async deleteUser(req, res) {
+    try {
+      const deleted = PortalModel.deleteUser(req.params.id);
+      if (!deleted) return errorResponse(res, { statusCode: 404, message: 'User not found' });
+      return successResponse(res, { statusCode: 200, message: 'User disabled successfully' });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async getRoles(req, res) {
+    try {
+      const roles = PortalModel.getAllRoles();
+      return successResponse(res, { statusCode: 200, message: 'Roles and permissions retrieved', data: roles });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async updateRolePermissions(req, res) {
+    try {
+      const { role } = req.params;
+      const { permissions } = req.body;
+      const updated = PortalModel.updateRolePermissions(role, permissions);
+      return successResponse(res, { statusCode: 200, message: `Permissions updated for role ${role}`, data: updated });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getPermissions(req, res) {
+    try {
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Master permissions list',
+        data: Object.values(PERMISSIONS)
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  // ─── DEPARTMENTS & DESIGNATIONS ────────────────────────
+  static async getDepartments(req, res) {
+    try {
+      const depts = PortalModel.getDepartments();
+      return successResponse(res, { statusCode: 200, message: 'Departments retrieved', data: depts });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createDepartment(req, res) {
+    try {
+      const dept = PortalModel.createDepartment(req.body);
+      return successResponse(res, { statusCode: 201, message: 'Department created', data: dept });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getDesignations(req, res) {
+    try {
+      const des = PortalModel.getDesignations();
+      return successResponse(res, { statusCode: 200, message: 'Designations retrieved', data: des });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createDesignation(req, res) {
+    try {
+      const des = PortalModel.createDesignation(req.body);
+      return successResponse(res, { statusCode: 201, message: 'Designation created', data: des });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  // ─── ONBOARDING & OFFBOARDING ──────────────────────────
+  static async getOnboarding(req, res) {
+    try {
+      const list = PortalModel.getOnboardingList();
+      return successResponse(res, { statusCode: 200, message: 'Onboarding pipelines retrieved', data: list });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createOnboarding(req, res) {
+    try {
+      const ob = PortalModel.createOnboarding(req.body);
+      return successResponse(res, { statusCode: 201, message: 'Candidate onboarding initiated', data: ob });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async advanceOnboardingStep(req, res) {
+    try {
+      const updated = PortalModel.advanceOnboardingStep(req.params.id);
+      if (!updated) return errorResponse(res, { statusCode: 404, message: 'Onboarding record not found' });
+      return successResponse(res, { statusCode: 200, message: 'Onboarding stage advanced', data: updated });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getOffboarding(req, res) {
+    try {
+      const list = PortalModel.getOffboardingList();
+      return successResponse(res, { statusCode: 200, message: 'Offboarding cases retrieved', data: list });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createOffboarding(req, res) {
+    try {
+      const off = PortalModel.createOffboarding(req.body);
+      return successResponse(res, { statusCode: 201, message: 'Employee offboarding initiated', data: off });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async advanceOffboardingStep(req, res) {
+    try {
+      const { itemIndex, completed } = req.body;
+      const updated = PortalModel.advanceOffboardingStep(req.params.id, itemIndex, completed);
+      if (!updated) return errorResponse(res, { statusCode: 404, message: 'Offboarding record not found' });
+      return successResponse(res, { statusCode: 200, message: 'Offboarding checklist updated', data: updated });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  // ─── MILESTONES ────────────────────────────────────────
+  static async getMilestones(req, res) {
+    try {
+      const { projectId } = req.query;
+      const list = PortalModel.getMilestones(projectId);
+      return successResponse(res, { statusCode: 200, message: 'Milestones retrieved', data: list });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createMilestone(req, res) {
+    try {
+      const m = PortalModel.createMilestone(req.body);
+      return successResponse(res, { statusCode: 201, message: 'Milestone created', data: m });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async updateMilestone(req, res) {
+    try {
+      const updated = PortalModel.updateMilestone(req.params.id, req.body);
+      if (!updated) return errorResponse(res, { statusCode: 404, message: 'Milestone not found' });
+      return successResponse(res, { statusCode: 200, message: 'Milestone updated', data: updated });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  // ─── TIME TRACKING ─────────────────────────────────────
+  static async startTimeTracking(req, res) {
+    try {
+      const { taskId, projectId, notes } = req.body;
+      const entry = PortalModel.startTimeTracking({
+        employeeId: req.portalUser.employeeId,
+        taskId,
+        projectId,
+        notes
+      });
+      return successResponse(res, { statusCode: 200, message: 'Work timer started', data: entry });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async stopTimeTracking(req, res) {
+    try {
+      const { notes } = req.body;
+      const entry = PortalModel.stopTimeTracking({
+        employeeId: req.portalUser.employeeId,
+        notes
+      });
+      return successResponse(res, { statusCode: 200, message: 'Work timer stopped & hours logged', data: entry });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getTimeTrackingSummary(req, res) {
+    try {
+      const empId = req.query.employeeId || (req.portalUser.role === ROLES.EMPLOYEE ? req.portalUser.employeeId : null);
+      const summary = PortalModel.getTimeTrackingSummary(empId);
+      return successResponse(res, { statusCode: 200, message: 'Time tracking summary', data: summary });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  // ─── LEAVE TYPES & ATTENDANCE CALENDAR ─────────────────
+  static async getLeaveTypes(req, res) {
+    try {
+      const types = PortalModel.getLeaveTypes();
+      return successResponse(res, { statusCode: 200, message: 'Leave types retrieved', data: types });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createLeaveType(req, res) {
+    try {
+      const lt = PortalModel.createLeaveType(req.body);
+      return successResponse(res, { statusCode: 201, message: 'Leave type configured', data: lt });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getAttendanceCalendar(req, res) {
+    try {
+      const { month } = req.query;
+      const cal = PortalModel.getAttendanceCalendar(month);
+      return successResponse(res, { statusCode: 200, message: 'Attendance calendar data', data: cal });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  // ─── KPIS & PERFORMANCE ────────────────────────────────
+  static async getKpis(req, res) {
+    try {
+      const kpis = PortalModel.getKpis();
+      return successResponse(res, { statusCode: 200, message: 'KPI configurations retrieved', data: kpis });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createKpi(req, res) {
+    try {
+      const kpi = PortalModel.createKpi(req.body);
+      return successResponse(res, { statusCode: 201, message: 'KPI metric configured', data: kpi });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getGoals(req, res) {
+    try {
+      const empId = req.query.employeeId || (req.portalUser.role === ROLES.EMPLOYEE ? req.portalUser.employeeId : null);
+      const goals = PortalModel.getGoals(empId);
+      return successResponse(res, { statusCode: 200, message: 'Goals retrieved', data: goals });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createGoal(req, res) {
+    try {
+      const goal = PortalModel.createGoal({
+        employeeId: req.body.employeeId || req.portalUser.employeeId,
+        title: req.body.title,
+        targetDate: req.body.targetDate,
+        progress: req.body.progress
+      });
+      return successResponse(res, { statusCode: 201, message: 'Performance goal registered', data: goal });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getPerformanceReviews(req, res) {
+    try {
+      const empId = req.query.employeeId || (req.portalUser.role === ROLES.EMPLOYEE ? req.portalUser.employeeId : null);
+      const reviews = PortalModel.getPerformanceReviews(empId);
+      return successResponse(res, { statusCode: 200, message: 'Performance reviews retrieved', data: reviews });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createPerformanceReview(req, res) {
+    try {
+      const review = PortalModel.createPerformanceReview({
+        ...req.body,
+        reviewerId: req.portalUser.id,
+        reviewerName: req.portalUser.name
+      });
+      return successResponse(res, { statusCode: 201, message: 'Performance review logged', data: review });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  // ─── ANNOUNCEMENTS & NOTIFICATIONS ─────────────────────
+  static async getAnnouncements(req, res) {
+    try {
+      const announcements = PortalModel.getAnnouncements();
+      return successResponse(res, { statusCode: 200, message: 'Announcements retrieved', data: announcements });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async createAnnouncement(req, res) {
+    try {
+      const ann = PortalModel.createAnnouncement({
+        ...req.body,
+        authorName: req.portalUser.name
+      });
+      return successResponse(res, { statusCode: 201, message: 'Company announcement posted', data: ann });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  static async getNotifications(req, res) {
+    try {
+      const notifs = PortalModel.getNotifications(req.portalUser.employeeId);
+      return successResponse(res, { statusCode: 200, message: 'Notifications retrieved', data: notifs });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async markNotificationRead(req, res) {
+    try {
+      PortalModel.markNotificationRead(req.params.id);
+      return successResponse(res, { statusCode: 200, message: 'Notification marked as read' });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
+  // ─── CLIENT PORTAL (STRICT ISOLATION) ──────────────────
+  static async getClientProjects(req, res) {
+    try {
+      const projects = PortalModel.getClientProjects(req.portalUser.id || req.portalUser.email);
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Client projects retrieved',
+        data: projects
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async getClientTasks(req, res) {
+    try {
+      const tasks = PortalModel.getClientTasks(req.portalUser.id || req.portalUser.email);
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Shared client deliverables retrieved',
+        data: tasks
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async getClientDocuments(req, res) {
+    try {
+      const docs = PortalModel.getClientDocuments(req.portalUser.id || req.portalUser.email);
+      return successResponse(res, {
+        statusCode: 200,
+        message: 'Shared client documents retrieved',
+        data: docs
+      });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  // ─── ANALYTICS & SETTINGS ──────────────────────────────
+  static async getCompanyAnalytics(req, res) {
+    try {
+      const analytics = PortalModel.getCompanyAnalytics();
+      return successResponse(res, { statusCode: 200, message: 'Company analytics metrics', data: analytics });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async getSettings(req, res) {
+    try {
+      const settings = PortalModel.getSettings();
+      return successResponse(res, { statusCode: 200, message: 'Company settings retrieved', data: settings });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 500, message: err.message });
+    }
+  }
+
+  static async updateSettings(req, res) {
+    try {
+      const updated = PortalModel.updateSettings(req.body);
+      return successResponse(res, { statusCode: 200, message: 'Company settings updated', data: updated });
+    } catch (err) {
+      return errorResponse(res, { statusCode: 400, message: err.message });
+    }
+  }
+
   // ─── SECURITY AUDIT LOGS ───────────────────────────────
   static async getAuditLogs(req, res) {
     try {
