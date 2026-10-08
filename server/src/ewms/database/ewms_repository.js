@@ -42,6 +42,24 @@ class EwmsRepository {
     this.attendanceRecords = [];
     this.auditLogs = [];
 
+    // Phase 2 & 3 Collections
+    this.kpiTemplates = [];
+    this.employeeKpis = [];
+    this.performanceReviews = [];
+    this.objectives = [];
+    this.keyResults = [];
+    this.leaveBalances = [];
+    this.leaveRequests = [];
+    this.timesheets = [];
+    this.employeeSkills = [];
+    this.meetings = [];
+    this.meetingParticipants = [];
+    this.meetingActionItems = [];
+    this.documents = [];
+    this.projectRisks = [];
+    this.notifications = [];
+    this.automationRules = [];
+
     this.seedDefaults();
   }
 
@@ -426,7 +444,243 @@ class EwmsRepository {
       updatedAt: new Date(),
     });
 
-    // 9. Initial Audit Record
+    // 9. Phase 2 Seed: KPI Templates
+    this.kpiTemplates.push(
+      {
+        id: 'kpi-tpl-dev',
+        role: 'DEVELOPER',
+        name: 'Senior Developer Performance Template',
+        metrics: [
+          { name: 'Delivery', weight: 25 },
+          { name: 'Code Quality', weight: 25 },
+          { name: 'Bug Rate', weight: 15 },
+          { name: 'Technical Contribution', weight: 15 },
+          { name: 'Documentation', weight: 10 },
+          { name: 'Team Collaboration', weight: 10 },
+        ],
+      },
+      {
+        id: 'kpi-tpl-qa',
+        role: 'QA',
+        name: 'QA Engineer Performance Template',
+        metrics: [
+          { name: 'Test Coverage', weight: 25 },
+          { name: 'Defect Detection', weight: 25 },
+          { name: 'Defect Escape Rate', weight: 20 },
+          { name: 'Automation', weight: 15 },
+          { name: 'Delivery', weight: 10 },
+          { name: 'Documentation', weight: 5 },
+        ],
+      }
+    );
+
+    // Pre-seeded Employee KPI evaluation (Kishore Kumar — Developer)
+    this.employeeKpis.push({
+      id: 'ekpi-001',
+      organizationId: orgId,
+      employeeId: 'emp-usr-employee',
+      templateId: 'kpi-tpl-dev',
+      period: '2026-Q1',
+      metrics: [
+        { name: 'Delivery', weight: 25, score: 92 },
+        { name: 'Code Quality', weight: 25, score: 88 },
+        { name: 'Bug Rate', weight: 15, score: 92 },
+        { name: 'Technical Contribution', weight: 15, score: 85 },
+        { name: 'Documentation', weight: 10, score: 90 },
+        { name: 'Team Collaboration', weight: 10, score: 95 },
+      ],
+      calculatedScore: 90.3,
+      signalNotice: 'Management signal for career growth; not an automated verdict.',
+      reviewedBy: 'emp-usr-teamlead',
+      createdAt: new Date('2026-03-31'),
+    });
+
+    // 10. Phase 2 Seed: OKR Objectives & Key Results
+    this.objectives.push(
+      {
+        id: 'obj-001',
+        organizationId: orgId,
+        title: 'Deliver ZeroCarbonix EWMS Enterprise v1.0',
+        description: 'Production modular monolith with high reliability and full RBAC isolation',
+        level: 'COMPANY',
+        targetQuarter: '2026-Q1',
+        progress: 85.0,
+      },
+      {
+        id: 'obj-002',
+        organizationId: orgId,
+        title: 'Backend Scalability & Zero-Defect State Transitions',
+        description: 'Complete task state transitions, dependency blocking, and multi-tenancy safeguards',
+        level: 'DEPARTMENT',
+        departmentId: 'dept-eng',
+        targetQuarter: '2026-Q1',
+        progress: 90.0,
+      }
+    );
+
+    this.keyResults.push(
+      { id: 'kr-101', objectiveId: 'obj-001', title: 'Complete Core Workflow Test Suite', targetValue: 100, currentValue: 100, unit: '%' },
+      { id: 'kr-102', objectiveId: 'obj-001', title: 'Deploy Web Portal on Production Domain', targetValue: 100, currentValue: 100, unit: '%' },
+      { id: 'kr-103', objectiveId: 'obj-001', title: 'Deliver Phase 3 Company Platform & Automation', targetValue: 100, currentValue: 80, unit: '%' }
+    );
+
+    // 11. Phase 2 Seed: Leave Balances & Requests
+    this.leaveBalances.push({
+      id: 'lb-emp-1',
+      organizationId: orgId,
+      employeeId: 'emp-usr-employee',
+      year: 2026,
+      casualAllocation: 12,
+      sickAllocation: 10,
+      earnedAllocation: 15,
+      casualUsed: 2,
+      sickUsed: 0,
+      earnedUsed: 0,
+    });
+
+    this.leaveRequests.push({
+      id: 'lr-001',
+      organizationId: orgId,
+      employeeId: 'emp-usr-employee',
+      leaveType: 'CASUAL',
+      startDate: '2026-04-10',
+      endDate: '2026-04-11',
+      days: 2,
+      reason: 'Personal family event',
+      status: 'APPROVED',
+      reviewedBy: 'emp-usr-teamlead',
+      createdAt: new Date('2026-03-01'),
+    });
+
+    // 12. Phase 2 Seed: Timesheets
+    this.timesheets.push({
+      id: 'ts-2026-w08',
+      organizationId: orgId,
+      employeeId: 'emp-usr-employee',
+      weekStartDate: '2026-02-16',
+      weekEndDate: '2026-02-22',
+      totalHours: 40.0,
+      status: 'SUBMITTED',
+      notes: 'Completed task dependency engine and RBAC guards',
+      reviewedBy: null,
+      createdAt: new Date('2026-02-22'),
+    });
+
+    // 13. Phase 2 Seed: Employee Skills Matrix
+    this.employeeSkills.push(
+      { id: 'sk-1', employeeId: 'emp-usr-employee', skillName: 'Node.js & NestJS', category: 'Backend', selfRating: 'EXPERT', verifiedRating: 'EXPERT', isVerified: true },
+      { id: 'sk-2', employeeId: 'emp-usr-employee', skillName: 'PostgreSQL & Prisma', category: 'Database', selfRating: 'ADVANCED', verifiedRating: 'ADVANCED', isVerified: true },
+      { id: 'sk-3', employeeId: 'emp-usr-employee', skillName: 'Next.js & React', category: 'Frontend', selfRating: 'ADVANCED', verifiedRating: 'INTERMEDIATE', isVerified: true },
+      { id: 'sk-4', employeeId: 'emp-usr-employee', skillName: 'Cybersecurity & RBAC', category: 'Security', selfRating: 'ADVANCED', verifiedRating: 'ADVANCED', isVerified: true }
+    );
+
+    // 14. Phase 3 Seed: Meetings & Action Items
+    this.meetings.push({
+      id: 'mtg-001',
+      organizationId: orgId,
+      title: 'EWMS Phase 3 Architecture & Review Sync',
+      agenda: 'Review Company Platform, Action Items to Tasks, Workflow Rules',
+      startTime: new Date('2026-02-20T10:00:00Z'),
+      endTime: new Date('2026-02-20T11:00:00Z'),
+      projectId: 'prj-cloud-core',
+      organizerId: 'emp-usr-projmgr',
+      status: 'COMPLETED',
+      participantIds: ['emp-usr-projmgr', 'emp-usr-teamlead', 'emp-usr-employee'],
+    });
+
+    this.meetingActionItems.push({
+      id: 'act-001',
+      meetingId: 'mtg-001',
+      description: 'Configure automated notification workers on BullMQ queue',
+      assigneeId: 'emp-usr-employee',
+      dueDate: '2026-03-01',
+      isConvertedToTask: false,
+      taskId: null,
+    });
+
+    // 15. Phase 3 Seed: Documents & Knowledge Base
+    this.documents.push(
+      {
+        id: 'doc-001',
+        organizationId: orgId,
+        title: 'ZeroCarbonix Cloud Architecture Blueprint v1.0',
+        category: 'Architecture',
+        accessLevel: 'INTERNAL',
+        fileUrl: 'https://docs.zerocarbonix.com/arch/blueprint-v1.pdf',
+        projectId: 'prj-cloud-core',
+        uploadedBy: 'emp-usr-projmgr',
+        createdAt: new Date('2026-01-20'),
+      },
+      {
+        id: 'doc-002',
+        organizationId: orgId,
+        title: 'Company Executive Compensation & Equity Policy 2026',
+        category: 'HR & Executive',
+        accessLevel: 'CONFIDENTIAL',
+        fileUrl: 'https://docs.zerocarbonix.com/hr/exec-comp-2026.pdf',
+        projectId: null,
+        uploadedBy: 'emp-usr-hradmin',
+        createdAt: new Date('2026-01-05'),
+      }
+    );
+
+    // 16. Phase 3 Seed: Project Risks Register
+    this.projectRisks.push({
+      id: 'rsk-001',
+      organizationId: orgId,
+      projectId: 'prj-cloud-core',
+      title: 'Database connection pool saturation under high concurrency spikes',
+      severity: 'HIGH',
+      probability: 'MEDIUM',
+      impact: 'Temporary API request throttling',
+      mitigationPlan: 'Configure connection pooling with resilient retry and Redis query caching',
+      status: 'OPEN',
+      createdAt: new Date('2026-01-25'),
+    });
+
+    // 17. Phase 3 Seed: Notifications
+    this.notifications.push(
+      {
+        id: 'notif-001',
+        organizationId: orgId,
+        recipientId: 'usr-employee',
+        title: 'New Task Assigned',
+        message: 'You have been assigned to task TSK-102: Implement Multi-Role RBAC Guards',
+        read: false,
+        createdAt: new Date(),
+      },
+      {
+        id: 'notif-002',
+        organizationId: orgId,
+        recipientId: 'usr-employee',
+        title: 'Leave Request Approved',
+        message: 'Your casual leave request for 2 days has been approved by Ananya Sen',
+        read: true,
+        createdAt: new Date(Date.now() - 24 * 3600 * 1000),
+      }
+    );
+
+    // 18. Phase 3 Seed: Automation Rules
+    this.automationRules.push(
+      {
+        id: 'rule-overdue',
+        organizationId: orgId,
+        trigger: 'TASK_OVERDUE',
+        name: 'Overdue Task Escalation Rule',
+        description: 'Notify employee, alert lead, and flag on manager dashboard when deadline passes',
+        isActive: true,
+      },
+      {
+        id: 'rule-workload',
+        organizationId: orgId,
+        trigger: 'WORKLOAD_EXCEEDED',
+        name: 'Capacity Overload Protective Rule',
+        description: 'Warn manager immediately when assigned task hours exceed contracted weekly capacity (>100%)',
+        isActive: true,
+      }
+    );
+
+    // 19. Initial Audit Record
     this.auditLogs.push({
       id: 'audit-001',
       organizationId: orgId,

@@ -6,7 +6,7 @@
 
 const { repository } = require('../../database/ewms_repository');
 const auditService = require('../audit/audit.service');
-const { calculateTimeSessionTotals } = require('../../shared/dto');
+const { calculateTimeSessionTotals } = require('../../../../../packages/shared/src/dto');
 
 class TimeController {
   startSession(req, res) {

@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config');
 const { repository } = require('../../database/ewms_repository');
 const encryptionService = require('../../database/encryption.service');
-const { DEFAULT_ROLE_PERMISSIONS } = require('../../shared/permissions');
+const { DEFAULT_ROLE_PERMISSIONS } = require('../../../../../packages/shared/src/permissions');
 
 /**
  * Authentication Middleware:

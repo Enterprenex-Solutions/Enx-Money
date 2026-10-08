@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config');
 const { repository, verifyPassword } = require('../../database/ewms_repository');
 const auditService = require('../audit/audit.service');
-const { DEFAULT_ROLE_PERMISSIONS } = require('../../shared/permissions');
+const { DEFAULT_ROLE_PERMISSIONS } = require('../../../../../packages/shared/src/permissions');
 
 class AuthController {
   async login(req, res) {
@@ -20,7 +20,25 @@ class AuthController {
       });
     }
 
-    const user = repository.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const ALIAS_MAP = {
+      'vikram.mehra@zerocarbonix.com': 'superadmin@zerocarbonix.com',
+      'aarti.sharma@zerocarbonix.com': 'admin@zerocarbonix.com',
+      'sneha.patil@zerocarbonix.com': 'hr@zerocarbonix.com',
+      'rahul.deshmukh@zerocarbonix.com': 'pm@zerocarbonix.com',
+      'ananya.sen@zerocarbonix.com': 'lead@zerocarbonix.com',
+      'kishore.kumar@zerocarbonix.com': 'employee@zerocarbonix.com',
+      'priya.nair@zerocarbonix.com': 'intern@zerocarbonix.com',
+      'john@acmecorp.com': 'client@acmecorp.com',
+    };
+    const targetEmail = ALIAS_MAP[email.toLowerCase()] || email.toLowerCase();
+
+    let user = repository.users.find(u => u.email.toLowerCase() === targetEmail);
+    if (!user) {
+      const emp = repository.employees.find(e => e.email && e.email.toLowerCase() === targetEmail);
+      if (emp) {
+        user = repository.users.find(u => u.id === emp.userId);
+      }
+    }
     if (!user || !verifyPassword(password, user.passwordHash)) {
       auditService.log({
         actorId: null,

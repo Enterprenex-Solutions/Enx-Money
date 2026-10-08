@@ -90,6 +90,69 @@ const SessionType = {
   BREAK: 'BREAK',
 };
 
+const TimesheetStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+};
+
+const GoalStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  ACHIEVED: 'ACHIEVED',
+  MISSED: 'MISSED',
+};
+
+const ReviewCycle = {
+  MONTHLY: 'MONTHLY',
+  QUARTERLY: 'QUARTERLY',
+  HALF_YEARLY: 'HALF_YEARLY',
+  YEARLY: 'YEARLY',
+};
+
+const ReviewStatus = {
+  DRAFT: 'DRAFT',
+  SELF_SUBMITTED: 'SELF_SUBMITTED',
+  MANAGER_REVIEWED: 'MANAGER_REVIEWED',
+  COMPLETED: 'COMPLETED',
+};
+
+const SkillLevel = {
+  BEGINNER: 'BEGINNER',
+  INTERMEDIATE: 'INTERMEDIATE',
+  ADVANCED: 'ADVANCED',
+  EXPERT: 'EXPERT',
+};
+
+const MeetingStatus = {
+  SCHEDULED: 'SCHEDULED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+};
+
+const DocumentAccess = {
+  INTERNAL: 'INTERNAL',
+  CONFIDENTIAL: 'CONFIDENTIAL',
+  RESTRICTED: 'RESTRICTED',
+  PUBLIC: 'PUBLIC',
+};
+
+const RiskSeverity = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL',
+};
+
+const AutomationTrigger = {
+  TASK_OVERDUE: 'TASK_OVERDUE',
+  WORKLOAD_EXCEEDED: 'WORKLOAD_EXCEEDED',
+  TIMESHEET_DUE: 'TIMESHEET_DUE',
+  LEAVE_REQUESTED: 'LEAVE_REQUESTED',
+};
+
 module.exports = {
   Role,
   TaskStatus,
@@ -102,4 +165,13 @@ module.exports = {
   LeaveStatus,
   ProjectStatus,
   SessionType,
+  TimesheetStatus,
+  GoalStatus,
+  ReviewCycle,
+  ReviewStatus,
+  SkillLevel,
+  MeetingStatus,
+  DocumentAccess,
+  RiskSeverity,
+  AutomationTrigger,
 };

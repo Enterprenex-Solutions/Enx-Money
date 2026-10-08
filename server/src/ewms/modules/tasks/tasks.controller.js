@@ -14,7 +14,7 @@ const {
   isValidTaskStatusTransition,
   canStartTask,
   calculateWorkload,
-} = require('../../shared/dto');
+} = require('../../../../../packages/shared/src/dto');
 
 class TasksController {
   list(req, res) {

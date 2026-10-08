@@ -132,6 +132,123 @@ function calculateKpiScore(metrics = []) {
   };
 }
 
+/**
+ * Role KPI Template Specifications
+ */
+const ROLE_KPI_TEMPLATES = {
+  DEVELOPER: [
+    { metric: 'Delivery', weight: 25 },
+    { metric: 'Code Quality', weight: 25 },
+    { metric: 'Bug Rate', weight: 15 },
+    { metric: 'Technical Contribution', weight: 15 },
+    { metric: 'Documentation', weight: 10 },
+    { metric: 'Team Collaboration', weight: 10 },
+  ],
+  QA: [
+    { metric: 'Test Coverage', weight: 25 },
+    { metric: 'Defect Detection', weight: 25 },
+    { metric: 'Defect Escape Rate', weight: 20 },
+    { metric: 'Automation', weight: 15 },
+    { metric: 'Delivery', weight: 10 },
+    { metric: 'Documentation', weight: 5 },
+  ],
+  DESIGNER: [
+    { metric: 'Visual Quality', weight: 30 },
+    { metric: 'User Research', weight: 20 },
+    { metric: 'Design System', weight: 20 },
+    { metric: 'Delivery', weight: 15 },
+    { metric: 'Cross-Functional Collab', weight: 15 },
+  ],
+  DEVOPS: [
+    { metric: 'Uptime & Reliability', weight: 30 },
+    { metric: 'CI/CD Pipeline', weight: 25 },
+    { metric: 'Security & Compliance', weight: 20 },
+    { metric: 'Incident MTTR', weight: 15 },
+    { metric: 'Automation', weight: 10 },
+  ],
+  INTERN: [
+    { metric: 'Learning Velocity', weight: 30 },
+    { metric: 'Task Execution', weight: 25 },
+    { metric: 'Code Quality', weight: 20 },
+    { metric: 'Curiosity & Initiative', weight: 15 },
+    { metric: 'Communication', weight: 10 },
+  ],
+};
+
+/**
+ * Leave Balance Calculation:
+ * Deducts approved and pending leave days from allocation.
+ */
+function calculateLeaveBalance(allocation = 24, leaves = []) {
+  const approvedDays = leaves
+    .filter(l => l.status === 'APPROVED')
+    .reduce((sum, l) => sum + (l.days || 1), 0);
+
+  const pendingDays = leaves
+    .filter(l => l.status === 'PENDING')
+    .reduce((sum, l) => sum + (l.days || 1), 0);
+
+  const remainingDays = Math.max(0, allocation - approvedDays);
+
+  return {
+    allocation,
+    approvedDays,
+    pendingDays,
+    remainingDays,
+  };
+}
+
+/**
+ * OKR Objective Progress Roll-up:
+ * Calculates objective progress as the average of its key results.
+ */
+function calculateOkrProgress(keyResults = []) {
+  if (!keyResults || keyResults.length === 0) return 0;
+  const total = keyResults.reduce((acc, kr) => {
+    const cur = kr.currentValue ?? 0;
+    const tgt = kr.targetValue > 0 ? kr.targetValue : 100;
+    const pct = Math.min(100, Math.max(0, (cur / tgt) * 100));
+    return acc + pct;
+  }, 0);
+  return Math.round((total / keyResults.length) * 10) / 10;
+}
+
+/**
+ * Project Health Score Calculation:
+ * Factors: Completion rate (60%), Overdue penalty (20%), Open risks penalty (20%).
+ */
+function calculateProjectHealthScore({ totalTasks = 0, completedTasks = 0, overdueTasks = 0, openRisks = 0 }) {
+  if (totalTasks === 0) return 100;
+  const completionRate = (completedTasks / totalTasks) * 60;
+  const overduePenalty = Math.min(25, (overdueTasks / totalTasks) * 25);
+  const riskPenalty = Math.min(20, openRisks * 5);
+  const score = Math.max(0, Math.min(100, Math.round(completionRate + (40 - overduePenalty - riskPenalty))));
+  return score;
+}
+
+/**
+ * Workflow Automation Rule Evaluation:
+ * Checks trigger conditions (TASK_OVERDUE, WORKLOAD_EXCEEDED) and returns actions.
+ */
+function evaluateAutomationRule(trigger, context = {}) {
+  const actions = [];
+  if (trigger === 'TASK_OVERDUE' && context.isOverdue) {
+    actions.push({ type: 'NOTIFY_EMPLOYEE', message: `Task "${context.taskTitle}" is overdue` });
+    actions.push({ type: 'NOTIFY_LEAD', message: `Task "${context.taskTitle}" assigned to ${context.assigneeName} is overdue` });
+    actions.push({ type: 'ESCALATE_TO_MANAGER', severity: 'HIGH' });
+  }
+
+  if (trigger === 'WORKLOAD_EXCEEDED' && context.workloadPercentage > 100) {
+    actions.push({ type: 'FLAG_OVERLOADED', employeeId: context.employeeId, workload: context.workloadPercentage });
+    actions.push({ type: 'NOTIFY_MANAGER', message: `${context.employeeName} is overloaded (${context.workloadPercentage}%)` });
+  }
+
+  return {
+    triggered: actions.length > 0,
+    actions,
+  };
+}
+
 module.exports = {
   ALLOWED_TASK_TRANSITIONS,
   isValidTaskStatusTransition,
@@ -139,4 +256,9 @@ module.exports = {
   calculateWorkload,
   calculateTimeSessionTotals,
   calculateKpiScore,
+  ROLE_KPI_TEMPLATES,
+  calculateLeaveBalance,
+  calculateOkrProgress,
+  calculateProjectHealthScore,
+  evaluateAutomationRule,
 };

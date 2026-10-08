@@ -96,3 +96,75 @@ export declare const SessionType: {
   readonly BREAK: 'BREAK';
 };
 export type SessionType = typeof SessionType[keyof typeof SessionType];
+
+export declare const TimesheetStatus: {
+  readonly DRAFT: 'DRAFT';
+  readonly SUBMITTED: 'SUBMITTED';
+  readonly APPROVED: 'APPROVED';
+  readonly REJECTED: 'REJECTED';
+};
+export type TimesheetStatus = typeof TimesheetStatus[keyof typeof TimesheetStatus];
+
+export declare const GoalStatus: {
+  readonly NOT_STARTED: 'NOT_STARTED';
+  readonly IN_PROGRESS: 'IN_PROGRESS';
+  readonly ACHIEVED: 'ACHIEVED';
+  readonly MISSED: 'MISSED';
+};
+export type GoalStatus = typeof GoalStatus[keyof typeof GoalStatus];
+
+export declare const ReviewCycle: {
+  readonly MONTHLY: 'MONTHLY';
+  readonly QUARTERLY: 'QUARTERLY';
+  readonly HALF_YEARLY: 'HALF_YEARLY';
+  readonly YEARLY: 'YEARLY';
+};
+export type ReviewCycle = typeof ReviewCycle[keyof typeof ReviewCycle];
+
+export declare const ReviewStatus: {
+  readonly DRAFT: 'DRAFT';
+  readonly SELF_SUBMITTED: 'SELF_SUBMITTED';
+  readonly MANAGER_REVIEWED: 'MANAGER_REVIEWED';
+  readonly COMPLETED: 'COMPLETED';
+};
+export type ReviewStatus = typeof ReviewStatus[keyof typeof ReviewStatus];
+
+export declare const SkillLevel: {
+  readonly BEGINNER: 'BEGINNER';
+  readonly INTERMEDIATE: 'INTERMEDIATE';
+  readonly ADVANCED: 'ADVANCED';
+  readonly EXPERT: 'EXPERT';
+};
+export type SkillLevel = typeof SkillLevel[keyof typeof SkillLevel];
+
+export declare const MeetingStatus: {
+  readonly SCHEDULED: 'SCHEDULED';
+  readonly IN_PROGRESS: 'IN_PROGRESS';
+  readonly COMPLETED: 'COMPLETED';
+  readonly CANCELLED: 'CANCELLED';
+};
+export type MeetingStatus = typeof MeetingStatus[keyof typeof MeetingStatus];
+
+export declare const DocumentAccess: {
+  readonly INTERNAL: 'INTERNAL';
+  readonly CONFIDENTIAL: 'CONFIDENTIAL';
+  readonly RESTRICTED: 'RESTRICTED';
+  readonly PUBLIC: 'PUBLIC';
+};
+export type DocumentAccess = typeof DocumentAccess[keyof typeof DocumentAccess];
+
+export declare const RiskSeverity: {
+  readonly LOW: 'LOW';
+  readonly MEDIUM: 'MEDIUM';
+  readonly HIGH: 'HIGH';
+  readonly CRITICAL: 'CRITICAL';
+};
+export type RiskSeverity = typeof RiskSeverity[keyof typeof RiskSeverity];
+
+export declare const AutomationTrigger: {
+  readonly TASK_OVERDUE: 'TASK_OVERDUE';
+  readonly WORKLOAD_EXCEEDED: 'WORKLOAD_EXCEEDED';
+  readonly TIMESHEET_DUE: 'TIMESHEET_DUE';
+  readonly LEAVE_REQUESTED: 'LEAVE_REQUESTED';
+};
+export type AutomationTrigger = typeof AutomationTrigger[keyof typeof AutomationTrigger];

@@ -4,7 +4,7 @@
  */
 
 const { repository } = require('../../database/ewms_repository');
-const { calculateWorkload } = require('../../shared/dto');
+const { calculateWorkload } = require('../../../../../packages/shared/src/dto');
 
 class ReportingController {
   getEmployeeDashboard(req, res) {

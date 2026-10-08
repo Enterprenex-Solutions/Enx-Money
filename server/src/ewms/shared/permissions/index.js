@@ -43,6 +43,27 @@ const Permissions = {
   // KPIs & Performance
   KPI_CREATE: 'kpi.create',
   KPI_EVALUATE: 'kpi.evaluate',
+  PERFORMANCE_REVIEW: 'performance.review',
+  GOALS_MANAGE: 'goals.manage',
+  GOALS_VIEW: 'goals.view',
+
+  // Skills
+  SKILLS_MANAGE: 'skills.manage',
+
+  // Documents
+  DOCUMENT_UPLOAD: 'document.upload',
+  DOCUMENT_VIEW: 'document.view',
+  DOCUMENT_CONFIDENTIAL_VIEW: 'document.confidential.view',
+
+  // Meetings
+  MEETING_MANAGE: 'meeting.manage',
+  MEETING_VIEW: 'meeting.view',
+
+  // Workflow Automation
+  WORKFLOW_MANAGE: 'workflow.manage',
+
+  // Risks
+  RISK_MANAGE: 'risk.manage',
 
   // Reports
   REPORT_VIEW: 'report.view',
@@ -77,6 +98,17 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Permissions.LEAVE_APPROVE,
     Permissions.KPI_CREATE,
     Permissions.KPI_EVALUATE,
+    Permissions.PERFORMANCE_REVIEW,
+    Permissions.GOALS_MANAGE,
+    Permissions.GOALS_VIEW,
+    Permissions.SKILLS_MANAGE,
+    Permissions.DOCUMENT_UPLOAD,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.DOCUMENT_CONFIDENTIAL_VIEW,
+    Permissions.MEETING_MANAGE,
+    Permissions.MEETING_VIEW,
+    Permissions.WORKFLOW_MANAGE,
+    Permissions.RISK_MANAGE,
     Permissions.REPORT_VIEW,
   ],
 
@@ -92,6 +124,13 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Permissions.REPORT_VIEW,
     Permissions.KPI_CREATE,
     Permissions.KPI_EVALUATE,
+    Permissions.PERFORMANCE_REVIEW,
+    Permissions.GOALS_VIEW,
+    Permissions.SKILLS_MANAGE,
+    Permissions.DOCUMENT_UPLOAD,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.DOCUMENT_CONFIDENTIAL_VIEW,
+    Permissions.MEETING_VIEW,
   ],
 
   [Role.PROJECT_MANAGER]: [
@@ -112,6 +151,16 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Permissions.LEAVE_APPROVE,
     Permissions.KPI_CREATE,
     Permissions.KPI_EVALUATE,
+    Permissions.PERFORMANCE_REVIEW,
+    Permissions.GOALS_MANAGE,
+    Permissions.GOALS_VIEW,
+    Permissions.SKILLS_MANAGE,
+    Permissions.DOCUMENT_UPLOAD,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.MEETING_MANAGE,
+    Permissions.MEETING_VIEW,
+    Permissions.WORKFLOW_MANAGE,
+    Permissions.RISK_MANAGE,
     Permissions.REPORT_VIEW,
   ],
 
@@ -129,6 +178,13 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Permissions.LEAVE_REQUEST,
     Permissions.LEAVE_APPROVE,
     Permissions.KPI_EVALUATE,
+    Permissions.PERFORMANCE_REVIEW,
+    Permissions.GOALS_VIEW,
+    Permissions.SKILLS_MANAGE,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.MEETING_MANAGE,
+    Permissions.MEETING_VIEW,
+    Permissions.RISK_MANAGE,
     Permissions.REPORT_VIEW,
   ],
 
@@ -139,6 +195,9 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Permissions.TIME_TRACK,
     Permissions.ATTENDANCE_VIEW,
     Permissions.LEAVE_REQUEST,
+    Permissions.GOALS_VIEW,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.MEETING_VIEW,
   ],
 
   [Role.INTERN]: [
@@ -148,10 +207,14 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Permissions.TIME_TRACK,
     Permissions.ATTENDANCE_VIEW,
     Permissions.LEAVE_REQUEST,
+    Permissions.GOALS_VIEW,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.MEETING_VIEW,
   ],
 
   [Role.CLIENT]: [
     Permissions.PROJECT_VIEW,
+    Permissions.DOCUMENT_VIEW,
   ],
 };
 

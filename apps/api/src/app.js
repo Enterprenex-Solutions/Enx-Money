@@ -21,6 +21,17 @@ const timeController = require('./modules/time/time.controller');
 const attendanceController = require('./modules/attendance/attendance.controller');
 const reportingController = require('./modules/reporting/reporting.controller');
 const auditController = require('./modules/audit/audit.controller');
+const kpiController = require('./modules/kpi/kpi.controller');
+const goalsController = require('./modules/goals/goals.controller');
+const leaveController = require('./modules/leave/leave.controller');
+const timesheetController = require('./modules/timesheet/timesheet.controller');
+const skillsController = require('./modules/skills/skills.controller');
+const documentsController = require('./modules/documents/documents.controller');
+const meetingsController = require('./modules/meetings/meetings.controller');
+const notificationsController = require('./modules/notifications/notifications.controller');
+const calendarController = require('./modules/calendar/calendar.controller');
+const workflowController = require('./modules/workflow/workflow.controller');
+const risksController = require('./modules/risks/risks.controller');
 
 function createApp() {
   const app = express();
@@ -98,6 +109,58 @@ function createApp() {
 
   // 10. Audit Logs
   api.get('/audit-logs', authenticateJwt, tenantGuard, requirePermissions(Permissions.AUDIT_VIEW), auditController.getLogs);
+
+  // 11. KPI & Performance (Phase 2)
+  api.get('/kpi/templates', authenticateJwt, tenantGuard, kpiController.getTemplates);
+  api.get('/kpi/employee/:employeeId?', authenticateJwt, tenantGuard, kpiController.getEmployeeKpis);
+  api.post('/kpi/evaluate', authenticateJwt, tenantGuard, requirePermissions(Permissions.KPI_EVALUATE), kpiController.evaluateKpi);
+
+  // 12. Goals & OKRs (Phase 2)
+  api.get('/goals', authenticateJwt, tenantGuard, goalsController.list);
+  api.post('/goals/objectives', authenticateJwt, tenantGuard, requirePermissions(Permissions.GOALS_MANAGE), goalsController.create);
+  api.patch('/goals/key-results/:id', authenticateJwt, tenantGuard, requirePermissions(Permissions.GOALS_MANAGE), goalsController.updateKeyResult);
+
+  // 13. Leave Management (Phase 2)
+  api.get('/leave/balance/:employeeId?', authenticateJwt, tenantGuard, leaveController.getBalance);
+  api.get('/leave/requests', authenticateJwt, tenantGuard, leaveController.list);
+  api.post('/leave/apply', authenticateJwt, tenantGuard, requirePermissions(Permissions.LEAVE_REQUEST), leaveController.apply);
+  api.patch('/leave/requests/:id/review', authenticateJwt, tenantGuard, requirePermissions(Permissions.LEAVE_APPROVE), leaveController.review);
+
+  // 14. Timesheets (Phase 2)
+  api.get('/timesheets', authenticateJwt, tenantGuard, timesheetController.list);
+  api.post('/timesheets/submit', authenticateJwt, tenantGuard, requirePermissions(Permissions.TIME_TRACK), timesheetController.submit);
+  api.patch('/timesheets/:id/review', authenticateJwt, tenantGuard, requirePermissions(Permissions.TIMESHEET_APPROVE), timesheetController.review);
+
+  // 15. Skills Matrix (Phase 2)
+  api.get('/skills/matrix', authenticateJwt, tenantGuard, skillsController.getMatrix);
+  api.post('/skills', authenticateJwt, tenantGuard, skillsController.addOrUpdate);
+  api.patch('/skills/:id/verify', authenticateJwt, tenantGuard, requirePermissions(Permissions.SKILLS_MANAGE), skillsController.verify);
+
+  // 16. Documents & Knowledge Base (Phase 3)
+  api.get('/documents', authenticateJwt, tenantGuard, requirePermissions(Permissions.DOCUMENT_VIEW), documentsController.list);
+  api.post('/documents/upload', authenticateJwt, tenantGuard, requirePermissions(Permissions.DOCUMENT_UPLOAD), documentsController.create);
+
+  // 17. Meetings & Action Items (Phase 3)
+  api.get('/meetings', authenticateJwt, tenantGuard, requirePermissions(Permissions.MEETING_VIEW), meetingsController.list);
+  api.post('/meetings/schedule', authenticateJwt, tenantGuard, requirePermissions(Permissions.MEETING_MANAGE), meetingsController.create);
+  api.post('/meetings/:id/action-items', authenticateJwt, tenantGuard, requirePermissions(Permissions.MEETING_MANAGE), meetingsController.addActionItem);
+  api.post('/meetings/:id/action-items/:itemId/convert-to-task', authenticateJwt, tenantGuard, requirePermissions(Permissions.TASK_CREATE), meetingsController.convertActionItemToTask);
+
+  // 18. Notifications (Phase 3)
+  api.get('/notifications', authenticateJwt, tenantGuard, notificationsController.list);
+  api.patch('/notifications/:id/read', authenticateJwt, tenantGuard, notificationsController.markRead);
+  api.post('/notifications/read-all', authenticateJwt, tenantGuard, notificationsController.markAllRead);
+
+  // 19. Calendar Aggregator (Phase 3)
+  api.get('/calendar/events', authenticateJwt, tenantGuard, calendarController.getEvents);
+
+  // 20. Workflow Automation (Phase 3)
+  api.get('/workflow/rules', authenticateJwt, tenantGuard, workflowController.getRules);
+  api.post('/workflow/scan', authenticateJwt, tenantGuard, requirePermissions(Permissions.WORKFLOW_MANAGE), workflowController.runAutomationScan);
+
+  // 21. Project Risks & Health (Phase 3)
+  api.get('/risks', authenticateJwt, tenantGuard, requirePermissions(Permissions.PROJECT_VIEW), risksController.list);
+  api.post('/risks', authenticateJwt, tenantGuard, requirePermissions(Permissions.RISK_MANAGE), risksController.create);
 
   app.use('/api/v1', api);
 
