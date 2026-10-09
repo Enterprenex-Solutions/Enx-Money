@@ -990,6 +990,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Widget _buildSearchNoResults() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(36),
@@ -1020,7 +1021,6 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Widget _buildErrorState() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(36),

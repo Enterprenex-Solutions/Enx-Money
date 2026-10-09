@@ -202,7 +202,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           setState(() => _isLoading = false);
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (_) => const SecurityCredentialSetupScreen(),
+              builder: (_) => SecurityCredentialSetupScreen(user: user),
             ),
             (route) => false,
           );

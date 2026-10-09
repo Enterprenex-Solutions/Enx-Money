@@ -592,7 +592,7 @@ class _DigitalIdentityKycScreenState extends State<DigitalIdentityKycScreen> wit
   void _showManualKycBottomSheet() {
     final nameCtrl = TextEditingController(text: _resolvedUserName);
     final panCtrl = TextEditingController(text: _panController.text);
-    final bizCtrl = TextEditingController(text: '${_resolvedUserName} Enterprises');
+    final bizCtrl = TextEditingController(text: '$_resolvedUserName Enterprises');
     bool isSubmitting = false;
 
     showModalBottomSheet(
