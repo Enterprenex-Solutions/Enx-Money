@@ -34,12 +34,11 @@ const app = express();
 // Enable trust proxy for reverse proxies (Render, Cloudflare, Nginx, AWS ALB/CloudFront)
 app.set('trust proxy', 1);
 
-// Automatic routing for portal.enterprenex.solutions subdomain
+// Portal subdomain removed — redirect to main ENX Money platform
 app.use((req, res, next) => {
   const host = (req.headers.host || '').toLowerCase();
-  if (host.startsWith('portal.enterprenex.solutions') && !req.path.startsWith('/api')) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.send(getCompanyPortalHtml());
+  if (host.startsWith('portal.enterprenex.solutions')) {
+    return res.redirect(301, 'https://enxmoney.enterprenex.solutions/');
   }
   next();
 });
@@ -328,19 +327,16 @@ app.get(['/workforce', '/workforce/dashboard', '/hrms'], (req, res) => {
   res.send(getWorkforcePortalHtml());
 });
 
-// Enterprenex Company Management Portal (Unified Single Login & RBAC Executive Dashboards)
+// Portal route removed — permanently redirect all legacy portal endpoints to root homepage
 app.get([
   '/portal',
   '/portal/*',
+  '/portal.html',
   '/company-portal',
   '/company-portal/*',
   '/enterprenex-portal',
-], (req, res, next) => {
-  if (req.path.startsWith('/portal/api') || req.path.startsWith('/api')) {
-    return next();
-  }
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.send(getCompanyPortalHtml());
+], (req, res) => {
+  return res.redirect(301, '/');
 });
 
 
