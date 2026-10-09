@@ -214,7 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 Icon(
                                   completion == 100 ? Icons.check_circle_rounded : Icons.pie_chart_rounded,
-                                  color: completion == 100 ? const Color(0xFF10B981) : const Color(0xFF00E676),
+                                  color: completion == 100 ? const Color(0xFF10B981) : AppColors.brandBlue,
                                   size: 22,
                                 ),
                                 const SizedBox(width: 8),
@@ -251,11 +251,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF00E676),
+                                    color: AppColors.brandBlue,
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF00E676).withValues(alpha: 0.3),
+                                        color: AppColors.brandBlue.withValues(alpha: 0.25),
                                         blurRadius: 6,
                                         offset: const Offset(0, 2),
                                       ),
@@ -267,8 +267,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Text(
                                         'Complete Profile',
                                         style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w800,
                                           fontSize: 11,
                                         ),
                                       ),
@@ -323,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           value: completion / 100,
                           backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            completion == 100 ? const Color(0xFF10B981) : const Color(0xFF00E676),
+                            completion == 100 ? const Color(0xFF10B981) : AppColors.brandBlue,
                           ),
                           minHeight: 8,
                         ),
@@ -348,13 +348,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
-                                  color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                                  color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                                 ),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.add_circle_outline_rounded, size: 12, color: Color(0xFF00E676)),
+                                  Icon(Icons.add_circle_outline_rounded, size: 12, color: AppColors.brandBlue),
                                   const SizedBox(width: 4),
                                   Text(
                                     item,

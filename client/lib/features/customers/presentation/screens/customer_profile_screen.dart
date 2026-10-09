@@ -63,16 +63,22 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
     String entryType = defaultType; // 'GAVE' or 'GOT'
     String paymentMode = 'CASH';
 
+    final isCurrentDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF141824),
+      backgroundColor: isCurrentDark ? const Color(0xFF1E293B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final isGave = entryType == 'GAVE';
+            final actionColor = isGave ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+
             return Padding(
               padding: EdgeInsets.only(
                 left: 20,
@@ -88,17 +94,17 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        entryType == 'GAVE'
+                        isGave
                             ? "↑ Give / Sale (Udhaar)"
                             : "↓ Got / Payment (Jama)",
                         style: TextStyle(
-                          color: entryType == 'GAVE' ? const Color(0xFF00E676) : const Color(0xFFFF5252),
+                          color: actionColor,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.grey),
+                        icon: Icon(Icons.close, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -111,10 +117,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: entryType == 'GAVE'
-                                ? const Color(0xFF00E676)
-                                : const Color(0xFF1B2030),
-                            foregroundColor: entryType == 'GAVE' ? Colors.black : Colors.white,
+                            backgroundColor: isGave
+                                ? const Color(0xFF10B981)
+                                : (isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9)),
+                            foregroundColor: isGave ? Colors.white : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
                           ),
                           onPressed: () => setModalState(() => entryType = 'GAVE'),
                           child: const Text("Give / Sale"),
@@ -124,10 +130,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: entryType == 'GOT'
-                                ? const Color(0xFFFF5252)
-                                : const Color(0xFF1B2030),
-                            foregroundColor: Colors.white,
+                            backgroundColor: !isGave
+                                ? const Color(0xFFEF4444)
+                                : (isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9)),
+                            foregroundColor: !isGave ? Colors.white : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
                           ),
                           onPressed: () => setModalState(() => entryType = 'GOT'),
                           child: const Text("Got / Payment"),
@@ -142,14 +148,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                   TextField(
                     controller: amountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 20, fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.currency_rupee, color: Color(0xFF00E676)),
+                      prefixIcon: Icon(Icons.currency_rupee, color: actionColor),
                       labelText: 'AMOUNT (₹) *',
-                      labelStyle: const TextStyle(color: Colors.grey),
+                      labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                       filled: true,
-                      fillColor: const Color(0xFF1B2030),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                     ),
                   ),
 
@@ -158,14 +165,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                   // Payment mode
                   DropdownButtonFormField<String>(
                     value: paymentMode,
-                    dropdownColor: const Color(0xFF1B2030),
-                    style: const TextStyle(color: Colors.white),
+                    dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
                     decoration: InputDecoration(
                       labelText: 'PAYMENT MODE',
-                      labelStyle: const TextStyle(color: Colors.grey),
+                      labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                       filled: true,
-                      fillColor: const Color(0xFF1B2030),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                     ),
                     items: const [
                       DropdownMenuItem(value: 'CASH', child: Text('Cash')),
@@ -182,15 +190,16 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                   // Description
                   TextField(
                     controller: descriptionController,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
                     decoration: InputDecoration(
                       labelText: 'DESCRIPTION / ITEM DETAILS',
-                      labelStyle: const TextStyle(color: Colors.grey),
+                      labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                       hintText: 'e.g. Sales Invoice #102, cotton fabrics',
-                      hintStyle: const TextStyle(color: Colors.grey),
+                      hintStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF94A3B8)),
                       filled: true,
-                      fillColor: const Color(0xFF1B2030),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                     ),
                   ),
 
@@ -201,8 +210,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                     height: 48,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: entryType == 'GAVE' ? const Color(0xFF00E676) : const Color(0xFFFF5252),
-                        foregroundColor: entryType == 'GAVE' ? Colors.black : Colors.white,
+                        backgroundColor: actionColor,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () async {
@@ -246,45 +255,62 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
     final creditCtrl = TextEditingController(text: _customer.creditLimit.toString());
     final addressCtrl = TextEditingController(text: _customer.address);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF141824),
-          title: const Text('Edit Customer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+          title: Text('Edit Customer', style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: 'Customer Name *', labelStyle: TextStyle(color: Colors.grey)),
+                  style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
+                  decoration: InputDecoration(
+                    labelText: 'Customer Name *',
+                    labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: phoneCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: 'Mobile Number *', labelStyle: TextStyle(color: Colors.grey)),
+                  style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
+                  decoration: InputDecoration(
+                    labelText: 'Mobile Number *',
+                    labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: gstinCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: 'GSTIN', labelStyle: TextStyle(color: Colors.grey)),
+                  style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
+                  decoration: InputDecoration(
+                    labelText: 'GSTIN',
+                    labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: creditCtrl,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Credit Limit (₹)', labelStyle: TextStyle(color: Colors.grey)),
+                  decoration: InputDecoration(
+                    labelText: 'Credit Limit (₹)',
+                    labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: addressCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(labelText: 'Address', labelStyle: TextStyle(color: Colors.grey)),
+                  style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                  ),
                 ),
               ],
             ),
@@ -292,10 +318,10 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text('Cancel', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00E676), foregroundColor: Colors.black),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandBlue, foregroundColor: Colors.white),
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 final phone = phoneCtrl.text.trim();
@@ -344,13 +370,20 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final pageBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
+    final cardBorder = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textPrimary = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF0F172A);
+    final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
+
     final isDue = _customer.currentBalance > 0;
     final isSettled = _customer.currentBalance == 0;
     final balanceColor = isSettled
-        ? Colors.grey
+        ? textSecondary
         : isDue
-            ? const Color(0xFFFF5252)
-            : const Color(0xFF00E676);
+            ? const Color(0xFFEF4444)
+            : const Color(0xFF10B981);
 
     final statusText = isSettled
         ? 'SETTLED'
@@ -359,26 +392,27 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
             : 'ADVANCE';
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0E14),
+      backgroundColor: pageBg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0B0E14),
+        backgroundColor: pageBg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: Text(
           _customer.name,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          icon: Icon(Icons.arrow_back_rounded, color: textPrimary),
           onPressed: () => Navigator.pop(context, true),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined, color: Colors.grey),
+            icon: Icon(Icons.edit_outlined, color: textSecondary),
             tooltip: 'Edit Customer',
             onPressed: _showEditCustomerDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.picture_as_pdf_outlined, color: Color(0xFF00BCD4)),
+            icon: const Icon(Icons.picture_as_pdf_outlined, color: AppColors.brandBlue),
             tooltip: 'Export Statement',
             onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -396,9 +430,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomActionBar(),
+      bottomNavigationBar: _buildBottomActionBar(cardBg, cardBorder, textPrimary, isDark),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00E676)))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.brandBlue))
           : Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 800), // Responsive max width
@@ -409,9 +443,16 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF121622),
+                        color: cardBg,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFF1F2638)),
+                        border: Border.all(color: cardBorder),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Column(
                         children: [
@@ -424,8 +465,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                                   children: [
                                     Text(
                                       _customer.name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      style: TextStyle(
+                                        color: textPrimary,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -433,20 +474,20 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                                     const SizedBox(height: 3),
                                     Text(
                                       '📱 ${_customer.phone}',
-                                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                      style: TextStyle(color: textSecondary, fontSize: 13),
                                     ),
                                     if (_customer.gstin.isNotEmpty) ...[
                                       const SizedBox(height: 2),
                                       Text(
                                         '🏛️ GSTIN: ${_customer.gstin}',
-                                        style: const TextStyle(color: Color(0xFF90A4AE), fontSize: 11),
+                                        style: const TextStyle(color: Color(0xFF0284C7), fontSize: 11),
                                       ),
                                     ],
                                     if (_customer.creditLimit > 0) ...[
                                       const SizedBox(height: 2),
                                       Text(
                                         '⚡ Credit Limit: ₹${_currencyFormat.format(_customer.creditLimit)}',
-                                        style: const TextStyle(color: Color(0xFF00E676), fontSize: 11, fontWeight: FontWeight.w600),
+                                        style: const TextStyle(color: Color(0xFF10B981), fontSize: 11, fontWeight: FontWeight.w600),
                                       ),
                                     ],
                                   ],
@@ -459,7 +500,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: balanceColor.withValues(alpha: 0.15),
+                                      color: balanceColor.withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -488,18 +529,18 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                           ),
 
                           const SizedBox(height: 14),
-                          const Divider(color: Color(0xFF1F2638), height: 1),
+                          Divider(color: cardBorder, height: 1),
                           const SizedBox(height: 12),
 
                           // Total Sales vs Total Payments Summary
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _buildMetricItem('Total Sales', '₹${_currencyFormat.format(_customer.totalSales)}', const Color(0xFF00E676)),
-                              Container(width: 1, height: 30, color: const Color(0xFF1F2638)),
-                              _buildMetricItem('Total Payments', '₹${_currencyFormat.format(_customer.totalPayments)}', const Color(0xFFFF5252)),
-                              Container(width: 1, height: 30, color: const Color(0xFF1F2638)),
-                              _buildMetricItem('Balance Due', '₹${_currencyFormat.format(_customer.currentBalance.abs())}', balanceColor),
+                              _buildMetricItem('Total Sales', '₹${_currencyFormat.format(_customer.totalSales)}', const Color(0xFF10B981), textSecondary),
+                              Container(width: 1, height: 30, color: cardBorder),
+                              _buildMetricItem('Total Payments', '₹${_currencyFormat.format(_customer.totalPayments)}', const Color(0xFFEF4444), textSecondary),
+                              Container(width: 1, height: 30, color: cardBorder),
+                              _buildMetricItem('Balance Due', '₹${_currencyFormat.format(_customer.currentBalance.abs())}', balanceColor, textSecondary),
                             ],
                           ),
                         ],
@@ -508,12 +549,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
 
                     // Tab Bar (Khata Ledger vs Transactions/Invoices)
                     Container(
-                      color: const Color(0xFF0B0E14),
+                      color: pageBg,
                       child: TabBar(
                         controller: _tabController,
-                        indicatorColor: const Color(0xFF00E676),
-                        labelColor: const Color(0xFF00E676),
-                        unselectedLabelColor: Colors.grey,
+                        indicatorColor: AppColors.brandBlue,
+                        labelColor: AppColors.brandBlue,
+                        unselectedLabelColor: textSecondary,
                         tabs: const [
                           Tab(icon: Icon(Icons.menu_book_rounded), text: 'Khata / Ledger'),
                           Tab(icon: Icon(Icons.receipt_long_rounded), text: 'Transactions / Invoices'),
@@ -526,8 +567,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          _buildLedgerTab(),
-                          _buildInvoicesTab(),
+                          _buildLedgerTab(cardBg, cardBorder, textPrimary, textSecondary),
+                          _buildInvoicesTab(cardBg, cardBorder, textPrimary, textSecondary),
                         ],
                       ),
                     ),
@@ -538,12 +579,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
     );
   }
 
-  Widget _buildMetricItem(String label, String value, Color valueColor) {
+  Widget _buildMetricItem(String label, String value, Color valueColor, Color labelColor) {
     return Column(
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.w500),
+          style: TextStyle(color: labelColor, fontSize: 11, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 2),
         Text(
@@ -554,17 +595,17 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
     );
   }
 
-  Widget _buildLedgerTab() {
+  Widget _buildLedgerTab(Color cardBg, Color cardBorder, Color textPrimary, Color textSecondary) {
     if (_ledgerEntries.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.menu_book_outlined, color: Colors.grey, size: 40),
-            SizedBox(height: 10),
-            Text('No Ledger Entries Yet', style: TextStyle(color: Colors.white, fontSize: 15)),
-            SizedBox(height: 4),
-            Text('Record an entry using Give / Got buttons below.', style: TextStyle(color: Colors.grey, fontSize: 12)),
+            Icon(Icons.menu_book_outlined, color: textSecondary, size: 40),
+            const SizedBox(height: 10),
+            Text('No Ledger Entries Yet', style: TextStyle(color: textPrimary, fontSize: 15, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            Text('Record an entry using Give / Got buttons below.', style: TextStyle(color: textSecondary, fontSize: 12)),
           ],
         ),
       );
@@ -581,9 +622,16 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF141824),
+            color: cardBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF1F2638)),
+            border: Border.all(color: cardBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -591,13 +639,13 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: isGave
-                      ? const Color(0xFF00E676).withValues(alpha: 0.15)
-                      : const Color(0xFFFF5252).withValues(alpha: 0.15),
+                      ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                      : const Color(0xFFEF4444).withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isGave ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                  color: isGave ? const Color(0xFF00E676) : const Color(0xFFFF5252),
+                  color: isGave ? const Color(0xFF10B981) : const Color(0xFFEF4444),
                   size: 18,
                 ),
               ),
@@ -608,12 +656,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                   children: [
                     Text(
                       entry.description.isNotEmpty ? entry.description : (isGave ? 'Credit Sale / Udhaar' : 'Payment Received / Jama'),
-                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '${entry.entryDate} • Mode: ${entry.paymentMode}',
-                      style: const TextStyle(color: Colors.grey, fontSize: 11),
+                      style: TextStyle(color: textSecondary, fontSize: 11),
                     ),
                   ],
                 ),
@@ -624,7 +672,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                   Text(
                     '${isGave ? '+' : '-'} ₹${_currencyFormat.format(entry.amount)}',
                     style: TextStyle(
-                      color: isGave ? const Color(0xFF00E676) : const Color(0xFFFF5252),
+                      color: isGave ? const Color(0xFF10B981) : const Color(0xFFEF4444),
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -632,7 +680,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                   const SizedBox(height: 2),
                   Text(
                     'Bal: ₹${_currencyFormat.format(entry.balanceAfter)}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 10),
+                    style: TextStyle(color: textSecondary, fontSize: 10),
                   ),
                 ],
               ),
@@ -643,25 +691,25 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
     );
   }
 
-  Widget _buildInvoicesTab() {
+  Widget _buildInvoicesTab(Color cardBg, Color cardBorder, Color textPrimary, Color textSecondary) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _buildInvoiceCard('INV-2026-0042', '16 Aug 2026', 30000.00, 'UNPAID', const Color(0xFFFF5252)),
-        _buildInvoiceCard('INV-2026-0038', '02 Aug 2026', 15000.00, 'PARTIAL', Colors.orange),
-        _buildInvoiceCard('INV-2026-0021', '12 Jul 2026', 25000.00, 'PAID', const Color(0xFF00E676)),
+        _buildInvoiceCard('INV-2026-0042', '16 Aug 2026', 30000.00, 'UNPAID', const Color(0xFFEF4444), cardBg, cardBorder, textPrimary, textSecondary),
+        _buildInvoiceCard('INV-2026-0038', '02 Aug 2026', 15000.00, 'PARTIAL', const Color(0xFFF59E0B), cardBg, cardBorder, textPrimary, textSecondary),
+        _buildInvoiceCard('INV-2026-0021', '12 Jul 2026', 25000.00, 'PAID', const Color(0xFF10B981), cardBg, cardBorder, textPrimary, textSecondary),
       ],
     );
   }
 
-  Widget _buildInvoiceCard(String invNo, String date, double amount, String status, Color statusColor) {
+  Widget _buildInvoiceCard(String invNo, String date, double amount, String status, Color statusColor, Color cardBg, Color cardBorder, Color textPrimary, Color textSecondary) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF141824),
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1F2638)),
+        border: Border.all(color: cardBorder),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -669,9 +717,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(invNo, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+              Text(invNo, style: TextStyle(color: textPrimary, fontWeight: FontWeight.bold, fontSize: 14)),
               const SizedBox(height: 3),
-              Text(date, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              Text(date, style: TextStyle(color: textSecondary, fontSize: 12)),
             ],
           ),
           Row(
@@ -680,12 +728,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text('₹${_currencyFormat.format(amount)}',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                      style: TextStyle(color: textPrimary, fontWeight: FontWeight.bold, fontSize: 15)),
                   const SizedBox(height: 3),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.15),
+                      color: statusColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -696,7 +744,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
                 ],
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+              Icon(Icons.chevron_right_rounded, color: textSecondary),
             ],
           ),
         ],
@@ -704,12 +752,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
     );
   }
 
-  Widget _buildBottomActionBar() {
+  Widget _buildBottomActionBar(Color cardBg, Color cardBorder, Color textPrimary, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: const BoxDecoration(
-        color: Color(0xFF121622),
-        border: Border(top: BorderSide(color: Color(0xFF1F2638))),
+      decoration: BoxDecoration(
+        color: cardBg,
+        border: Border(top: BorderSide(color: cardBorder)),
       ),
       child: SafeArea(
         top: false,
@@ -720,12 +768,12 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
               flex: 1,
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF00E676)),
+                  side: const BorderSide(color: Color(0xFF25D366)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                icon: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF00E676), size: 18),
-                label: const Text('Remind', style: TextStyle(color: Color(0xFF00E676), fontWeight: FontWeight.bold)),
+                icon: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF25D366), size: 18),
+                label: const Text('Remind', style: TextStyle(color: Color(0xFF25D366), fontWeight: FontWeight.bold)),
                 onPressed: _sendReminder,
               ),
             ),
@@ -735,8 +783,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
               flex: 1,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00E676),
-                  foregroundColor: Colors.black,
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
@@ -750,7 +798,7 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> with Sing
               flex: 1,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF5252),
+                  backgroundColor: const Color(0xFFEF4444),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

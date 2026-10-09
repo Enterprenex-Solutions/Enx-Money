@@ -12,16 +12,16 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppColors.background,
-      primaryColor: AppColors.primaryGreen,
+      scaffoldBackgroundColor: const Color(0xFF0F172A),
+      primaryColor: AppColors.brandBlue,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.primaryGreen,
-        secondary: AppColors.accentNeon,
-        surface: AppColors.surface,
+        primary: AppColors.brandBlue,
+        secondary: AppColors.brandCyan,
+        surface: Color(0xFF1E293B),
         error: AppColors.error,
-        onPrimary: AppColors.background,
-        onSecondary: AppColors.background,
-        onSurface: AppColors.textPrimary,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: Colors.white,
         onError: AppColors.pureWhite,
       ),
       appBarTheme: const AppBarTheme(
@@ -36,16 +36,16 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surfaceCard,
+        color: const Color(0xFF1E293B),
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-          side: const BorderSide(color: AppColors.border, width: 1),
+          side: const BorderSide(color: Color(0xFF334155), width: 1),
         ),
         margin: EdgeInsets.zero,
       ),
       dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+        color: Color(0xFF334155),
         thickness: 1,
         space: 1,
       ),
@@ -56,8 +56,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryGreen,
-          foregroundColor: AppColors.background,
+          backgroundColor: AppColors.brandBlue,
+          foregroundColor: Colors.white,
           elevation: 0,
           minimumSize: const Size(64, AppDimensions.buttonHeight),
           shape: RoundedRectangleBorder(

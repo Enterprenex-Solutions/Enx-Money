@@ -119,18 +119,22 @@ class _CustomersScreenState extends State<CustomersScreen> {
       }
     }
 
-    if (!mounted) return;
+    final isCurrentDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF141824),
+      backgroundColor: isCurrentDark ? const Color(0xFF1E293B) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final isGot = entryType == 'GOT';
+            final primaryActionColor = isGot ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+
             return Padding(
               padding: EdgeInsets.only(
                 left: 20,
@@ -146,15 +150,15 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        entryType == 'GAVE' ? '↑ + Give (Sale / Udhaar)' : '↓ + Got (Payment / Jama)',
+                        isGot ? '↓ + Got (Payment / Jama)' : '↑ + Give (Sale / Udhaar)',
                         style: TextStyle(
-                          color: entryType == 'GAVE' ? const Color(0xFF00E676) : const Color(0xFFFF5252),
+                          color: primaryActionColor,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.grey),
+                        icon: Icon(Icons.close, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -162,7 +166,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   const SizedBox(height: 14),
 
                   // Customer Selector Card
-                  const Text('CUSTOMER', style: TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold)),
+                  Text('CUSTOMER', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
                   InkWell(
                     onTap: () async {
@@ -180,20 +184,20 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1B2030),
+                        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF2B3248)),
+                        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                       ),
                       child: Row(
                         children: [
                           CircleAvatar(
                             radius: 18,
-                            backgroundColor: const Color(0xFF2B3248),
+                            backgroundColor: isDark ? const Color(0xFF1E3A8A) : const Color(0xFFEFF6FF),
                             child: Text(
                               (selectedCustomer?.name.isNotEmpty == true)
                                   ? selectedCustomer!.name[0].toUpperCase()
                                   : '?',
-                              style: const TextStyle(color: Color(0xFF00E676), fontWeight: FontWeight.bold),
+                              style: TextStyle(color: isDark ? const Color(0xFF60A5FA) : AppColors.brandBlue, fontWeight: FontWeight.bold),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -203,22 +207,22 @@ class _CustomersScreenState extends State<CustomersScreen> {
                               children: [
                                 Text(
                                   selectedCustomer?.name ?? 'Select Customer',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontWeight: FontWeight.bold, fontSize: 15),
                                 ),
                                 if (selectedCustomer != null)
                                   Text(
                                     '${selectedCustomer!.phone.isNotEmpty ? selectedCustomer!.phone : selectedCustomer!.email} • Balance: ₹${selectedCustomer!.currentBalance.toStringAsFixed(2)}',
                                     style: TextStyle(
                                       color: selectedCustomer!.currentBalance > 0
-                                          ? const Color(0xFFFF5252)
-                                          : const Color(0xFF00E676),
+                                          ? const Color(0xFFEF4444)
+                                          : const Color(0xFF10B981),
                                       fontSize: 12,
                                     ),
                                   ),
                               ],
                             ),
                           ),
-                          const Icon(Icons.swap_horiz_rounded, color: Color(0xFF00E676), size: 20),
+                          Icon(Icons.swap_horiz_rounded, color: isDark ? const Color(0xFF60A5FA) : AppColors.brandBlue, size: 20),
                         ],
                       ),
                     ),
@@ -230,14 +234,15 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   TextField(
                     controller: amountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 20, fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.currency_rupee, color: Color(0xFF00E676)),
+                      prefixIcon: Icon(Icons.currency_rupee, color: primaryActionColor),
                       labelText: 'AMOUNT (₹) *',
-                      labelStyle: const TextStyle(color: Colors.grey),
+                      labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                       filled: true,
-                      fillColor: const Color(0xFF1B2030),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                     ),
                   ),
 
@@ -246,15 +251,16 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   // Description
                   TextField(
                     controller: descController,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
                     decoration: InputDecoration(
                       labelText: 'DESCRIPTION / ITEM DETAILS',
-                      labelStyle: const TextStyle(color: Colors.grey),
+                      labelStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                       hintText: 'e.g. Invoiced goods, partial settlement',
-                      hintStyle: const TextStyle(color: Colors.grey),
+                      hintStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF94A3B8)),
                       filled: true,
-                      fillColor: const Color(0xFF1B2030),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                     ),
                   ),
 
@@ -265,8 +271,8 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     height: 48,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: entryType == 'GAVE' ? const Color(0xFF00E676) : const Color(0xFFFF5252),
-                        foregroundColor: entryType == 'GAVE' ? Colors.black : Colors.white,
+                        backgroundColor: primaryActionColor,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () async {
@@ -333,11 +339,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
             _fetchCustomers();
           }
         },
-        backgroundColor: const Color(0xFF00E676),
-        icon: const Icon(Icons.person_add_alt_1_rounded, color: Colors.black),
+        backgroundColor: AppColors.brandBlue,
+        icon: const Icon(Icons.person_add_alt_1_rounded, color: Colors.white),
         label: const Text(
           'Add Customer',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ),
       body: SafeArea(
@@ -346,7 +352,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
             constraints: const BoxConstraints(maxWidth: 800),
             child: RefreshIndicator(
               onRefresh: _fetchCustomers,
-              color: const Color(0xFF00E676),
+              color: AppColors.brandBlue,
               backgroundColor: cardBg,
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -381,7 +387,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     const Center(
                       child: Padding(
                         padding: EdgeInsets.all(40),
-                        child: CircularProgressIndicator(color: Color(0xFF00E676)),
+                        child: CircularProgressIndicator(color: AppColors.brandBlue),
                       ),
                     )
                   else if (_errorMessage != null)
@@ -425,11 +431,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   width: 40,
                   height: 40,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF00E676),
+                    color: AppColors.brandBlue,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: const Text('EN', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 15)),
+                  child: const Text('EN', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15)),
                 ),
               ),
             ),
@@ -575,7 +581,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 Text(
                   '₹${_currencyFormat.format(_totalReceivable)}',
                   style: const TextStyle(
-                    color: Color(0xFF00E676),
+                    color: Color(0xFF10B981),
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     letterSpacing: -0.5,
@@ -598,7 +604,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 Text(
                   '₹${_currencyFormat.format(_totalPayable)}',
                   style: const TextStyle(
-                    color: Color(0xFFFF5252),
+                    color: Color(0xFFEF4444),
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     letterSpacing: -0.5,
@@ -628,14 +634,14 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 border: Border.all(color: isDark ? const Color(0xFF13523B) : const Color(0xFF86EFAC)),
               ),
               alignment: Alignment.center,
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.arrow_upward_rounded, color: isDark ? const Color(0xFF00E676) : const Color(0xFF16A34A), size: 16),
-                  const SizedBox(width: 6),
+                  Icon(Icons.arrow_upward_rounded, color: Color(0xFF10B981), size: 16),
+                  SizedBox(width: 6),
                   Text(
-                    context.tr('gave_sale'),
-                    style: TextStyle(color: isDark ? const Color(0xFF00E676) : const Color(0xFF16A34A), fontSize: 14, fontWeight: FontWeight.bold),
+                    '+ Give (Sale)',
+                    style: TextStyle(color: Color(0xFF10B981), fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -656,14 +662,14 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 border: Border.all(color: isDark ? const Color(0xFF552228) : const Color(0xFFFCA5A5)),
               ),
               alignment: Alignment.center,
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.arrow_downward_rounded, color: Color(0xFFDC2626), size: 16),
-                  const SizedBox(width: 6),
+                  Icon(Icons.arrow_downward_rounded, color: Color(0xFFEF4444), size: 16),
+                  SizedBox(width: 6),
                   Text(
-                    context.tr('got_payment'),
-                    style: const TextStyle(color: Color(0xFFDC2626), fontSize: 14, fontWeight: FontWeight.bold),
+                    '+ Got (Payment)',
+                    style: TextStyle(color: Color(0xFFEF4444), fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -685,10 +691,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
         controller: _searchController,
         onChanged: (_) => _fetchCustomers(),
         style: TextStyle(color: textColor, fontSize: 14),
+        cursorColor: AppColors.brandBlue,
         decoration: InputDecoration(
           hintText: 'Search customer by name, mobile, or GSTIN...',
-          hintStyle: TextStyle(color: isDark ? Colors.grey : const Color(0xFF94A3B8), fontSize: 13),
-          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00E676), size: 20),
+          hintStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 13),
+          prefixIcon: Icon(Icons.search_rounded, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), size: 20),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
@@ -728,17 +735,26 @@ class _CustomersScreenState extends State<CustomersScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF00E676) : cardBg,
+            color: isSelected ? AppColors.brandBlue : cardBg,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isSelected ? const Color(0xFF00E676) : borderColor,
+              color: isSelected ? AppColors.brandBlue : borderColor,
             ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppColors.brandBlue.withValues(alpha: 0.25),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           alignment: Alignment.center,
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.black : (isDark ? Colors.white : const Color(0xFF0F172A)),
+              color: isSelected ? Colors.white : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
               fontSize: 11,
               fontWeight: FontWeight.bold,
             ),
@@ -812,14 +828,14 @@ class _CustomersScreenState extends State<CustomersScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00E676).withValues(alpha: 0.15),
+                        color: isDark ? const Color(0xFF1E3A8A) : const Color(0xFFEFF6FF),
                         shape: BoxShape.circle,
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         customer.name.isNotEmpty ? customer.name[0].toUpperCase() : 'C',
-                        style: const TextStyle(
-                          color: Color(0xFF00A86B),
+                        style: TextStyle(
+                          color: isDark ? const Color(0xFF60A5FA) : AppColors.brandBlue,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -983,13 +999,13 @@ class _CustomersScreenState extends State<CustomersScreen> {
             const SizedBox(height: 12),
             Text(
               'No results for "${_searchController.text.trim()}"',
-              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+              style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 15, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1B2030),
-                foregroundColor: const Color(0xFF00E676),
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: Colors.white,
               ),
               onPressed: () {
                 _searchController.clear();
@@ -1004,23 +1020,24 @@ class _CustomersScreenState extends State<CustomersScreen> {
   }
 
   Widget _buildErrorState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(36),
         child: Column(
           children: [
-            const Icon(Icons.error_outline_rounded, color: Color(0xFFFF5252), size: 44),
+            const Icon(Icons.error_outline_rounded, color: Color(0xFFEF4444), size: 44),
             const SizedBox(height: 12),
             Text(
               _errorMessage ?? 'An error occurred',
-              style: const TextStyle(color: Color(0xFFFF5252), fontSize: 14),
+              style: const TextStyle(color: Color(0xFFEF4444), fontSize: 14),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00E676),
-                foregroundColor: Colors.black,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Retry Connection', style: TextStyle(fontWeight: FontWeight.bold)),

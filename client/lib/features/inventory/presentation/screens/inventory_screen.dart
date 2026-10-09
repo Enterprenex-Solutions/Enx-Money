@@ -97,22 +97,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF141824),
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Product?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text('Delete Product?', style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontWeight: FontWeight.bold)),
         content: Text(
           'Are you sure you want to remove "${product.name}" from your inventory? This will update your Total Inventory Valuation.',
-          style: const TextStyle(color: Colors.grey, fontSize: 13),
+          style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: Text('Cancel', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF5252),
+              backgroundColor: const Color(0xFFEF4444),
               foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () async {
               Navigator.pop(ctx);
@@ -154,8 +155,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.primaryGreen,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add_box_rounded),
         label: const Text('Add Product', style: TextStyle(fontWeight: FontWeight.bold)),
         onPressed: () async {
@@ -171,7 +172,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _fetchProducts,
-          color: AppColors.primaryGreen,
+          color: AppColors.brandBlue,
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             children: [
@@ -181,7 +182,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -198,7 +206,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('TOTAL INVENTORY VALUATION', style: TextStyle(color: Colors.grey, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8)),
+                          Text('TOTAL INVENTORY VALUATION', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8)),
                           const SizedBox(height: 2),
                           Text(
                             '₹${_currencyFormat.format(_totalValuation)}',
@@ -210,12 +218,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1F2638),
+                        color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '$_totalStockCount Units',
-                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: isDark ? Colors.white : const Color(0xFF475569), fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -245,11 +253,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                   ),
                 ),
               ),
@@ -261,7 +269,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(40),
-                    child: CircularProgressIndicator(color: AppColors.primaryGreen),
+                    child: CircularProgressIndicator(color: AppColors.brandBlue),
                   ),
                 )
               else if (_errorMessage != null)
@@ -270,18 +278,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     padding: const EdgeInsets.all(40),
                     child: Column(
                       children: [
-                        const Icon(Icons.error_outline_rounded, color: Color(0xFFFF5252), size: 40),
+                        const Icon(Icons.error_outline_rounded, color: Color(0xFFEF4444), size: 40),
                         const SizedBox(height: 12),
                         Text(
                           _errorMessage!,
-                          style: const TextStyle(color: Color(0xFFFF5252), fontSize: 14),
+                          style: const TextStyle(color: Color(0xFFEF4444), fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryGreen,
-                            foregroundColor: Colors.black,
+                            backgroundColor: AppColors.brandBlue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
                           icon: const Icon(Icons.refresh_rounded),
                           label: const Text('Try Again', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -297,7 +306,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     padding: const EdgeInsets.all(40),
                     child: Column(
                       children: [
-                        const Icon(Icons.inventory_2_outlined, color: Colors.grey, size: 40),
+                        Icon(Icons.inventory_2_outlined, color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8), size: 44),
                         const SizedBox(height: 12),
                         Text('No Products in Inventory', style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 16, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
@@ -315,7 +324,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF1E293B) : Colors.white,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                      border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,13 +342,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           decoration: BoxDecoration(
                             color: isLowStock
                                 ? (isDark ? const Color(0xFF33161C) : const Color(0xFFFEE2E2))
-                                : (isDark ? const Color(0xFF13221E) : const Color(0xFFDCFCE7)),
+                                : (isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7)),
                             shape: BoxShape.circle,
                           ),
                           alignment: Alignment.center,
                           child: Icon(
                             isLowStock ? Icons.warning_amber_rounded : Icons.check_circle_outline_rounded,
-                            color: isLowStock ? const Color(0xFFFF5252) : const Color(0xFF00E676),
+                            color: isLowStock ? const Color(0xFFEF4444) : const Color(0xFF10B981),
                             size: 20,
                           ),
                         ),
@@ -343,16 +359,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             children: [
                               Text(p.name, style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 15, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 2),
-                              Text('SKU: ${p.sku} • HSN: ${p.hsnCode}', style: const TextStyle(color: Colors.grey, fontSize: 11.5)),
+                              Text('SKU: ${p.sku} • HSN: ${p.hsnCode}', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 11.5)),
                               const SizedBox(height: 2),
                               Text(
                                 'Cost: ₹${_currencyFormat.format(p.costPrice)}  |  Sell: ₹${_currencyFormat.format(p.sellingPrice)} (${p.gstRate.toStringAsFixed(0)}% GST)',
-                                style: const TextStyle(color: Color(0xFF00BCD4), fontSize: 11),
+                                style: const TextStyle(color: Color(0xFF0284C7), fontSize: 11),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 'Valuation: ₹${_currencyFormat.format(p.currentStock * p.costPrice)}',
-                                style: const TextStyle(color: Color(0xFFFFB300), fontSize: 11, fontWeight: FontWeight.w600),
+                                style: const TextStyle(color: Color(0xFFD97706), fontSize: 11, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -363,22 +379,24 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             Text(
                               '${p.currentStock} ${p.unit}',
                               style: TextStyle(
-                                color: isLowStock ? const Color(0xFFFF5252) : Colors.white,
+                                color: isLowStock ? const Color(0xFFEF4444) : (isDark ? Colors.white : const Color(0xFF0F172A)),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: 3),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                               decoration: BoxDecoration(
-                                color: isLowStock ? const Color(0xFF33161C) : const Color(0xFF13221E),
+                                color: isLowStock
+                                    ? (isDark ? const Color(0xFF33161C) : const Color(0xFFFEE2E2))
+                                    : (isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7)),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 isLowStock ? 'LOW STOCK' : 'IN STOCK',
                                 style: TextStyle(
-                                  color: isLowStock ? const Color(0xFFFF5252) : const Color(0xFF00E676),
+                                  color: isLowStock ? const Color(0xFFEF4444) : const Color(0xFF10B981),
                                   fontSize: 9,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -386,8 +404,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             ),
                             PopupMenuButton<String>(
                               padding: EdgeInsets.zero,
-                              icon: const Icon(Icons.more_horiz_rounded, color: Colors.grey, size: 18),
-                              color: const Color(0xFF1F2638),
+                              icon: Icon(Icons.more_horiz_rounded, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), size: 18),
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               onSelected: (val) {
                                 if (val == 'delete') {
                                   _confirmDeleteProduct(p);
@@ -398,9 +417,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_outline_rounded, color: Color(0xFFFF5252), size: 18),
+                                      Icon(Icons.delete_outline_rounded, color: Color(0xFFEF4444), size: 18),
                                       SizedBox(width: 8),
-                                      Text('Delete Product', style: TextStyle(color: Color(0xFFFF5252), fontSize: 13)),
+                                      Text('Delete Product', style: TextStyle(color: Color(0xFFEF4444), fontSize: 13)),
                                     ],
                                   ),
                                 ),

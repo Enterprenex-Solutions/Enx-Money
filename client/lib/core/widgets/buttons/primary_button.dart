@@ -38,8 +38,8 @@ class _PrimaryButtonState extends State<PrimaryButton> {
 
   @override
   Widget build(BuildContext context) {
-    final bg = widget.backgroundColor ?? AppColors.primaryGreen;
-    final fg = widget.textColor ?? AppColors.background;
+    final bg = widget.backgroundColor ?? AppColors.brandBlue;
+    final fg = widget.textColor ?? Colors.white;
     final isEnabled = widget.onPressed != null && !widget.isLoading;
 
     return Listener(

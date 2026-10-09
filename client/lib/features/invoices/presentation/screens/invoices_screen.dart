@@ -110,7 +110,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,11 +122,11 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                         const SizedBox(height: 2),
                         Text(
                           '₹${_currencyFormat.format(totalInvoiced)}',
-                          style: const TextStyle(color: Color(0xFF00E676), fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Color(0xFF10B981), fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
-                    Container(width: 1, height: 35, color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    Container(width: 1, height: 35, color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -134,7 +134,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                         const SizedBox(height: 2),
                         Text(
                           '₹${_currencyFormat.format(totalDue)}',
-                          style: const TextStyle(color: Color(0xFFFF5252), fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Color(0xFFEF4444), fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -234,7 +234,14 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF1E293B) : Colors.white,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                      border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +251,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                           children: [
                             Text(
                               inv.invoiceNumber,
-                              style: const TextStyle(color: Color(0xFF00BCD4), fontWeight: FontWeight.bold, fontSize: 14),
+                              style: const TextStyle(color: AppColors.brandBlue, fontWeight: FontWeight.bold, fontSize: 14),
                             ),
                             Text(
                               inv.invoiceDate,
@@ -262,7 +269,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                             ),
                             Text(
                               '₹${_currencyFormat.format(inv.grandTotal)}',
-                              style: const TextStyle(color: Color(0xFF00E676), fontSize: 17, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 17, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

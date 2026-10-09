@@ -22,7 +22,7 @@ class CustomBottomNavBar extends StatelessWidget {
       builder: (context, _) {
         final isDark = ThemeController().isDarkTheme(context);
         final barBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFFFFFFF);
-        final barBorder = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+        final barBorder = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
         return Container(
           decoration: BoxDecoration(

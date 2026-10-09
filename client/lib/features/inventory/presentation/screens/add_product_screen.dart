@@ -244,13 +244,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryGreen,
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppColors.brandBlue,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
                   ),
                   onPressed: _isLoading ? null : _submitProduct,
                   child: _isLoading
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2.5))
+                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
                       : const Text('Save to Inventory', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),

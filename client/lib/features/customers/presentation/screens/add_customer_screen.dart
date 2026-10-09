@@ -133,7 +133,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: const Color(0xFF00E676),
+              backgroundColor: const Color(0xFF10B981),
               content: Text(
                 'Location detected: ${_selectedDistrict ?? ''}, ${_selectedState ?? ''} (${_pincodeController.text})',
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -234,10 +234,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            backgroundColor: Color(0xFF00E676),
+            backgroundColor: Color(0xFF10B981),
             content: Text(
               'Customer added successfully!',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         );
@@ -305,7 +305,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search state...',
                       hintStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-                      prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00E676)),
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.brandBlue),
                       filled: true,
                       fillColor: isDark ? const Color(0xFF1B2030) : const Color(0xFFF1F5F9),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
@@ -323,11 +323,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           title: Text(
                             s,
                             style: TextStyle(
-                              color: isSelected ? const Color(0xFF00E676) : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                              color: isSelected ? AppColors.brandBlue : (isDark ? Colors.white : const Color(0xFF0F172A)),
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
                           ),
-                          trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: Color(0xFF00E676)) : null,
+                          trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: AppColors.brandBlue) : null,
                           onTap: () {
                             setState(() {
                               _selectedState = s;
@@ -410,7 +410,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search district...',
                       hintStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-                      prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00E676)),
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.brandBlue),
                       filled: true,
                       fillColor: isDark ? const Color(0xFF1B2030) : const Color(0xFFF1F5F9),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
@@ -428,11 +428,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           title: Text(
                             d,
                             style: TextStyle(
-                              color: isSelected ? const Color(0xFF00E676) : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                              color: isSelected ? AppColors.brandBlue : (isDark ? Colors.white : const Color(0xFF0F172A)),
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
                           ),
-                          trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: Color(0xFF00E676)) : null,
+                          trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: AppColors.brandBlue) : null,
                           onTap: () {
                             setState(() {
                               _selectedDistrict = d;
@@ -620,7 +620,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF00E676)),
+                              const Icon(Icons.arrow_drop_down_rounded, color: AppColors.brandBlue),
                             ],
                           ),
                         ],
@@ -659,7 +659,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF00E676)),
+                              const Icon(Icons.arrow_drop_down_rounded, color: AppColors.brandBlue),
                             ],
                           ),
                         ],
@@ -828,7 +828,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           dropdownColor: cardBg,
           isExpanded: true,
           style: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w600),
-          icon: const Icon(Icons.public_rounded, color: Color(0xFF00E676)),
+          icon: const Icon(Icons.public_rounded, color: AppColors.brandBlue),
           items: IndianLocations.countries.map((c) {
             return DropdownMenuItem(
               value: c,
@@ -900,7 +900,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
                   color: _openingBalanceType == 'GAVE'
-                      ? const Color(0xFF00E676).withValues(alpha: 0.15)
+                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
                       : Colors.transparent,
                   borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
                 ),
@@ -908,7 +908,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 child: Text(
                   "You'll Get",
                   style: TextStyle(
-                    color: _openingBalanceType == 'GAVE' ? const Color(0xFF00E676) : Colors.grey,
+                    color: _openingBalanceType == 'GAVE' ? const Color(0xFF10B981) : Colors.grey,
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                   ),
@@ -974,7 +974,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           Switch(
             value: _blockOnCreditBreach,
-            activeColor: const Color(0xFF00E676),
+            activeColor: AppColors.brandBlue,
             onChanged: (val) => setState(() => _blockOnCreditBreach = val),
           ),
         ],

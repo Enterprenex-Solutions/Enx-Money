@@ -393,7 +393,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         'Total: ₹${_currencyFormat.format(item.total)}',
-                        style: const TextStyle(color: Color(0xFF00E676), fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ),
                   ],
@@ -412,7 +412,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                 border: Border.all(color: cardBorder),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.08),
+                    color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.04),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -434,7 +434,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                       Text('GRAND TOTAL', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 15)),
                       Text(
                         '₹${_currencyFormat.format(_grandTotal)}',
-                        style: const TextStyle(color: Color(0xFF00E676), fontWeight: FontWeight.bold, fontSize: 20),
+                        style: const TextStyle(color: AppColors.brandBlue, fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                     ],
                   ),
@@ -449,13 +449,13 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
               height: 52,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGreen,
-                  foregroundColor: Colors.black,
+                  backgroundColor: AppColors.brandBlue,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _isLoading ? null : _submitInvoice,
                 child: _isLoading
-                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2.5))
+                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
                     : const Text('Save & Generate PDF Invoice', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),

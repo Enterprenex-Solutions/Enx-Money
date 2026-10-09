@@ -4,23 +4,29 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Primary Backgrounds & Surfaces (Strict Theme Tokens)
-  static const Color background = Color(0xFF0F172A);
-  static const Color backgroundLight = Color(0xFFF8FAFC);
-  static const Color surface = Color(0xFF1E293B);
-  static const Color surfaceElevated = Color(0xFF1E293B);
-  static const Color surfaceCard = Color(0xFF1E293B);
+  // Primary Backgrounds & Surfaces (Clean Minimalist White & Blue Design System)
+  static const Color background = Color(0xFFF8FAFC);
+  static const Color backgroundLight = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceElevated = Color(0xFFFFFFFF);
+  static const Color surfaceCard = Color(0xFFFFFFFF);
 
-  // Official ENX Money Brand Colors (Logo: Deep Navy & Azure Royal Blue)
+  // Dark Theme Alternative Tokens (when dark mode is explicitly enabled)
+  static const Color darkBackground = Color(0xFF0F172A);
+  static const Color darkSurface = Color(0xFF1E293B);
+  static const Color darkSurfaceCard = Color(0xFF1E293B);
+  static const Color darkBorder = Color(0xFF334155);
+
+  // Official ENX Money Brand Colors (Professional Vibrant Blue & Navy)
   static const Color brandBlue = Color(0xFF0066FF);
   static const Color brandBlueDark = Color(0xFF0047BA);
   static const Color brandBlueLight = Color(0xFFEFF6FF);
-  static const Color brandNavy = Color(0xFF0A1931);
-  static const Color brandNavyLight = Color(0xFF152A4A);
+  static const Color brandNavy = Color(0xFF0F172A);
+  static const Color brandNavyLight = Color(0xFF1E293B);
   static const Color brandCyan = Color(0xFF00D2FF);
   static const Color brandBackground = Color(0xFFF8FAFC);
   static const Color brandSurface = Color(0xFFFFFFFF);
-  static const Color brandBorder = Color(0xFFCBD5E1);
+  static const Color brandBorder = Color(0xFFE2E8F0);
   static const Color brandText = Color(0xFF0F172A);
   static const Color brandTextSecondary = Color(0xFF475569);
   static const Color brandTextMuted = Color(0xFF64748B);
@@ -28,28 +34,28 @@ class AppColors {
   // Vibrant Brand Accents
   static const Color primaryGreen = Color(0xFF0066FF); // Brand Azure Blue for primary actions
   static const Color primaryGreenHover = Color(0xFF0052CC);
-  static const Color emeraldGlow = Color(0x330066FF);
+  static const Color emeraldGlow = Color(0x220066FF);
   static const Color mintLight = Color(0xFFEFF6FF);
   static const Color successMint = Color(0xFF10B981);
 
   // Secondary Accents
-  static const Color accentNeon = Color(0xFF00D2FF);
+  static const Color accentNeon = Color(0xFF0066FF);
   static const Color accentCyan = Color(0xFF0066FF);
   static const Color accentPurple = Color(0xFF8B5CF6);
-  static const Color accentGold = Color(0xFFFFB800);
+  static const Color accentGold = Color(0xFFF59E0B);
 
-  // High-Contrast Neutrals
+  // High-Contrast Modern Typography Neutrals
   static const Color pureWhite = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFF94A3B8);
+  static const Color textPrimary = Color(0xFF0F172A);
+  static const Color textSecondary = Color(0xFF475569);
   static const Color textTertiary = Color(0xFF64748B);
-  static const Color textMuted = Color(0xFF475569);
+  static const Color textMuted = Color(0xFF94A3B8);
 
   // Borders & Dividers
-  static const Color border = Color(0xFF334155);
-  static const Color borderLight = Color(0x1FFFFFFF);
-  static const Color borderGlow = Color(0x4400E599);
-  static const Color divider = Color(0xFF334155);
+  static const Color border = Color(0xFFE2E8F0);
+  static const Color borderLight = Color(0xFFF1F5F9);
+  static const Color borderGlow = Color(0x330066FF);
+  static const Color divider = Color(0xFFE2E8F0);
 
   // Status Indicators
   static const Color success = Color(0xFF10B981);

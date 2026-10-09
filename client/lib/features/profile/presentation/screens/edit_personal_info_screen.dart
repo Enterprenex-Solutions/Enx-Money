@@ -215,13 +215,13 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: const Color(0xFF00E676),
+              backgroundColor: const Color(0xFF10B981),
               behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 3),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               content: Text(
                 'Live Location Detected: ${mandalCity.isNotEmpty ? "$mandalCity, " : ""}$state',
-                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           );
@@ -316,7 +316,7 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Profile photo selected from files/drive!'),
-                                  backgroundColor: Color(0xFF00E676),
+                                  backgroundColor: Color(0xFF10B981),
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -333,14 +333,14 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00E676).withValues(alpha: 0.12),
+                            color: AppColors.brandBlue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFF00E676).withValues(alpha: 0.4)),
+                            border: Border.all(color: AppColors.brandBlue.withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
-                              Icon(Icons.folder_open_rounded, color: Color(0xFF00E676), size: 20),
+                              Icon(Icons.folder_open_rounded, color: AppColors.brandBlue, size: 20),
                               SizedBox(width: 8),
                               Flexible(
                                 child: Text(
@@ -348,7 +348,7 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
-                                    color: Color(0xFF00E676),
+                                    color: AppColors.brandBlue,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -376,7 +376,7 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Camera photo captured!'),
-                                  backgroundColor: Color(0xFF00E676),
+                                  backgroundColor: Color(0xFF10B981),
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -445,12 +445,12 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                           shape: BoxShape.circle,
                           color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                           border: Border.all(
-                            color: _profilePhoto.isEmpty ? const Color(0xFF00E676) : (isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                            color: _profilePhoto.isEmpty ? AppColors.brandBlue : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                             width: 2,
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.person_outline_rounded, size: 26, color: Color(0xFF00E676)),
+                        child: Icon(Icons.person_outline_rounded, size: 26, color: AppColors.brandBlue),
                       ),
                     ),
                     ..._avatarPresets.map((url) {
@@ -467,7 +467,7 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? const Color(0xFF00E676) : (isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                              color: isSelected ? AppColors.brandBlue : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                               width: isSelected ? 2.5 : 1,
                             ),
                             image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
@@ -515,10 +515,11 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
                     const SizedBox(width: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00E676),
-                        foregroundColor: Colors.black,
+                        backgroundColor: AppColors.brandBlue,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
                       ),
                       onPressed: () {
                         final val = urlController.text.trim();
@@ -611,12 +612,12 @@ class _EditPersonalInfoScreenState extends State<EditPersonalInfoScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color(0xFF00E676),
+            backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             content: const Text(
               'Personal Profile updated successfully!',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         );

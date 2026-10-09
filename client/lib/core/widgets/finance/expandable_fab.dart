@@ -132,7 +132,7 @@ class _ExpandableFabState extends State<ExpandableFab> with SingleTickerProvider
                 child: AnimatedIcon(
                   icon: AnimatedIcons.menu_close,
                   progress: _expandAnimation,
-                  color: Colors.black,
+                  color: Colors.white,
                   size: 26,
                 ),
               ),

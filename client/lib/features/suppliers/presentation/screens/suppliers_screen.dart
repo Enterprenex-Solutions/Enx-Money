@@ -81,7 +81,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
         final isDark = ThemeController().isDarkTheme(context);
         final pageBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
         final cardBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF);
-        final cardBorder = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+        final cardBorder = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
         final textPrimary = isDark ? const Color(0xFFFFFFFF) : const Color(0xFF0F172A);
         final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
 

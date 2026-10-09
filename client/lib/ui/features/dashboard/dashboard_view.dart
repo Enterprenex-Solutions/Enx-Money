@@ -667,7 +667,7 @@ class _DashboardViewState extends State<DashboardView> {
             amount: 0,
             customDisplayValue: '${kpi.sales.totalOrders}',
             icon: Icons.receipt_outlined,
-            color: const Color(0xFF00E676),
+            color: const Color(0xFF10B981),
             subtitle: 'Total Invoices',
           ),
         ];
@@ -802,7 +802,7 @@ class _DashboardViewState extends State<DashboardView> {
             title: 'Cash Inflow',
             amount: kpi.business.cashInflow,
             icon: Icons.arrow_downward_rounded,
-            color: const Color(0xFF00E676),
+            color: const Color(0xFF10B981),
             subtitle: 'Collected Receipts',
           ),
           KpiCard(

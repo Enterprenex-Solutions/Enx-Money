@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/customers_repository.dart';
 import '../../models/customer_model.dart';
 import '../screens/add_customer_screen.dart';
+import '../../../../core/constants/app_colors.dart';
 
 /// Interactive bottom sheet for searching and selecting a customer
 /// dynamically by name, phone, or email.
@@ -141,7 +142,7 @@ class _CustomerSearchModalState extends State<CustomerSearchModal> {
                 cursorColor: isDark ? const Color(0xFF3B82F6) : const Color(0xFF2563EB),
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00E676), size: 20),
+                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.brandBlue, size: 20),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
                           icon: Icon(Icons.clear_rounded, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), size: 18),
@@ -189,7 +190,7 @@ class _CustomerSearchModalState extends State<CustomerSearchModal> {
                   child: const Text(
                     '+ Add New Customer',
                     style: TextStyle(
-                      color: Color(0xFF00E676),
+                      color: AppColors.brandBlue,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -203,7 +204,7 @@ class _CustomerSearchModalState extends State<CustomerSearchModal> {
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: Color(0xFF00E676)),
+                      child: CircularProgressIndicator(color: AppColors.brandBlue),
                     )
                   : _customers.isEmpty
                       ? Center(
@@ -225,8 +226,8 @@ class _CustomerSearchModalState extends State<CustomerSearchModal> {
                               const SizedBox(height: 16),
                               ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF00E676),
-                                  foregroundColor: Colors.black,
+                                  backgroundColor: AppColors.brandBlue,
+                                  foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -266,13 +267,13 @@ class _CustomerSearchModalState extends State<CustomerSearchModal> {
                                 backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFEFF6FF),
                                 child: Text(
                                   c.name.isNotEmpty ? c.name[0].toUpperCase() : 'C',
-                                  style: const TextStyle(color: Color(0xFF00E676), fontWeight: FontWeight.bold),
+                                  style: const TextStyle(color: AppColors.brandBlue, fontWeight: FontWeight.bold),
                                 ),
                               ),
                               title: Text(
                                 c.name,
                                 style: TextStyle(
-                                  color: isSelected ? const Color(0xFF00E676) : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                                  color: isSelected ? AppColors.brandBlue : (isDark ? Colors.white : const Color(0xFF0F172A)),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -293,7 +294,7 @@ class _CustomerSearchModalState extends State<CustomerSearchModal> {
                                   Text(
                                     '₹${c.currentBalance.abs().toStringAsFixed(2)}',
                                     style: TextStyle(
-                                      color: isDue ? const Color(0xFFFF5252) : const Color(0xFF00E676),
+                                      color: isDue ? const Color(0xFFEF4444) : const Color(0xFF10B981),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,
                                     ),

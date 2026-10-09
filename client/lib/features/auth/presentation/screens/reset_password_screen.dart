@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_typography.dart';
@@ -170,7 +170,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         SnackBar(
           content: const Row(
             children: [
-              Icon(Icons.check_circle_outline, color: Color(0xFF00E676)),
+              Icon(Icons.check_circle_outline, color: Color(0xFF10B981)),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -185,7 +185,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-            side: const BorderSide(color: Color(0xFF00E676)),
+            side: const BorderSide(color: Color(0xFF10B981)),
           ),
         ),
       );
