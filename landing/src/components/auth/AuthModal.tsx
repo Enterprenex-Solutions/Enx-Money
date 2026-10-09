@@ -17,9 +17,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onSuccess,
   onLegalClick,
 }) => {
-  const { login, register, sendOtp, verifyOtp } = useAuth();
+  const { login, register, sendOtp, verifyOtp, forgotPassword, verifyResetOtp, resetPassword } = useAuth();
 
-  const [mode, setMode] = useState<'signin' | 'signup' | 'otp' | 'forgot'>(initialMode);
+  const [mode, setMode] = useState<'signin' | 'signup' | 'otp' | 'forgot' | 'reset'>(initialMode);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -40,8 +40,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [otpTarget, setOtpTarget] = useState('');
   const [pendingSignupPayload, setPendingSignupPayload] = useState<any>(null);
 
-  // Forgot password
+  // Forgot / Reset password state
   const [resetEmail, setResetEmail] = useState('');
+  const [savedResetToken, setSavedResetToken] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isResetFlow, setIsResetFlow] = useState(false);
 
   if (!isOpen) return null;
 
@@ -115,28 +119,41 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError(null);
 
     try {
-      const verifyRes = await verifyOtp(otpTarget, otpCode);
-      if (verifyRes.success) {
-        if (pendingSignupPayload) {
-          const regRes = await register(pendingSignupPayload);
-          if (regRes.success) {
-            setSuccessMsg('Account verified & created successfully!');
-            setTimeout(() => {
-              onClose();
-              onSuccess?.();
-            }, 600);
-            return;
-          } else {
-            setError(regRes.message || 'Registration failed after OTP.');
-          }
+      if (isResetFlow) {
+        // PASSWORD RESET FLOW
+        const verifyRes = await verifyResetOtp(otpTarget, otpCode);
+        if (verifyRes.success) {
+          setSavedResetToken(verifyRes.resetToken || null);
+          setSuccessMsg('Verification code confirmed! Now create your new password.');
+          setMode('reset');
         } else {
-          setSuccessMsg('Verification successful!');
-          setTimeout(() => {
-            setMode('signin');
-          }, 800);
+          setError(verifyRes.message || 'Invalid verification code. Try 123456 or request a new code.');
         }
       } else {
-        setError('Invalid OTP code. Try 123456 or request a new code.');
+        // REGISTRATION FLOW
+        const verifyRes = await verifyOtp(otpTarget, otpCode);
+        if (verifyRes.success) {
+          if (pendingSignupPayload) {
+            const regRes = await register(pendingSignupPayload);
+            if (regRes.success) {
+              setSuccessMsg('Account verified & created successfully!');
+              setTimeout(() => {
+                onClose();
+                onSuccess?.();
+              }, 600);
+              return;
+            } else {
+              setError(regRes.message || 'Registration failed after OTP.');
+            }
+          } else {
+            setSuccessMsg('Verification successful!');
+            setTimeout(() => {
+              setMode('signin');
+            }, 800);
+          }
+        } else {
+          setError('Invalid OTP code. Try 123456 or request a new code.');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Verification failed.');
@@ -148,19 +165,81 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resetEmail) {
-      setError('Please enter your registered email address.');
+      setError('Please enter your registered email address or mobile number.');
       return;
     }
 
     setLoading(true);
     setError(null);
     try {
-      await sendOtp(resetEmail);
-      setOtpTarget(resetEmail);
-      setSuccessMsg('Password reset code sent to ' + resetEmail);
-      setMode('otp');
+      const res = await forgotPassword(resetEmail);
+      if (res.success) {
+        setOtpTarget(resetEmail);
+        setIsResetFlow(true);
+        setOtpCode('');
+        setSuccessMsg(res.message || 'Password reset code sent to ' + resetEmail);
+        setMode('otp');
+      } else {
+        setError(res.message || 'Failed to send reset code.');
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to send reset code.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!newPassword || newPassword.length < 8) {
+      setError('New password must be at least 8 characters long.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match. Please re-enter identical passwords.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await resetPassword({
+        emailOrPhone: otpTarget,
+        otp: otpCode,
+        resetToken: savedResetToken || undefined,
+        newPassword,
+      });
+
+      if (res.success) {
+        setSuccessMsg('Password updated successfully! Signing you in...');
+        setPassword(newPassword);
+        setIdentifier(otpTarget);
+
+        // Auto login with updated credentials
+        try {
+          const loginRes = await login(otpTarget, newPassword);
+          if (loginRes.success) {
+            setTimeout(() => {
+              onClose();
+              onSuccess?.();
+            }, 700);
+            return;
+          }
+        } catch (_) {}
+
+        // Fallback to signin mode
+        setTimeout(() => {
+          setMode('signin');
+          setIsResetFlow(false);
+          setSuccessMsg('Password reset complete. Please sign in with your new password.');
+        }, 900);
+      } else {
+        setError(res.message || 'Failed to update password.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to reset password.');
     } finally {
       setLoading(false);
     }
@@ -195,18 +274,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <p className="text-xs text-blue-100 max-w-sm mt-1">
             {mode === 'signin' && 'Sign in to access your business khata, GST invoices, and financial reports.'}
             {mode === 'signup' && 'Create your free digital merchant account in less than 30 seconds.'}
-            {mode === 'otp' && `Enter the 6-digit security OTP sent to ${otpTarget}`}
+            {mode === 'otp' && (isResetFlow ? `Enter the 6-digit password reset OTP sent to ${otpTarget}` : `Enter the 6-digit security OTP sent to ${otpTarget}`)}
             {mode === 'forgot' && 'Reset your password securely via one-time email verification.'}
+            {mode === 'reset' && 'Set a new password for your verified merchant account.'}
           </p>
         </div>
 
         {/* Tab Controls for Sign In / Sign Up */}
-        {mode !== 'otp' && (
+        {(mode === 'signin' || mode === 'signup') && (
           <div className="grid grid-cols-2 border-b border-slate-100 bg-slate-50/50">
             <button
               type="button"
               onClick={() => {
                 setMode('signin');
+                setIsResetFlow(false);
                 setError(null);
               }}
               className={`py-3 text-sm font-semibold text-center transition-all ${
@@ -221,6 +302,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="button"
               onClick={() => {
                 setMode('signup');
+                setIsResetFlow(false);
                 setError(null);
               }}
               className={`py-3 text-sm font-semibold text-center transition-all ${
@@ -280,10 +362,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <button
                     type="button"
                     onClick={() => {
+                      setResetEmail(identifier || '');
+                      setIsResetFlow(true);
                       setMode('forgot');
                       setError(null);
                     }}
-                    className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                    className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
                   >
                     Forgot password?
                   </button>
@@ -470,9 +554,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3 shadow-sm border border-blue-100">
                   <KeyRound className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">Email OTP Verification</h3>
+                <h3 className="text-base font-bold text-slate-900">
+                  {isResetFlow ? 'Password Reset Verification' : 'Email OTP Verification'}
+                </h3>
                 <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-                  We sent a 6-digit confirmation PIN to <strong className="text-slate-800">{otpTarget}</strong>
+                  {isResetFlow ? 'We sent a 6-digit password reset PIN to ' : 'We sent a 6-digit confirmation PIN to '}
+                  <strong className="text-slate-800">{otpTarget}</strong>
                 </p>
               </div>
 
@@ -500,17 +587,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   type="button"
                   onClick={async () => {
                     setError(null);
-                    const res = await sendOtp(otpTarget);
-                    setSuccessMsg(res.message);
+                    if (isResetFlow) {
+                      const res = await forgotPassword(otpTarget);
+                      setSuccessMsg(res.message);
+                    } else {
+                      const res = await sendOtp(otpTarget);
+                      setSuccessMsg(res.message);
+                    }
                   }}
-                  className="font-medium text-blue-600 hover:underline"
+                  className="font-medium text-blue-600 hover:underline cursor-pointer"
                 >
                   Resend OTP Code
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMode('signin')}
-                  className="text-slate-500 hover:text-slate-800"
+                  onClick={() => {
+                    setMode('signin');
+                    setIsResetFlow(false);
+                  }}
+                  className="text-slate-500 hover:text-slate-800 cursor-pointer"
                 >
                   Change Email / Cancel
                 </button>
@@ -526,7 +621,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    <span>Confirm & Continue</span>
+                    <span>{isResetFlow ? 'Verify Code & Set New Password' : 'Confirm & Continue'}</span>
                   </>
                 )}
               </button>
@@ -538,16 +633,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Registered Email Address
+                  Registered Email Address or Mobile Number
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    placeholder="Enter your registered email"
+                    placeholder="e.g. hr@enterprenex.solutions or 9823456789"
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   />
                 </div>
@@ -556,8 +651,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="flex items-center justify-between text-xs pt-1">
                 <button
                   type="button"
-                  onClick={() => setMode('signin')}
-                  className="text-slate-500 hover:text-slate-800"
+                  onClick={() => {
+                    setMode('signin');
+                    setIsResetFlow(false);
+                  }}
+                  className="text-slate-500 hover:text-slate-800 cursor-pointer"
                 >
                   Back to Sign In
                 </button>
@@ -565,15 +663,92 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !resetEmail}
                 className="w-full py-3 px-4 rounded-xl font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-60"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Send Reset Code</span>
+                    <span>Send Password Reset Code</span>
                     <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* 5. CREATE NEW PASSWORD MODE */}
+          {mode === 'reset' && (
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div className="text-center py-1">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-2 shadow-sm border border-blue-100">
+                  <KeyRound className="w-6 h-6" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-800">Create New Password</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Set a new, secure password for <span className="font-semibold text-slate-700">{otpTarget}</span>
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  New Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
+                  <input
+                    type="password"
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Min 8 characters"
+                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
+                  <input
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter new password"
+                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('signin');
+                    setIsResetFlow(false);
+                  }}
+                  className="text-slate-500 hover:text-slate-800 cursor-pointer"
+                >
+                  Cancel & Back to Sign In
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || newPassword.length < 8}
+                className="w-full py-3 px-4 rounded-xl font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-60"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Save New Password & Sign In</span>
                   </>
                 )}
               </button>

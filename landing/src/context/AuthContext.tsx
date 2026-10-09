@@ -10,6 +10,9 @@ interface AuthContextType {
   register: (params: { name: string; email: string; phone: string; password: string; businessName: string }) => Promise<{ success: boolean; message?: string }>;
   sendOtp: (emailOrPhone: string) => Promise<{ success: boolean; message: string; otp?: string }>;
   verifyOtp: (emailOrPhone: string, otp: string) => Promise<{ success: boolean; message: string }>;
+  forgotPassword: (emailOrPhone: string) => Promise<{ success: boolean; message: string }>;
+  verifyResetOtp: (emailOrPhone: string, otp: string) => Promise<{ success: boolean; resetToken?: string; message: string }>;
+  resetPassword: (params: { emailOrPhone: string; otp?: string; resetToken?: string; newPassword: string }) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   updateUser: (updated: Partial<AuthUser>) => void;
 }
@@ -77,6 +80,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return await api.verifyOtp(emailOrPhone, otp);
   };
 
+  const forgotPassword = async (emailOrPhone: string) => {
+    return await api.forgotPassword(emailOrPhone);
+  };
+
+  const verifyResetOtp = async (emailOrPhone: string, otp: string) => {
+    return await api.verifyResetOtp(emailOrPhone, otp);
+  };
+
+  const resetPassword = async (params: { emailOrPhone: string; otp?: string; resetToken?: string; newPassword: string }) => {
+    return await api.resetPassword(params);
+  };
+
   const logout = () => {
     api.logout();
     setUser(null);
@@ -101,6 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         sendOtp,
         verifyOtp,
+        forgotPassword,
+        verifyResetOtp,
+        resetPassword,
         logout,
         updateUser,
       }}
