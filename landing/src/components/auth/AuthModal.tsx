@@ -7,6 +7,7 @@ interface AuthModalProps {
   onClose: () => void;
   initialMode?: 'signin' | 'signup';
   onSuccess?: () => void;
+  onLegalClick?: (tab: 'privacy' | 'terms' | 'refund') => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -14,6 +15,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   initialMode = 'signin',
   onSuccess,
+  onLegalClick,
 }) => {
   const { login, register, sendOtp, verifyOtp } = useAuth();
 
@@ -72,6 +74,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     if (!name || !signupEmail || !phone || !signupPassword) {
       setError('Please fill in all required fields.');
+      return;
+    }
+
+    if (signupPassword.length < 8) {
+      setError('Password must be at least 8 characters long.');
       return;
     }
 
@@ -413,7 +420,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       required
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
-                      placeholder="Min 6 characters"
+                      placeholder="Min 8 characters"
                       className="w-full pl-9 pr-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     />
                   </div>
@@ -422,8 +429,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <div className="text-[11px] text-slate-500 pt-1 leading-relaxed">
                 By continuing, you agree to ENX Money&apos;s{' '}
-                <span className="text-blue-600 font-medium">Terms of Service</span> and{' '}
-                <span className="text-blue-600 font-medium">Privacy Policy</span>.
+                <button
+                  type="button"
+                  onClick={() => onLegalClick?.('terms')}
+                  className="text-blue-600 font-semibold hover:underline cursor-pointer transition-colors"
+                >
+                  Terms of Service
+                </button>{' '}
+                and{' '}
+                <button
+                  type="button"
+                  onClick={() => onLegalClick?.('privacy')}
+                  className="text-blue-600 font-semibold hover:underline cursor-pointer transition-colors"
+                >
+                  Privacy Policy
+                </button>.
               </div>
 
               <button

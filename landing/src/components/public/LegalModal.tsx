@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Shield, FileText, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { SITE_CONFIG } from '../../data/content';
 
@@ -15,10 +15,16 @@ export const LegalModal: React.FC<LegalModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'privacy' | 'terms' | 'refund'>(initialTab);
 
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab, isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
       <div
         className="relative w-full max-w-3xl max-h-[90vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
         onClick={(e) => e.stopPropagation()}

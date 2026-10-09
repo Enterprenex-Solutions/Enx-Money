@@ -59,6 +59,15 @@ const MainAppContent: React.FC = () => {
         setAuthMode('signin');
         setAuthModalOpen(true);
       }
+    } else if (hash.includes('#terms') || search.includes('terms') || path.includes('/terms')) {
+      setLegalTab('terms');
+      setLegalModalOpen(true);
+    } else if (hash.includes('#privacy') || search.includes('privacy') || path.includes('/privacy')) {
+      setLegalTab('privacy');
+      setLegalModalOpen(true);
+    } else if (hash.includes('#refund') || search.includes('refund') || path.includes('/refund')) {
+      setLegalTab('refund');
+      setLegalModalOpen(true);
     }
 
     const handlePopState = () => {
@@ -212,6 +221,10 @@ const MainAppContent: React.FC = () => {
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
         onSuccess={handleAuthSuccess}
+        onLegalClick={(tab) => {
+          setLegalTab(tab);
+          setLegalModalOpen(true);
+        }}
       />
 
       <AboutModal
