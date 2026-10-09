@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ZeroCarbonix — Employee & Work Management System (EWMS)',
-  description: 'Enterprise modular workforce, project, task, time and capacity platform for ZeroCarbonix Technologies',
+  title: 'Enterprenex Solutions — Employee & Work Management System (EWMS)',
+  description: 'Enterprise modular workforce, project, task, time and capacity platform for Enterprenex Solutions',
 };
 
 export default function RootLayout({

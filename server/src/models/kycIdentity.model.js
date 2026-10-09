@@ -1,4 +1,4 @@
-const { generateUuid } = require('../utils/crypto.util');
+const { generateUuid, sha256Hash } = require('../utils/crypto.util');
 
 class KycIdentityModel {
   // In-memory stores
@@ -57,19 +57,25 @@ class KycIdentityModel {
     }
 
     const challengeId = customChallengeId || `uidai_ch_${Date.now()}`;
-    const otp = '123456'; // Simulated UIDAI secure OTP
+    const otp = (process.env.NODE_ENV === 'production') ? null : '123456'; // Simulated UIDAI secure OTP for non-prod
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 min expiry
+    const maskedAadhaar = `•••• •••• ${cleanAadhaar.slice(-4)}`;
+    const aadhaarHash = sha256Hash(cleanAadhaar + (process.env.AADHAAR_SALT || 'enx_aadhaar_salt_2026'));
 
+    // DPDP Act 2023 Section 8(5) & Aadhaar Act:
+    // Never persist or retain the raw 12-digit Aadhaar number.
+    // Store only the masked format and one-way cryptographic hash for session matching.
     this._aadhaarChallenges.set(challengeId, {
       userId,
-      cleanAadhaar,
+      maskedAadhaar,
+      aadhaarHash,
       otp,
       expiresAt,
     });
 
     return {
       challengeId,
-      maskedAadhaar: `•••• •••• ${cleanAadhaar.slice(-4)}`,
+      maskedAadhaar,
       expiresInSeconds: 300,
       resendCountdown: 30,
       message: '6-digit Aadhaar OTP dispatched to UIDAI-linked mobile number.',
@@ -85,14 +91,14 @@ class KycIdentityModel {
       this._aadhaarChallenges.delete(challengeId);
       throw new Error('Aadhaar verification OTP expired.');
     }
-    if (challenge && otp !== challenge.otp && otp !== '123456' && !customAadhaarData) {
+    if (challenge && challenge.otp && otp !== challenge.otp && otp !== '123456' && !customAadhaarData) {
       throw new Error('Invalid Aadhaar OTP. Please check the code sent by UIDAI.');
     }
 
     const targetUserId = challenge ? challenge.userId : 1;
     const userKyc = this._getStore(targetUserId);
     userKyc.isAadhaarVerified = true;
-    userKyc.maskedAadhaar = challenge ? `•••• •••• ${challenge.cleanAadhaar.slice(-4)}` : '•••• •••• 4821';
+    userKyc.maskedAadhaar = challenge ? challenge.maskedAadhaar : '•••• •••• 4821';
     userKyc.aadhaarData = customAadhaarData || {
       fullName: userKyc.verifiedName,
       gender: 'MALE',
@@ -188,6 +194,27 @@ class KycIdentityModel {
     userKyc.updatedAt = new Date().toISOString();
 
     return userKyc;
+  }
+
+  /**
+   * DPDP Act 2023 Section 12 (Right to Erasure):
+   * Purge all KYC identity records and pending OTP challenges for user
+   */
+  static purgeUserData(userId) {
+    this._kycStore.delete(userId);
+    for (const [challengeId, challenge] of this._aadhaarChallenges.entries()) {
+      if (challenge.userId === userId) {
+        this._aadhaarChallenges.delete(challengeId);
+      }
+    }
+  }
+
+  /**
+   * Test helper to reset store
+   */
+  static _clearStore() {
+    this._kycStore.clear();
+    this._aadhaarChallenges.clear();
   }
 }
 

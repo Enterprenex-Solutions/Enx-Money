@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Download, Globe, LogIn } from 'lucide-react';
+import { Menu, X, Download, Globe } from 'lucide-react';
 import { SITE_CONFIG } from '../data/content';
 
 interface NavbarProps {
@@ -37,19 +37,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Official Enterprenex Solutions Brand Logo */}
+          {/* Official ENX Money Brand Logo */}
           <a href="#hero" className="flex items-center gap-3 group">
             <img
-              src="/enterprenex-badge.png"
-              alt="Enterprenex Solutions"
-              className="w-10 h-10 object-contain rounded-full shadow-sm group-hover:scale-105 transition-transform bg-white p-0.5 border border-slate-100"
+              src="/enx-emblem.png"
+              alt="ENX Money"
+              className="w-10 h-10 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform bg-white p-0.5 border border-slate-100"
             />
             <div className="flex flex-col">
               <span className="text-xl font-black tracking-tight text-slate-900 font-display flex items-center gap-1.5">
                 {SITE_CONFIG.brandName}
               </span>
               <span className="text-[11px] font-semibold text-slate-500 tracking-tight">
-                by Enterprenex Solutions
+                Expenses tracker app
               </span>
             </div>
           </a>
@@ -69,16 +69,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
 
           {/* Right Action Icons & Web CTA */}
           <div className="hidden md:flex items-center gap-2.5">
-            {/* Enterprenex Company Portal Login Link */}
-            <a
-              href="/portal"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5 py-2 px-3 rounded-lg hover:bg-slate-100"
-              title="Enterprenex Company Management Portal"
-            >
-              <LogIn className="w-3.5 h-3.5 text-slate-500" />
-              <span>Portal</span>
-            </a>
-
             {/* Quick Web app link (Desktop / Laptop) */}
             <a
               href={SITE_CONFIG.webAppUrl}
@@ -107,14 +97,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
 
           {/* Mobile Hamburger Toggle */}
           <div className="flex lg:hidden items-center gap-2">
-            <a
-              href="/portal"
-              className="p-2 rounded-lg text-emerald-700 bg-emerald-50 border border-emerald-200"
-              title="Portal Login"
-            >
-              <LogIn className="w-4 h-4" />
-            </a>
-
             <a
               href="#download"
               onClick={onDownloadClick}
@@ -149,16 +131,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onDownloadClick, onWebClick }) =
             </a>
           ))}
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2.5">
-            {/* Portal Login Mobile Link */}
-            <a
-              href="/portal"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-3 rounded-xl border border-emerald-300 text-emerald-900 font-bold text-center text-sm flex items-center justify-center gap-2 bg-emerald-50/90 shadow-sm"
-            >
-              <LogIn className="w-4 h-4 text-emerald-600" />
-              <span>Portal Login (CEO, CTO, CFO, HR & Staff)</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            </a>
 
             <a
               href={SITE_CONFIG.whatsappUrl}

@@ -14,16 +14,16 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src="/enterprenex-badge.png"
-                alt="Enterprenex Solutions"
-                className="w-12 h-12 object-contain rounded-full shadow-md bg-white p-1"
+                src="/enx-emblem.png"
+                alt="ENX Money"
+                className="w-12 h-12 object-contain rounded-xl shadow-md bg-white p-1"
               />
               <div className="flex flex-col">
                 <span className="text-xl font-extrabold tracking-tight text-white font-display">
                   {SITE_CONFIG.brandName}
                 </span>
                 <span className="text-[10px] tracking-wider uppercase font-semibold text-emerald-400">
-                  by Enterprenex Solutions
+                  Expenses tracker app
                 </span>
               </div>
             </div>

@@ -189,6 +189,21 @@ class KycRecordModel {
     }
   }
 
+  /**
+   * DPDP Act 2023 Section 12 (Right to Erasure):
+   * Purge all persistent and in-memory KYC records for user
+   */
+  static purgeUserData(userId) {
+    const key = String(userId);
+    this._records.delete(key);
+    for (const [state, sess] of this._oauthSessions.entries()) {
+      if (String(sess.userId) === key) {
+        this._oauthSessions.delete(state);
+      }
+    }
+    this._saveToDisk();
+  }
+
   static resetForTesting() {
     this._records.clear();
     this._oauthSessions.clear();

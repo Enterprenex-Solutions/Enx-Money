@@ -21,6 +21,12 @@ class AuthController {
     }
 
     const ALIAS_MAP = {
+      'director@enterprenex.solutions': 'director@enterprenex.solutions',
+      'manager@enterprenex.solutions': 'manager@enterprenex.solutions',
+      'employee@enterprenex.solutions': 'employee@enterprenex.solutions',
+      'kishore.polamarasetti@enterprenex.solutions': 'director@enterprenex.solutions',
+      'aniket.sharma@enterprenex.solutions': 'manager@enterprenex.solutions',
+      'rahul.verma@enterprenex.solutions': 'employee@enterprenex.solutions',
       'vikram.mehra@zerocarbonix.com': 'superadmin@zerocarbonix.com',
       'aarti.sharma@zerocarbonix.com': 'admin@zerocarbonix.com',
       'sneha.patil@zerocarbonix.com': 'hr@zerocarbonix.com',

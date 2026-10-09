@@ -4,8 +4,7 @@ import {
   CheckCircle2, 
   ChevronRight, 
   Download,
-  Laptop,
-  LogIn
+  Laptop
 } from 'lucide-react';
 import { SITE_CONFIG } from '../data/content';
 import { LivePhoneDemo } from './LivePhoneDemo';
@@ -76,16 +75,6 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadClick, onWebClick }) => {
                 >
                   <Laptop className="w-4 h-4 text-slate-500" />
                   <span>Web par chalayein</span>
-                </a>
-
-                {/* 3. Company Portal Login */}
-                <a
-                  href="/portal"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-sm border border-slate-200/60 transition-all duration-150"
-                  title="Enterprenex Company Management Portal"
-                >
-                  <LogIn className="w-4 h-4 text-slate-500" />
-                  <span>Portal Login</span>
                 </a>
               </div>
 

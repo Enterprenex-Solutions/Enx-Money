@@ -7,8 +7,8 @@ class AuthController {
    */
   static async register(req, res, next) {
     try {
-      const { name, businessName, email, phone, password } = req.body;
-      const result = await AuthService.register({ name, businessName, email, phone, password });
+      const { name, businessName, email, phone, password, consentGiven, isAdult } = req.body;
+      const result = await AuthService.register({ name, businessName, email, phone, password, consentGiven, isAdult });
       return successResponse(res, {
         statusCode: 201,
         message: result.message,

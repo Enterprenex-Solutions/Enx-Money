@@ -161,6 +161,18 @@ class MultiAssetWalletModel {
       timestamp: new Date().toISOString(),
     };
   }
+
+  /**
+   * DPDP Act 2023 Section 12 (Right to Erasure):
+   * Purge wallet for user
+   */
+  static purgeUserData(userId) {
+    this._wallets.delete(userId);
+  }
+
+  static _clearStore() {
+    this._wallets.clear();
+  }
 }
 
 module.exports = MultiAssetWalletModel;

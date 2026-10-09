@@ -163,6 +163,9 @@ function createApp() {
   api.post('/risks', authenticateJwt, tenantGuard, requirePermissions(Permissions.RISK_MANAGE), risksController.create);
 
   app.use('/api/v1', api);
+  app.use('/api/v1/ewms', api);
+  app.use('/ewms/api/v1', api);
+  app.use('/', api);
 
   return app;
 }

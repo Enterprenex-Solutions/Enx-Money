@@ -26,6 +26,10 @@ class SmsService {
     if (clean.startsWith('0')) {
       clean = clean.substring(1);
     }
+    // If number already includes 91 country code (12 digits), do not duplicate country code
+    if (clean.length === 12 && clean.startsWith('91')) {
+      return `+${clean}`;
+    }
     const cleanDefault = defaultCountryCode.startsWith('+') ? defaultCountryCode : `+${defaultCountryCode}`;
     return `${cleanDefault}${clean}`;
   }

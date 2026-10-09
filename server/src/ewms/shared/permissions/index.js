@@ -70,6 +70,48 @@ const Permissions = {
 };
 
 const DEFAULT_ROLE_PERMISSIONS = {
+  [Role.DIRECTOR]: Object.values(Permissions),
+
+  [Role.MANAGER]: [
+    Permissions.ORG_MANAGE,
+    Permissions.USER_MANAGE,
+    Permissions.AUDIT_VIEW,
+    Permissions.EMPLOYEE_VIEW,
+    Permissions.EMPLOYEE_EDIT,
+    Permissions.EMPLOYEE_CREATE,
+    Permissions.SALARY_VIEW,
+    Permissions.PROJECT_CREATE,
+    Permissions.PROJECT_VIEW,
+    Permissions.PROJECT_EDIT,
+    Permissions.PROJECT_DELETE,
+    Permissions.TASK_CREATE,
+    Permissions.TASK_ASSIGN,
+    Permissions.TASK_EDIT,
+    Permissions.TASK_DELETE,
+    Permissions.TASK_REVIEW,
+    Permissions.TASK_STATUS_UPDATE,
+    Permissions.TIME_TRACK,
+    Permissions.TIMESHEET_APPROVE,
+    Permissions.ATTENDANCE_VIEW,
+    Permissions.ATTENDANCE_MANAGE,
+    Permissions.LEAVE_REQUEST,
+    Permissions.LEAVE_APPROVE,
+    Permissions.KPI_CREATE,
+    Permissions.KPI_EVALUATE,
+    Permissions.PERFORMANCE_REVIEW,
+    Permissions.GOALS_MANAGE,
+    Permissions.GOALS_VIEW,
+    Permissions.SKILLS_MANAGE,
+    Permissions.DOCUMENT_UPLOAD,
+    Permissions.DOCUMENT_VIEW,
+    Permissions.DOCUMENT_CONFIDENTIAL_VIEW,
+    Permissions.MEETING_MANAGE,
+    Permissions.MEETING_VIEW,
+    Permissions.WORKFLOW_MANAGE,
+    Permissions.RISK_MANAGE,
+    Permissions.REPORT_VIEW,
+  ],
+
   [Role.SUPER_ADMIN]: Object.values(Permissions),
 
   [Role.COMPANY_ADMIN]: [

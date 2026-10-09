@@ -89,7 +89,16 @@ class UserModel {
   /**
    * Create a new user (or reuse existing account if already present)
    */
-  static async create({ email, name = null, phone = null, passwordHash = null, isBiometricEnabled = false, isEmailVerified = false }) {
+  static async create({
+    email,
+    name = null,
+    phone = null,
+    passwordHash = null,
+    isBiometricEnabled = false,
+    isEmailVerified = false,
+    consentGiven = false,
+    isAdult = true,
+  }) {
     const normalizedEmail = email.toLowerCase().trim();
     const normalizedPhone = phone ? phone.trim() : null;
     const now = new Date();
@@ -120,6 +129,9 @@ class UserModel {
       );
       const createdUser = await this.findById(id);
       if (createdUser) {
+        createdUser.consentGiven = Boolean(consentGiven);
+        createdUser.consentTimestamp = consentGiven ? now.toISOString() : null;
+        createdUser.isAdult = Boolean(isAdult);
         db.inMemoryStore.users.set(normalizedEmail, createdUser);
         if (typeof db.saveResilienceStore === 'function') db.saveResilienceStore();
       }
@@ -137,6 +149,9 @@ class UserModel {
       role: (process.env.ADMIN_EMAIL && normalizedEmail === process.env.ADMIN_EMAIL.toLowerCase().trim()) ? 'admin' : 'user',
       is_biometric_enabled: Boolean(isBiometricEnabled),
       isBiometricEnabled: Boolean(isBiometricEnabled),
+      consentGiven: Boolean(consentGiven),
+      consentTimestamp: consentGiven ? now.toISOString() : null,
+      isAdult: Boolean(isAdult),
       status: 'ACTIVE',
       is_email_verified: verified,
       isEmailVerified: verified,
@@ -340,6 +355,32 @@ class UserModel {
     for (const [key, dev] of db.inMemoryStore.devices.entries()) {
       if (String(dev.user_id || dev.userId) === strId) db.inMemoryStore.devices.delete(key);
     }
+
+    // DPDP Act 2023 Section 12 (Right to Erasure):
+    // Cascading purge across auxiliary stores (cards, KYC identities, wallets)
+    try {
+      const CardModel = require('./card.model');
+      await CardModel.purgeByUserId(strId);
+      await CardModel.purgeByUserId(Number(id));
+    } catch (_) {}
+
+    try {
+      const KycIdentityModel = require('./kycIdentity.model');
+      KycIdentityModel.purgeUserData(strId);
+      KycIdentityModel.purgeUserData(Number(id));
+    } catch (_) {}
+
+    try {
+      const KycRecordModel = require('./kycRecord.model');
+      KycRecordModel.purgeUserData(strId);
+      KycRecordModel.purgeUserData(Number(id));
+    } catch (_) {}
+
+    try {
+      const MultiAssetWalletModel = require('./multiAssetWallet.model');
+      MultiAssetWalletModel.purgeUserData(strId);
+      MultiAssetWalletModel.purgeUserData(Number(id));
+    } catch (_) {}
 
     if (db.isConnected()) {
       try {

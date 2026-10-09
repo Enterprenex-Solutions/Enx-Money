@@ -10,10 +10,13 @@ const auditService = require('../audit/audit.service');
 const { DEFAULT_ROLE_PERMISSIONS } = require('../../../../../packages/shared/src/permissions');
 
 class AuthController {
-  async login(req, res) {
-    const { email, password, mfaCode } = req.body;
+  async login(req, res, next) {
+    const { email, password, mfaCode } = req.body || {};
 
     if (!email || !password) {
+      if (typeof next === 'function' && !req.originalUrl?.includes('/ewms')) {
+        return next();
+      }
       return res.status(400).json({
         success: false,
         error: 'Email and password are required',
@@ -21,6 +24,12 @@ class AuthController {
     }
 
     const ALIAS_MAP = {
+      'director@enterprenex.solutions': 'director@enterprenex.solutions',
+      'manager@enterprenex.solutions': 'manager@enterprenex.solutions',
+      'employee@enterprenex.solutions': 'employee@enterprenex.solutions',
+      'kishore.polamarasetti@enterprenex.solutions': 'director@enterprenex.solutions',
+      'aniket.sharma@enterprenex.solutions': 'manager@enterprenex.solutions',
+      'rahul.verma@enterprenex.solutions': 'employee@enterprenex.solutions',
       'vikram.mehra@zerocarbonix.com': 'superadmin@zerocarbonix.com',
       'aarti.sharma@zerocarbonix.com': 'admin@zerocarbonix.com',
       'sneha.patil@zerocarbonix.com': 'hr@zerocarbonix.com',
@@ -39,7 +48,25 @@ class AuthController {
         user = repository.users.find(u => u.id === emp.userId);
       }
     }
-    if (!user || !verifyPassword(password, user.passwordHash)) {
+    if (!user) {
+      if (typeof next === 'function' && !req.originalUrl?.includes('/ewms')) {
+        return next();
+      }
+      auditService.log({
+        actorId: null,
+        action: 'LOGIN_FAILED',
+        entityName: 'users',
+        entityId: null,
+        ipAddress: req.ip,
+        afterState: { attemptedEmail: email },
+      });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid email or password',
+      });
+    }
+
+    if (!verifyPassword(password, user.passwordHash)) {
       auditService.log({
         actorId: null,
         action: 'LOGIN_FAILED',

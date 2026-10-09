@@ -48,25 +48,24 @@ class CardModel {
     const p2 = randPart();
     const p3 = randPart();
     const p4 = randPart();
-    const cardNumber = `${p1}  ${p2}  ${p3}  ${p4}`;
+    const futureYear = (new Date().getFullYear() + 3).toString().slice(-2);
+    const futureMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+    const expiryDate = `${futureMonth}/${futureYear}`;
 
-    // Expiry date (5 years from now)
-    const now = new Date();
-    const expMonth = String((now.getMonth() + 1)).padStart(2, '0');
-    const expYear = String((now.getFullYear() + 5)).slice(-2);
-    const expiryDate = `${expMonth}/${expYear}`;
-
-    // CVV
-    const cvv = String(Math.floor(100 + Math.random() * 900));
+    // Under RBI Card-on-File Tokenization (CoFT) and DPDP Act 2023 Section 8(5),
+    // CVV must NEVER be stored in memory or persistent storage.
+    // Full 16-digit card numbers must be masked, providing a secure token reference.
+    const maskedCardNumber = `${prefix}•••  ••••  ••••  ${p4}`;
+    const tokenRef = `tok_card_${uuidv4().replace(/-/g, '').slice(0, 16)}`;
 
     const card = {
       id: `card_${uuidv4().replace(/-/g, '').slice(0, 12)}`,
       userId,
       cardHolderName: (cardHolderName || 'ENX MEMBER').toUpperCase().trim(),
-      cardNumber,
+      cardNumber: maskedCardNumber,
       lastFourDigits: p4,
+      tokenRef,
       expiryDate,
-      cvv,
       cardTier,
       network,
       balance: Number(balance),
@@ -115,6 +114,18 @@ class CardModel {
     card.updatedAt = new Date().toISOString();
     _cardsStore.set(card.id, card);
     return { ...card };
+  }
+
+  /**
+   * DPDP Act 2023 Section 12 (Right to Erasure):
+   * Purge all cards belonging to the deleted user
+   */
+  static async purgeByUserId(userId) {
+    for (const [id, card] of _cardsStore.entries()) {
+      if (card.userId === userId) {
+        _cardsStore.delete(id);
+      }
+    }
   }
 
   /**

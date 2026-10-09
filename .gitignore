@@ -70,12 +70,14 @@ server/scripts/generate_engineering_report_pdf.js
 **/android/app/profile
 **/android/app/release
 
-# Keep APK and AAB binaries out of git repository
+# Keep general build binaries out of git repository
 *.apk
 *.aab
 *.abb
-server/public/*.apk
 server/public/*.aab
+# Whitelist official consumer release APK for production landing page downloads
+!server/public/ENX-Money-Consumer.apk
+!landing/public/ENX-Money-Consumer.apk
 
 
 # Test database artifacts

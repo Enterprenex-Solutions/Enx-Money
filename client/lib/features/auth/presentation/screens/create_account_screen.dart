@@ -7,9 +7,11 @@ import '../../../../core/widgets/buttons/primary_button.dart';
 import '../../../../core/widgets/inputs/fintech_text_field.dart';
 
 import '../../data/auth_repository.dart';
+import '../../../profile/data/profile_repository.dart';
 import '../../../profile/presentation/widgets/profile_modals.dart';
 import '../../../../core/widgets/already_registered_dialog.dart';
 import 'otp_verification_screen.dart';
+import 'security_credential_setup_screen.dart';
 
 /// Registration: Collects Name, Email, Mobile, Password, Confirm Password.
 /// Sends OTP after validation, then proceeds to OTP verification.
@@ -182,6 +184,32 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     });
 
     try {
+      if (_isEmailVerified) {
+        // Email is already verified inline! Directly create account and proceed to security setup
+        final user = await _authRepo.register(
+          name: name,
+          businessName: businessName,
+          email: email,
+          mobile: mobile,
+          password: password,
+        );
+        ProfileRepository().syncFromUser(user);
+        try {
+          await ProfileRepository().loadProfile(fetchFromApi: true);
+        } catch (_) {}
+
+        if (mounted) {
+          setState(() => _isLoading = false);
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => const SecurityCredentialSetupScreen(),
+            ),
+            (route) => false,
+          );
+        }
+        return;
+      }
+
       // 1. Check account availability before sending OTP (Duplicate Prevention)
       await _authRepo.checkAccountAvailability(email: email, phone: mobile);
 
@@ -902,7 +930,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     const SizedBox(height: 24),
 
                     PrimaryButton(
-                      text: 'Verify Email',
+                      text: _isEmailVerified ? 'Create Account' : 'Verify Email',
                       isLoading: _isLoading,
                       backgroundColor: const Color(0xFF0066FF),
                       textColor: Colors.white,

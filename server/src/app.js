@@ -477,6 +477,35 @@ app.get(['/statements/:filename', '/api/v1/whatsapp/statement/:filename', '/api/
   res.status(404).json({ error: 'Statement PDF not found or expired.' });
 });
 
+// 5.4 Enterprenex Solutions EWMS Web Application & Modular Monolith API
+try {
+  const { createApp: createEwmsApp } = require('./ewms/app');
+  const ewmsApp = createEwmsApp();
+  app.use(['/api/v1/ewms', '/ewms/api', '/api/ewms'], ewmsApp);
+  app.use(ewmsApp);
+} catch (ewmsErr) {
+  console.warn('[Server] EWMS API mount notice:', ewmsErr.message);
+}
+
+app.get([
+  '/ewms',
+  '/ewms/',
+  '/ewms/*',
+  '/work-management',
+  '/work-management/*',
+  '/system',
+  '/system/*'
+], (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const ewmsHtmlPath = path.join(__dirname, '../public/ewms/index.html');
+  if (fs.existsSync(ewmsHtmlPath)) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(ewmsHtmlPath);
+  }
+  next();
+});
+
 // 5.5 Serve static Flutter Web assets & public files from /public with aggressive caching for fast load
 app.use(express.static(path.join(__dirname, '../public'), {
   index: false,
@@ -505,34 +534,6 @@ app.use(express.static(path.join(__dirname, '../public'), {
     }
   },
 }));
-
-// 5.8 ZeroCarbonix EWMS Modular Monolith Phase 1 API
-try {
-  const { createApp: createEwmsApp } = require('./ewms/app');
-  const ewmsApp = createEwmsApp();
-  app.use('/api/v1', ewmsApp);
-} catch (ewmsErr) {
-  console.warn('[Server] EWMS API mount notice:', ewmsErr.message);
-}
-
-// 5.9 ZeroCarbonix EWMS Next.js Web Application
-app.get([
-  '/ewms',
-  '/ewms/*',
-  '/work-management',
-  '/work-management/*',
-  '/system',
-  '/system/*'
-], (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  const ewmsHtmlPath = path.join(__dirname, '../public/ewms/index.html');
-  if (fs.existsSync(ewmsHtmlPath)) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    return res.sendFile(ewmsHtmlPath);
-  }
-  next();
-});
 
 // 6. Mount API routes (supports /api, /api/v1, /v1, /api/api and root endpoints)
 app.use(['/api', '/api/v1', '/v1', '/api/api'], apiRoutes);

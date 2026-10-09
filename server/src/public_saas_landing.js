@@ -519,7 +519,7 @@ function getSaasLandingHtml() {
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="brand">
-      <div class="brand-logo">E</div>
+      <img src="/enx-emblem.png" alt="ENX" style="width: 40px; height: 40px; object-fit: contain; border-radius: 10px; background: #ffffff; padding: 2px; box-shadow: 0 4px 14px rgba(16,185,129,0.3);"/>
       <div>
         <span class="brand-name">ENX Business Suite</span>
         <span class="brand-sub">${company}</span>

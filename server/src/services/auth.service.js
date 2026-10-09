@@ -40,21 +40,37 @@ class AuthService {
       }
     }
 
-    const isEmailRegistered = existingByEmail && (
-      existingByEmail.password_hash ||
-      existingByEmail.passwordHash ||
-      existingByEmail.is_email_verified ||
-      existingByEmail.isEmailVerified
-    ) && existingByEmail.status !== 'DELETED';
+    const isSameUser = existingByEmail && existingByPhone && (
+      existingByEmail.id === existingByPhone.id ||
+      existingByEmail.email?.toLowerCase() === existingByPhone.email?.toLowerCase()
+    );
 
-    const isPhoneRegistered = existingByPhone && (
-      existingByPhone.password_hash ||
-      existingByPhone.passwordHash ||
-      existingByPhone.is_email_verified ||
-      existingByPhone.isEmailVerified ||
-      existingByPhone.is_mobile_verified ||
-      existingByPhone.isMobileVerified
-    ) && existingByPhone.status !== 'DELETED';
+    // Email registration check:
+    // If only email is being checked, any verified or password-bearing account is taken as registered.
+    // If both email and phone are being checked together (registration flow), an account is only
+    // considered already registered if it has completed password credentials (allowing in-progress
+    // users who just verified email OTP to proceed with mobile OTP and account creation).
+    const hasEmailPassword = Boolean(existingByEmail && (existingByEmail.password_hash || existingByEmail.passwordHash));
+    const isEmailRegistered = Boolean(
+      existingByEmail &&
+      existingByEmail.status !== 'DELETED' &&
+      (hasEmailPassword || (!formattedPhone && !phone && (existingByEmail.is_email_verified || existingByEmail.isEmailVerified)))
+    );
+
+    // Phone registration check:
+    // A mobile collision only occurs if the phone number belongs to another user
+    // who has completed registration with credentials or verified mobile under another account.
+    let isPhoneRegistered = false;
+    if (existingByPhone && existingByPhone.status !== 'DELETED') {
+      const isCurrentEmail = normalizedEmail && existingByPhone.email?.toLowerCase() === normalizedEmail;
+      if (!isCurrentEmail && !isSameUser) {
+        const hasPhonePassword = Boolean(existingByPhone.password_hash || existingByPhone.passwordHash);
+        const isPhoneVerified = Boolean(existingByPhone.is_mobile_verified || existingByPhone.isMobileVerified);
+        if (hasPhonePassword || isPhoneVerified) {
+          isPhoneRegistered = true;
+        }
+      }
+    }
 
     if (isEmailRegistered || isPhoneRegistered) {
       const field = (isEmailRegistered && isPhoneRegistered) ? 'both' : (isEmailRegistered ? 'email' : 'phone');
@@ -171,20 +187,45 @@ class AuthService {
   /**
    * Register a new user and business, then dispatch email OTP
    */
-  static async register({ name, businessName, email, phone, password }) {
+  static async register({ name, businessName, email, phone, password, consentGiven = false, isAdult = true }) {
     const normalizedEmail = email ? email.toLowerCase().trim() : '';
     const normalizedPhone = phone ? SmsService.formatToE164(phone) : null;
-    // Enforce check for already registered email or mobile
-    await this.checkRegistered({ email: normalizedEmail, phone: normalizedPhone || phone });
 
+    // 1. Check if email is already fully registered with password credentials
+    const existingUser = normalizedEmail ? await UserModel.findByEmail(normalizedEmail) : null;
+    if (existingUser && (existingUser.password_hash || existingUser.passwordHash) && existingUser.status !== 'DELETED') {
+      const error = new Error('This account is already registered.');
+      error.statusCode = 409;
+      error.code = 'ALREADY_REGISTERED';
+      error.field = 'email';
+      error.matchedEmail = true;
+      error.isRegistered = true;
+      throw error;
+    }
+
+    // 2. Check if mobile number is already registered under another account
     if (normalizedPhone) {
-      const existingPhoneUser = await UserModel.findByPhone(normalizedPhone);
+      let existingPhoneUser = await UserModel.findByPhone(normalizedPhone);
       if (existingPhoneUser && (existingPhoneUser.id === 1 || existingPhoneUser.email === 'kishore@enterprenex.com')) {
         await UserModel.updateUserDetails(existingPhoneUser.id, { phone: '+919000000001' });
+        existingPhoneUser = null;
+      }
+      if (
+        existingPhoneUser &&
+        existingPhoneUser.status !== 'DELETED' &&
+        existingPhoneUser.email?.toLowerCase() !== normalizedEmail &&
+        (existingPhoneUser.password_hash || existingPhoneUser.passwordHash || existingPhoneUser.is_mobile_verified || existingPhoneUser.isMobileVerified)
+      ) {
+        const error = new Error('This account is already registered.');
+        error.statusCode = 409;
+        error.code = 'ALREADY_REGISTERED';
+        error.field = 'phone';
+        error.matchedPhone = true;
+        error.isRegistered = true;
+        throw error;
       }
     }
 
-    const existingUser = await UserModel.findByEmail(normalizedEmail);
     const isAlreadyVerified = existingUser && (existingUser.is_email_verified || existingUser.isEmailVerified);
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -204,6 +245,8 @@ class AuthService {
         phone: normalizedPhone,
         passwordHash,
         isEmailVerified: false,
+        consentGiven,
+        isAdult,
       });
     }
 
@@ -917,6 +960,9 @@ class AuthService {
       kycTier: isVerified ? 'VERIFIED' : 'NOT VERIFIED',
       kycStatus: isVerified ? 'VERIFIED' : 'NOT VERIFIED',
       status: user.status || 'ACTIVE',
+      consentGiven: Boolean(user.consentGiven),
+      consentTimestamp: user.consentTimestamp || null,
+      isAdult: user.isAdult !== undefined ? Boolean(user.isAdult) : true,
       lastLoginAt: user.last_login_at,
     };
   }
@@ -944,6 +990,11 @@ class AuthService {
     if (token) {
       await TokenService.revokeToken(token, userId);
     }
+    _businessStore.delete(userId);
+    _businessStore.delete(Number(userId));
+    if (user.email) {
+      await OtpModel.purgeForEmail(user.email);
+    }
     await UserModel.deleteUser(userId);
     return {
       message: 'Account and associated personal data deleted successfully. Regulatory audit records anonymized.',
@@ -951,13 +1002,16 @@ class AuthService {
   }
 
   /**
-   * External web-based deletion request (Google Play Policy Compliance)
+   * External web-based deletion request (Google Play Policy Compliance & DPDP Act Right to Erasure)
    */
   static async requestDeletion({ email, reason }) {
     const normalizedEmail = email ? email.toLowerCase().trim() : '';
     if (normalizedEmail) {
       const user = await UserModel.findByEmail(normalizedEmail);
       if (user) {
+        _businessStore.delete(user.id);
+        _businessStore.delete(Number(user.id));
+        await OtpModel.purgeForEmail(user.email);
         await UserModel.deleteUser(user.id);
       }
     }

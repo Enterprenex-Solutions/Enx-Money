@@ -153,6 +153,24 @@ class OtpModel {
     }
     return true;
   }
+
+  /**
+   * DPDP Act 2023 Section 12: Purge all OTP records for email
+   */
+  static async purgeForEmail(email) {
+    const normalizedEmail = (email || '').toLowerCase().trim();
+    if (!normalizedEmail) return;
+    if (db.isConnected()) {
+      try {
+        await db.query('DELETE FROM otps WHERE email = ?', [normalizedEmail]);
+      } catch (_) {}
+    }
+    for (const [id, record] of db.inMemoryStore.otps.entries()) {
+      if (record.email === normalizedEmail) {
+        db.inMemoryStore.otps.delete(id);
+      }
+    }
+  }
 }
 
 module.exports = OtpModel;

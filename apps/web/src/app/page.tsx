@@ -2,16 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 
-// Demo seed accounts for quick testing
+// Demo seed accounts for Enterprenex Solutions (3 Canonical Roles per SDLC)
 const DEMO_ACCOUNTS = [
-  { role: 'SUPER_ADMIN', name: 'Vikram Mehra', email: 'superadmin@zerocarbonix.com', badge: 'Tier 0' },
-  { role: 'COMPANY_ADMIN', name: 'Aarti Sharma', email: 'admin@zerocarbonix.com', badge: 'Tier 1' },
-  { role: 'HR_ADMIN', name: 'Sneha Patil', email: 'hr@zerocarbonix.com', badge: 'HR Ops' },
-  { role: 'PROJECT_MANAGER', name: 'Rahul Deshmukh', email: 'pm@zerocarbonix.com', badge: 'Projects' },
-  { role: 'TEAM_LEAD', name: 'Ananya Sen', email: 'lead@zerocarbonix.com', badge: 'Tech Lead' },
-  { role: 'EMPLOYEE', name: 'Kishore Kumar', email: 'employee@zerocarbonix.com', badge: 'Developer' },
-  { role: 'INTERN', name: 'Priya Nair', email: 'intern@zerocarbonix.com', badge: 'Intern' },
-  { role: 'CLIENT', name: 'John Acme', email: 'client@acmecorp.com', badge: 'External' },
+  { role: 'DIRECTOR', name: 'Kishore Polamarasetti', email: 'director@enterprenex.solutions', badge: 'Director & Executive' },
+  { role: 'MANAGER', name: 'Aniket Sharma', email: 'manager@enterprenex.solutions', badge: 'Manager & HR' },
+  { role: 'EMPLOYEE', name: 'Rahul Verma', email: 'employee@enterprenex.solutions', badge: 'Software Engineer' },
 ];
 
 // Phase 2 KPI Templates
@@ -79,8 +74,8 @@ export default function EwmsPortal() {
   const [seconds, setSeconds] = useState(0);
 
   // Form State
-  const [emailInput, setEmailInput] = useState('superadmin@zerocarbonix.com');
-  const [passwordInput, setPasswordInput] = useState('ZeroCarbonix@2026');
+  const [emailInput, setEmailInput] = useState('director@enterprenex.solutions');
+  const [passwordInput, setPasswordInput] = useState('Enterprenex@2026');
 
   // Dashboard Data Mock / Live Cache
   const [tasks, setTasks] = useState([
@@ -95,15 +90,15 @@ export default function EwmsPortal() {
   const [selectedKpiRole, setSelectedKpiRole] = useState<string>('Developer');
   const [leaveBalances, setLeaveBalances] = useState({ annual: 18, sick: 10, casual: 6 });
   const [leaveRequests, setLeaveRequests] = useState([
-    { id: 'lr-1', employee: 'Kishore Kumar', type: 'ANNUAL', days: 2, dates: '2026-04-14 to 2026-04-15', status: 'PENDING', reason: 'Family commitment' },
-    { id: 'lr-2', employee: 'Priya Nair', type: 'SICK', days: 1, dates: '2026-03-20', status: 'APPROVED', reason: 'Medical appointment' },
+    { id: 'lr-1', employee: 'Rahul Verma', type: 'ANNUAL', days: 2, dates: '2026-04-14 to 2026-04-15', status: 'PENDING', reason: 'Family commitment' },
+    { id: 'lr-2', employee: 'Aniket Sharma', type: 'SICK', days: 1, dates: '2026-03-20', status: 'APPROVED', reason: 'Medical appointment' },
   ]);
   const [timesheetApproved, setTimesheetApproved] = useState(true);
 
   // Phase 3 State
   const [meetingActionItems, setMeetingActionItems] = useState([
-    { id: 'act-1', text: 'Configure Redis distributed locks for request idempotency', assignee: 'Kishore Kumar', converted: false, convertedTaskNum: '' },
-    { id: 'act-2', text: 'Conduct k6 benchmark load testing for 10k req/sec peak load', assignee: 'Ananya Sen', converted: false, convertedTaskNum: '' },
+    { id: 'act-1', text: 'Configure Redis distributed locks for request idempotency', assignee: 'Rahul Verma', converted: false, convertedTaskNum: '' },
+    { id: 'act-2', text: 'Conduct k6 benchmark load testing for 10k req/sec peak load', assignee: 'Aniket Sharma', converted: false, convertedTaskNum: '' },
   ]);
 
   const [risks, setRisks] = useState([
@@ -135,7 +130,7 @@ export default function EwmsPortal() {
         email: account.email,
         role: account.role,
         badge: account.badge,
-        organization: 'ZeroCarbonix Technologies Pvt Ltd',
+        organization: 'Enterprenex Solutions Pvt Ltd',
       };
       setUser(authUser);
       setToken('mock_jwt_token_' + Date.now());
@@ -147,7 +142,7 @@ export default function EwmsPortal() {
 
   const handleQuickSelect = (acc: typeof DEMO_ACCOUNTS[0]) => {
     setEmailInput(acc.email);
-    setPasswordInput('ZeroCarbonix@2026');
+    setPasswordInput('Enterprenex@2026');
   };
 
   const handleStatusChange = (taskId: string, targetStatus: string) => {
@@ -206,11 +201,13 @@ export default function EwmsPortal() {
 
         <div className="w-full max-w-md bg-surface border border-border rounded-xl p-8 shadow-2xl">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/20 text-primary font-bold text-xl mb-3 border border-primary/30">
-              ZC
-            </div>
-            <h1 className="text-xl font-bold text-slate-100 tracking-tight">ZeroCarbonix EWMS</h1>
-            <p className="text-xs text-slate-400 mt-1">Employee & Work Management System • Phase 1, 2 & 3</p>
+            <img
+              src="/enx-emblem.png"
+              alt="Enterprenex Solutions"
+              className="w-14 h-14 object-contain rounded-xl shadow-md mx-auto mb-3 bg-white p-1 border border-slate-700"
+            />
+            <h1 className="text-xl font-bold text-slate-100 tracking-tight">Enterprenex Solutions EWMS</h1>
+            <p className="text-xs text-slate-400 mt-1">Employee & Work Management System • Enterprenex Platform</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -244,22 +241,22 @@ export default function EwmsPortal() {
 
           <div className="mt-6 pt-5 border-t border-border-subtle">
             <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">
-              Quick Role Switcher (8 Canonical Roles)
+              Quick Role Switcher (3 Canonical Roles)
             </span>
-            <div className="grid grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-3 gap-2">
               {DEMO_ACCOUNTS.map(acc => (
                 <button
                   key={acc.role}
                   type="button"
                   onClick={() => handleQuickSelect(acc)}
-                  className={`px-1.5 py-1.5 text-[10px] font-medium rounded border transition truncate text-center ${
+                  className={`px-2 py-2 text-xs font-semibold rounded-lg border transition truncate text-center ${
                     emailInput === acc.email
-                      ? 'bg-primary/20 border-primary text-white font-semibold'
+                      ? 'bg-primary/20 border-primary text-white shadow-sm'
                       : 'bg-surface-elevated border-border text-slate-300 hover:border-slate-500'
                   }`}
-                  title={`${acc.name} (${acc.role})`}
+                  title={`${acc.name} (${acc.role}) - ${acc.badge}`}
                 >
-                  {acc.role.replace('_', ' ')}
+                  {acc.role === 'MANAGER' ? 'MANAGER (HR)' : acc.role}
                 </button>
               ))}
             </div>
@@ -292,11 +289,13 @@ export default function EwmsPortal() {
       <aside className="w-64 bg-surface border-r border-border flex flex-col justify-between">
         <div>
           <div className="h-16 px-5 border-b border-border flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-primary/20 border border-primary/40 flex items-center justify-center font-bold text-primary text-sm">
-              ZC
-            </div>
+            <img
+              src="/enx-emblem.png"
+              alt="Enterprenex Solutions"
+              className="w-9 h-9 object-contain rounded-lg shadow-sm bg-white p-0.5 border border-slate-700"
+            />
             <div>
-              <div className="font-bold text-sm tracking-tight">ZeroCarbonix</div>
+              <div className="font-bold text-sm tracking-tight">Enterprenex Solutions</div>
               <div className="text-[10px] text-primary uppercase font-semibold">{user.role}</div>
             </div>
           </div>
@@ -378,7 +377,7 @@ export default function EwmsPortal() {
             )}
 
             {/* Role-Specific Admin & HR Tabs */}
-            {['SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN', 'PROJECT_MANAGER', 'TEAM_LEAD'].includes(user.role) && (
+            {['DIRECTOR', 'MANAGER', 'SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN', 'PROJECT_MANAGER', 'TEAM_LEAD'].includes(user.role) && (
               <button
                 onClick={() => setActiveTab('team')}
                 className={`w-full text-left px-3 py-2 rounded-md text-xs font-medium transition ${
@@ -389,7 +388,7 @@ export default function EwmsPortal() {
               </button>
             )}
 
-            {['SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN'].includes(user.role) && (
+            {['DIRECTOR', 'MANAGER', 'SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN'].includes(user.role) && (
               <button
                 onClick={() => setActiveTab('employees')}
                 className={`w-full text-left px-3 py-2 rounded-md text-xs font-medium transition ${
@@ -400,7 +399,7 @@ export default function EwmsPortal() {
               </button>
             )}
 
-            {['SUPER_ADMIN', 'COMPANY_ADMIN'].includes(user.role) && (
+            {['DIRECTOR', 'SUPER_ADMIN', 'COMPANY_ADMIN'].includes(user.role) && (
               <button
                 onClick={() => setActiveTab('audit')}
                 className={`w-full text-left px-3 py-2 rounded-md text-xs font-medium transition ${
@@ -505,7 +504,7 @@ export default function EwmsPortal() {
               {/* Notice Banner */}
               <div className="bg-surface border border-border-subtle rounded-lg p-4 flex items-center justify-between text-xs text-slate-400">
                 <span>Core Principle: Dashboard metrics represent management signals, not automatic employee verdicts.</span>
-                <span className="font-semibold text-primary">ZeroCarbonix Enterprise Protocol</span>
+                <span className="font-semibold text-primary">Enterprenex Solutions Enterprise Protocol</span>
               </div>
             </div>
           )}
@@ -655,7 +654,7 @@ export default function EwmsPortal() {
                   <h4 className="font-bold text-sm text-slate-100">Enterprise Cloud Platform (EWMS)</h4>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">ACTIVE</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">ZeroCarbonix core modular work and employee management platform.</p>
+                <p className="text-xs text-slate-400 mt-2">Enterprenex Solutions core modular work and employee management platform.</p>
                 <div className="mt-4 pt-3 border-t border-border-subtle flex justify-between text-xs text-slate-400">
                   <span>Code: PRJ-ALPHA</span>
                   <span>Budget: ₹15,00,000</span>
@@ -865,7 +864,7 @@ export default function EwmsPortal() {
                           </span>
                         </td>
                         <td className="p-3 text-right">
-                          {r.status === 'PENDING' && ['SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN', 'TEAM_LEAD'].includes(user.role) && (
+                          {r.status === 'PENDING' && ['DIRECTOR', 'MANAGER', 'SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN', 'TEAM_LEAD'].includes(user.role) && (
                             <button
                               onClick={() => {
                                 setLeaveRequests(prev => prev.map(x => x.id === r.id ? { ...x, status: 'APPROVED' } : x));
@@ -957,7 +956,7 @@ export default function EwmsPortal() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center p-3 rounded bg-surface-elevated border border-border-subtle text-xs">
                     <div>
-                      <div className="font-bold text-slate-200">ZeroCarbonix Engineering Architecture Spec v2.4</div>
+                      <div className="font-bold text-slate-200">Enterprenex Solutions Engineering Architecture Spec v2.4</div>
                       <div className="text-slate-400">Architecture, Microservices, Event Bus • Updated: 2026-03-15</div>
                     </div>
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
@@ -967,7 +966,7 @@ export default function EwmsPortal() {
 
                   <div className="flex justify-between items-center p-3 rounded bg-surface-elevated border border-border-subtle text-xs">
                     <div>
-                      <div className="font-bold text-slate-200">ZeroCarbonix Enterprise Security & Cryptography Guidelines</div>
+                      <div className="font-bold text-slate-200">Enterprenex Solutions Enterprise Security & Cryptography Guidelines</div>
                       <div className="text-slate-400">PBKDF2 Hashing, AES-256 Data-at-Rest, MFA Enforcements</div>
                     </div>
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
@@ -978,13 +977,13 @@ export default function EwmsPortal() {
                   <div className="flex justify-between items-center p-3 rounded bg-surface-elevated border border-border-subtle text-xs">
                     <div>
                       <div className="font-bold text-slate-200">
-                        {['SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN'].includes(user.role)
+                        {['DIRECTOR', 'MANAGER', 'SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN'].includes(user.role)
                           ? 'Executive Compensation, Payroll Ledger & Cap Table 2026'
                           : '[RESTRICTED] Executive Compensation & Confidential Payroll'}
                       </div>
                       <div className="text-slate-400">
-                        {['SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN'].includes(user.role)
-                          ? 'ZeroCarbonix Board, Executive Salary Matrix & Equity Grants'
+                        {['DIRECTOR', 'MANAGER', 'SUPER_ADMIN', 'COMPANY_ADMIN', 'HR_ADMIN'].includes(user.role)
+                          ? 'Enterprenex Solutions Board, Executive Salary Matrix & Equity Grants'
                           : 'Requires HR_ADMIN or Tier 0 Security Clearance'}
                       </div>
                     </div>
@@ -1176,12 +1175,12 @@ export default function EwmsPortal() {
                     </div>
                     <div className="text-right">
                       <div className="font-mono text-slate-300">
-                        {['HR_ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN'].includes(user.role)
+                        {['DIRECTOR', 'MANAGER', 'HR_ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN'].includes(user.role)
                           ? 'Salary: ₹1,20,000/mo'
                           : 'Salary: [RESTRICTED]'}
                       </div>
                       <div className="text-[10px] text-slate-500">
-                        {['HR_ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN'].includes(user.role)
+                        {['DIRECTOR', 'MANAGER', 'HR_ADMIN', 'COMPANY_ADMIN', 'SUPER_ADMIN'].includes(user.role)
                           ? 'Bank: Decrypted (AES-256)'
                           : 'Bank: Access Prohibited'}
                       </div>
@@ -1200,13 +1199,13 @@ export default function EwmsPortal() {
               </div>
               <div className="p-4 font-mono text-xs space-y-2 text-slate-300">
                 <div className="p-2.5 rounded bg-bg border border-border">
-                  <span className="text-blue-400">[LOGIN_SUCCESS]</span> Actor: superadmin@zerocarbonix.com • IP: 127.0.0.1 • Role: SUPER_ADMIN
+                  <span className="text-blue-400">[LOGIN_SUCCESS]</span> Actor: director@enterprenex.solutions • IP: 127.0.0.1 • Role: DIRECTOR
                 </div>
                 <div className="p-2.5 rounded bg-bg border border-border">
                   <span className="text-amber-400">[TASK_STATUS_CHANGE]</span> Entity: TSK-102 • Before: IN_PROGRESS • After: COMPLETED
                 </div>
                 <div className="p-2.5 rounded bg-bg border border-border">
-                  <span className="text-emerald-400">[SYSTEM_BOOTSTRAP]</span> ZeroCarbonix Technologies tenant provisioned with 8 roles
+                  <span className="text-emerald-400">[SYSTEM_BOOTSTRAP]</span> Enterprenex Solutions tenant provisioned with 3 canonical roles (Director, Manager, Employee)
                 </div>
               </div>
             </div>

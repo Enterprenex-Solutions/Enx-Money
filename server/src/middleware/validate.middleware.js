@@ -118,6 +118,14 @@ const validateRegister = [
     .optional()
     .isBoolean()
     .withMessage('isBiometricEnabled must be boolean'),
+  body('consentGiven')
+    .optional()
+    .isBoolean()
+    .withMessage('consentGiven must be boolean'),
+  body('isAdult')
+    .optional()
+    .isBoolean()
+    .withMessage('isAdult must be boolean'),
   handleValidationErrors,
 ];
 
