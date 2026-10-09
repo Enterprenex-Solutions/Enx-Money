@@ -233,8 +233,14 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Serve ENX Money Flutter Web Application at Root
+// Serve ENX Money Website & Web Application at Root
 app.get('/', (req, res) => {
+  const redesignedIndexPath = path.join(__dirname, '../../landing/dist/index.html');
+  if (fs.existsSync(redesignedIndexPath)) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(redesignedIndexPath);
+  }
   const flutterIndexPath = path.join(__dirname, '../public/index.html');
   if (fs.existsSync(flutterIndexPath)) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -545,6 +551,12 @@ app.get([
   next();
 });
 
+// 5.4b Serve redesigned modern React web application bundle assets
+const landingDistDir = path.join(__dirname, '../../landing/dist');
+if (fs.existsSync(landingDistDir)) {
+  app.use(express.static(landingDistDir, { index: false }));
+}
+
 // 5.5 Serve static Flutter Web assets & public files from /public with aggressive caching for fast load
 app.use(express.static(path.join(__dirname, '../public'), {
   index: false,
@@ -580,6 +592,12 @@ app.use(apiRoutes);
 
 // ─── Web App & SPA Routing ───────────────────────────────────────────────────
 app.get(['/app', '/app/*', '/web', '/web/*', '/login', '/dashboard', '/customers', '/transactions', '/inventory', '/settings'], (req, res, next) => {
+  const redesignedAppPath = path.join(__dirname, '../../landing/dist/index.html');
+  if (fs.existsSync(redesignedAppPath)) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(redesignedAppPath);
+  }
   const appPath = path.join(__dirname, '../public/app.html');
   if (fs.existsSync(appPath)) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

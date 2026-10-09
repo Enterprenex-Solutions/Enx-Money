@@ -24,6 +24,10 @@ export default {
         brand: {
           navy: '#0B192C',
           navyLight: '#142C4F',
+          blue: '#2563EB',
+          blueDark: '#1D4ED8',
+          blueLight: '#3B82F6',
+          blue50: '#EFF6FF',
           green: '#10B981',
           greenDark: '#059669',
           greenLight: '#34D399',

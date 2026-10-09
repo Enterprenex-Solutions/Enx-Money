@@ -5,9 +5,11 @@ const os = require('os');
 
 const PORT = 8080;
 const BACKEND_PORT = 5000;
-const WEB_DIR = fs.existsSync(path.join(__dirname, 'client', 'build', 'web'))
-  ? path.join(__dirname, 'client', 'build', 'web')
-  : path.join(__dirname, 'client', 'web');
+const WEB_DIR = fs.existsSync(path.join(__dirname, 'landing', 'dist'))
+  ? path.join(__dirname, 'landing', 'dist')
+  : (fs.existsSync(path.join(__dirname, 'client', 'build', 'web'))
+      ? path.join(__dirname, 'client', 'build', 'web')
+      : path.join(__dirname, 'client', 'web'));
 
 // Legal pages in-memory provider fallback
 let legalPages = null;
