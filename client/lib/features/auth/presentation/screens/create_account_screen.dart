@@ -930,13 +930,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     const SizedBox(height: 24),
 
                     PrimaryButton(
-                      text: _isEmailVerified ? 'Create Account' : 'Verify Email',
+                      text: 'Create Account',
                       isLoading: _isLoading,
                       backgroundColor: const Color(0xFF0066FF),
                       textColor: Colors.white,
                       disabledBackgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
                       disabledForegroundColor: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
-                      onPressed: _agreedToTerms ? _onContinue : null,
+                      onPressed: _onContinue,
                     ),
                     const SizedBox(height: 24),
                     Wrap(
