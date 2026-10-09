@@ -156,15 +156,6 @@ export const Footer: React.FC<FooterProps> = ({
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
-              <li>
-                <a
-                  href="/portal"
-                  className="text-blue-400 hover:text-blue-300 font-semibold transition-colors flex items-center gap-1.5 pt-1"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-                  <span>Corporate Portal</span>
-                </a>
-              </li>
             </ul>
           </div>
 

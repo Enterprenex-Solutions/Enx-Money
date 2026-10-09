@@ -147,44 +147,52 @@ const MainAppContent: React.FC = () => {
       {/* Main Public Website Sections */}
       <main className="flex-grow">
         {/* 1. Hero Section */}
-        <Hero
-          onStartFreeClick={handleOpenSignUp}
-          onLiveDemoClick={handleOpenDashboard}
-        />
+        <div id="home">
+          <Hero
+            onStartFreeClick={handleOpenSignUp}
+            onLiveDemoClick={handleOpenDashboard}
+          />
+        </div>
 
         {/* 2. Business Categories & Har Dhandhe Ke Liye */}
-        <div id="categories">
+        <div id="categories" className="scroll-mt-20">
           <CategoriesSection />
         </div>
 
         {/* 3. Product Features Grid */}
-        <div id="features">
+        <div id="features" className="scroll-mt-20">
           <Features />
         </div>
 
-        {/* 4. How It Works (Digital Bahi Khata Workflow) */}
-        <div id="how-it-works">
-          <HowItWorks />
+        {/* 4. How It Works (Digital Bahi Khata Workflow & Khata Guide) */}
+        <div id="khata-guide" className="scroll-mt-20">
+          <div id="how-it-works">
+            <HowItWorks />
+          </div>
         </div>
 
         {/* 5. Business Dashboard Interactive Showcase */}
-        <div id="dashboard-preview">
+        <div id="dashboard-preview" className="scroll-mt-20">
           <DashboardShowcase />
         </div>
 
-        {/* 6. GST Invoice Showcase */}
-        <div id="invoices">
-          <InvoiceShowcase onCreateInvoiceClick={handleOpenDashboard} />
+        {/* 6. GST Invoice Showcase (GST Billing) */}
+        <div id="gst-billing" className="scroll-mt-20">
+          <div id="invoices">
+            <InvoiceShowcase onCreateInvoiceClick={handleOpenDashboard} />
+          </div>
         </div>
 
         {/* 7. Inventory Showcase */}
-        <div id="inventory">
+        <div id="inventory" className="scroll-mt-20">
           <InventoryShowcase />
         </div>
 
-        {/* 8. Business Analytics & Health Score */}
-        <div id="insights">
-          <Analytics />
+        {/* 8. Business Analytics & Reports & Insights */}
+        <div id="reports-insights" className="scroll-mt-20">
+          <div id="insights">
+            <Analytics />
+          </div>
         </div>
 
         {/* 9. Security & DPDP Compliance Pillars */}

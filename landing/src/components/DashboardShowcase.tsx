@@ -105,7 +105,7 @@ export const DashboardShowcase: React.FC = () => {
                 <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
               </div>
               <div className="hidden sm:block text-xs font-mono text-slate-400 bg-navy-900 px-3 py-1 rounded-md border border-navy-800">
-                https://enxmoney.enterprenex.solutions/portal/business-ops
+                https://enxmoney.enterprenex.solutions/app
               </div>
             </div>
 
