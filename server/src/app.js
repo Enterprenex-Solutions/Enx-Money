@@ -253,10 +253,6 @@ app.get(['/landing', '/saas', '/about-us'], (req, res) => {
 
 
 
-// Direct APK download route
-app.get('/apk', (req, res) => {
-  res.redirect('/download-apk');
-});
 
 // Google Play Policy Public Legal Web Pages (Not PDFs - Required by Google Play)
 app.get(['/privacy-policy', '/privacy', '/legal/privacy', '/settings/privacy-policy', '/api/privacy-policy', '/api/privacy'], (req, res) => {
@@ -342,73 +338,116 @@ app.get([
 });
 
 
-// Direct Android APK Download Endpoints (with real-time download tracking)
-app.get(['/download-apk', '/enx-money.apk', '/ENX-Money.apk', '/app-release.apk', '/api/download-apk'], (req, res) => {
+// Sync APK files locally in public directory on startup to support any alias
+try {
+  const publicDir = path.join(__dirname, '../public');
+  const primaryApk = path.join(publicDir, 'ENX-Money-Consumer.apk');
+  if (fs.existsSync(primaryApk)) {
+    const aliases = ['ENX-Money.apk', 'enx-money.apk', 'app-release.apk'];
+    for (const alias of aliases) {
+      const aliasPath = path.join(publicDir, alias);
+      if (!fs.existsSync(aliasPath)) {
+        try {
+          fs.linkSync(primaryApk, aliasPath);
+        } catch (_) {
+          fs.copyFileSync(primaryApk, aliasPath);
+        }
+      }
+    }
+  }
+} catch (e) {
+  console.warn('[APK Alias Setup Notice]', e.message);
+}
+
+function findApkFile(flavor = 'consumer') {
+  const flavorName = flavor ? `ENX-Money-${flavor.charAt(0).toUpperCase() + flavor.slice(1)}.apk` : null;
+  const candidateNames = [
+    flavorName,
+    'ENX-Money-Consumer.apk',
+    'ENX-Money.apk',
+    'app-release.apk',
+    'enx-money.apk',
+  ].filter(Boolean);
+
+  const candidateDirs = [
+    path.join(__dirname, '../public'),
+    path.join(__dirname, '../../landing/public'),
+    path.join(__dirname, '../../client/build/app/outputs/flutter-apk'),
+    path.join(__dirname, '..'),
+    path.join(__dirname, '../..'),
+  ];
+
+  for (const dir of candidateDirs) {
+    for (const name of candidateNames) {
+      const fullPath = path.join(dir, name);
+      if (fs.existsSync(fullPath)) {
+        try {
+          const stat = fs.statSync(fullPath);
+          if (stat.isFile() && stat.size > 1000) {
+            return { path: fullPath, filename: name, size: stat.size };
+          }
+        } catch (_) {}
+      }
+    }
+  }
+  return null;
+}
+
+const serveApkHandler = (req, res) => {
+  const rawFlavor = req.params?.flavor || (req.path.includes('merchant') ? 'merchant' : req.path.includes('field') ? 'field' : 'consumer');
+  const flavor = typeof rawFlavor === 'string' ? rawFlavor.toLowerCase() : 'consumer';
+  const flavorLabel = flavor === 'consumer' ? 'ENX Money' : flavor === 'merchant' ? 'ENX Money Merchant' : 'ENX Money Field';
+
   // Track download event
   const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
   const userAgent = req.headers['user-agent'] || '';
   DownloadModel.recordDownload({
     ipAddress: clientIp,
     userAgent,
-    platform: 'Android APK',
+    platform: `Android APK (${flavorLabel})`,
     version: '1.0.0',
     channel: req.path,
   }).catch(() => {});
 
-  const candidateApkPaths = [
-    path.join(__dirname, '../public/ENX-Money.apk'),
-    path.join(__dirname, '../public/app-release.apk'),
-    path.join(__dirname, '../../client/build/app/outputs/flutter-apk/app-release.apk'),
-    path.join(__dirname, '../ENX-Money.apk'),
-    path.join(__dirname, '../../ENX-Money.apk'),
-  ];
-  for (const p of candidateApkPaths) {
-    if (fs.existsSync(p)) {
-      const stat = fs.statSync(p);
-      res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-      res.setHeader('Content-Length', stat.size);
-      res.setHeader('Content-Disposition', 'attachment; filename="ENX-Money.apk"');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      return fs.createReadStream(p).pipe(res);
-    }
+  const apk = findApkFile(flavor);
+  if (!apk) {
+    return res.status(404).json({ error: `${flavorLabel} APK not found on server` });
   }
-  res.status(404).json({ error: 'APK file not found on server' });
-});
 
-// Flavor-specific APK download routes
-['consumer', 'merchant', 'field'].forEach((flavor) => {
-  const flavorLabel = flavor === 'consumer' ? 'ENX Money' : flavor === 'merchant' ? 'ENX Money Merchant' : 'ENX Money Field';
-  app.get([`/download-apk/${flavor}`, `/ENX-Money-${flavor.charAt(0).toUpperCase() + flavor.slice(1)}.apk`], (req, res) => {
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
-    const userAgent = req.headers['user-agent'] || '';
-    DownloadModel.recordDownload({
-      ipAddress: clientIp,
-      userAgent,
-      platform: `Android APK (${flavorLabel})`,
-      version: '1.0.0',
-      channel: req.path,
-    }).catch(() => {});
+  const downloadFilename = 'ENX-Money-Consumer.apk';
 
-    const filename = `ENX-Money-${flavor.charAt(0).toUpperCase() + flavor.slice(1)}.apk`;
-    const candidatePaths = [
-      path.join(__dirname, `../public/${filename}`),
-      path.join(__dirname, `../../client/build/app/outputs/flutter-apk/${filename}`),
-      // fallback to generic consumer build
-      path.join(__dirname, '../public/ENX-Money.apk'),
-    ];
-    for (const p of candidatePaths) {
-      if (fs.existsSync(p)) {
-        const stat = fs.statSync(p);
-        res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-        res.setHeader('Content-Length', stat.size);
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        return fs.createReadStream(p).pipe(res);
+  // Ensure permissive headers so mobile download managers and external browsers don't block
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+  res.setHeader('Accept-Ranges', 'bytes');
+  res.removeHeader('X-Download-Options');
+
+  // Use res.download which natively handles HTTP Range (206), HEAD requests, and Content-Disposition
+  return res.download(apk.path, downloadFilename, (err) => {
+    if (err && !res.headersSent) {
+      if (err.code !== 'ECONNABORTED' && err.syscall !== 'write') {
+        console.error('[APK Download Error]', err.message);
+        res.status(500).json({ error: 'Failed to stream APK download' });
       }
     }
-    res.status(404).json({ error: `${flavorLabel} APK not found on server` });
   });
-});
+};
+
+// Direct Android APK Download Endpoints (with real-time download tracking & Range 206 support)
+app.get([
+  '/download-apk',
+  '/download-apk/:flavor',
+  '/apk',
+  '/api/download-apk',
+  '/api/apk',
+  '/enx-money.apk',
+  '/ENX-Money.apk',
+  '/ENX-Money-Consumer.apk',
+  '/ENX-Money-Merchant.apk',
+  '/ENX-Money-Field.apk',
+  '/app-release.apk',
+], serveApkHandler);
 
 // Direct Android App Bundle (AAB / ABB) Download Endpoints (for Google Play Console submission)
 app.get([
