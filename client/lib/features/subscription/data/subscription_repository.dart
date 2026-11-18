@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart';
 import '../../../core/network/api_client.dart';
 import '../models/plan_model.dart';
 import '../models/subscription_model.dart';
@@ -133,77 +131,9 @@ class SubscriptionRepository {
     } catch (e) {
       debugPrint('[SubscriptionRepo] checkout fallback error: $e');
     }
-
-    // 3. Direct Authentic Razorpay Order Creation via Razorpay API
-    final plan = PlanModel.defaultPlans.firstWhere(
-      (p) => p.id.toLowerCase() == planId.toLowerCase() || p.name.toUpperCase() == planId.toUpperCase(),
-      orElse: () => PlanModel.defaultPlans[1],
-    );
-    final basePrice = billingCycle == 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
-    final taxable = basePrice.clamp(0.0, double.infinity);
-    final gst = double.parse((taxable * 0.18).toStringAsFixed(2));
-    final total = double.parse((taxable + gst).toStringAsFixed(2));
-    final amountPaise = (total * 100).round();
-
-    String genuineOrderId = '';
-    const razorpayKeyId = 'rzp_live_ThjlhbHvQ4iaQV';
-    const razorpaySecret = 'obTkTnLgWoM2bkq35zhUY7Og';
-
-    try {
-      final authStr = base64Encode(utf8.encode('$razorpayKeyId:$razorpaySecret'));
-      final rzpResponse = await http.post(
-        Uri.parse('https://api.razorpay.com/v1/orders'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic $authStr',
-        },
-        body: jsonEncode({
-          'amount': amountPaise,
-          'currency': 'INR',
-          'receipt': 'rcpt_${DateTime.now().millisecondsSinceEpoch}',
-          'notes': {
-            'plan_id': planId,
-            'plan_name': plan.displayName,
-            'billing_cycle': billingCycle,
-            'merchant': 'ENX Money',
-          },
-        }),
-      );
-
-      if (rzpResponse.statusCode == 200 || rzpResponse.statusCode == 201) {
-        final rzpBody = jsonDecode(rzpResponse.body) as Map<String, dynamic>;
-        genuineOrderId = rzpBody['id'] as String? ?? '';
-        debugPrint('[SubscriptionRepo] Real Razorpay Order created directly: $genuineOrderId');
-      } else {
-        debugPrint('[SubscriptionRepo] Razorpay API error (${rzpResponse.statusCode}): ${rzpResponse.body}');
-      }
-    } catch (e) {
-      debugPrint('[SubscriptionRepo] Razorpay direct order creation error: $e');
-    }
-
-    return CheckoutData(
-      orderId: genuineOrderId,
-      amountInPaise: amountPaise,
-      currency: 'INR',
-      planName: plan.displayName,
-      billingCycle: billingCycle,
-      originalAmount: basePrice,
-      discountAmount: 0,
-      finalAmount: total,
-      baseAmount: basePrice,
-      gstAmount: gst,
-      totalAmount: total,
-      razorpayKey: razorpayKeyId,
-      settlementDestination: const SettlementDestination(
-        beneficiaryName: 'ENX Money',
-        bankName: 'ENX Money Secure Gateway',
-        accountNumber: '',
-        ifscCode: '',
-        urnNumber: '',
-        gstin: '27AARCP9260R1Z2',
-        merchantName: 'ENX Money',
-      ),
-    );
+    // Order creation is sent to the server. It must not leak into the client.
+    debugPrint('[SubscriptionRepo] createPaymentOrder Failed: server did not return order');
+    return null;
   }
 
   // ── Verify Payment ─────────────────────────────────────────────────────────
@@ -282,64 +212,8 @@ class SubscriptionRepository {
     } catch (e) {
       debugPrint('[SubscriptionRepo] verifyPaymentWithDetails (/payment/verify) error: $e');
     }
-
-    // 3. Fallback: Authenticated Direct HMAC-SHA256 Verification with active secret
-    // ONLY if orderId, paymentId and signature are ALL provided and cryptographically valid!
-    // NEVER activate on unverified paymentId alone.
-    bool isCryptographicallyValid = false;
-    const activeSecret = 'XI8094mTE5f4DzOmCJpw23oL';
-
-    if (orderId.isNotEmpty && paymentId.isNotEmpty && signature.isNotEmpty) {
-      final hmac = Hmac(sha256, utf8.encode(activeSecret));
-      final generatedDigest = hmac.convert(utf8.encode('$orderId|$paymentId')).toString();
-      isCryptographicallyValid = generatedDigest.toLowerCase() == signature.toLowerCase();
-      debugPrint('[SubscriptionRepo] Strict local HMAC check: $isCryptographicallyValid');
-    }
-
-    if (isCryptographicallyValid) {
-      await _persistActiveSubscription(
-        planId: planId,
-        billingCycle: billingCycle,
-        paymentId: paymentId,
-        orderId: orderId,
-        method: method,
-      );
-
-      final plan = PlanModel.defaultPlans.firstWhere(
-        (p) => p.id.toLowerCase() == planId.toLowerCase() || p.name.toUpperCase() == planId.toUpperCase(),
-        orElse: () => PlanModel.defaultPlans[1],
-      );
-      final total = billingCycle == 'YEARLY' ? plan.priceYearly * 1.18 : plan.priceMonthly * 1.18;
-      final receiptSuffix = paymentId.replaceAll('pay_', '').length >= 6
-          ? paymentId.replaceAll('pay_', '').substring(0, 6).toUpperCase()
-          : '${DateTime.now().millisecondsSinceEpoch % 100000}';
-
-      return {
-        'verified': true,
-        'status': 'SUCCESS',
-        'receipt_id': 'ENXI-${DateTime.now().year}-$receiptSuffix',
-        'receiptId': 'ENXI-${DateTime.now().year}-$receiptSuffix',
-        'order_id': orderId,
-        'payment_id': paymentId,
-        'plan_id': planId,
-        'billing_cycle': billingCycle,
-        'total_amount': total,
-        'invoice': {
-          'invoiceNumber': 'INV-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch % 10000}',
-          'merchantName': 'ENX Money',
-          'planName': plan.displayName,
-          'billingCycle': billingCycle,
-          'totalAmount': total,
-          'paymentMethod': method ?? 'Razorpay Gateway',
-          'paymentId': paymentId,
-          'gstNumber': '27AARCP9260R1Z2',
-          'date': DateTime.now().toIso8601String(),
-        },
-      };
-    }
-
-    // Server verification failed or cryptographic mismatch - strictly do NOT activate plan
-    debugPrint('[SubscriptionRepo] Payment signature verification failed. Plan state remains unchanged.');
+    // Migrating the payment signature verification to the server side. It is a server responsibility and must not be exposed to the client side.
+    debugPrint('[SubscriptionRepo] Payment verification failed: server did not confirm.');
     return null;
   }
 

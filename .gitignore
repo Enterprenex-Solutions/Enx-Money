@@ -83,3 +83,7 @@ server/public/*.aab
 # Test database artifacts
 *.test.json
 
+# Maintaining the fixes
+F1.md
+R1.md
+P1.md

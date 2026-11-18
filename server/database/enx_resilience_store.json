@@ -20,9 +20,50 @@
       "last_login_at": "2026-10-09T05:31:19.824Z",
       "created_at": "2026-10-09T05:31:19.822Z",
       "updated_at": "2026-10-09T05:31:19.949Z"
+    },
+    {
+      "id": "943b122e-73ae-407f-994e-155d1a8e5d4a",
+      "email": "kijewex988@jcaton.com",
+      "name": "Bala Arghy",
+      "phone": "+919012345678",
+      "password_hash": "$2a$10$v5LViHCH/c6z.1JNCB/qwOGK/yJilSwdvz1wlVu3WXg7eVU9XH8Au",
+      "passwordHash": "$2a$10$v5LViHCH/c6z.1JNCB/qwOGK/yJilSwdvz1wlVu3WXg7eVU9XH8Au",
+      "role": "user",
+      "is_biometric_enabled": false,
+      "isBiometricEnabled": false,
+      "consentGiven": false,
+      "consentTimestamp": null,
+      "isAdult": true,
+      "status": "ACTIVE",
+      "is_email_verified": true,
+      "isEmailVerified": true,
+      "kyc_tier": "VERIFIED",
+      "last_login_at": "2026-11-18T10:52:30.312Z",
+      "created_at": "2026-11-18T10:52:30.309Z",
+      "updated_at": "2026-11-18T10:52:30.312Z",
+      "is_mobile_verified": true,
+      "isMobileVerified": true
     }
   ],
-  "devices": [],
+  "devices": [
+    {
+      "id": "a4a6cb42-ddfc-4e60-874b-d73416e3e969",
+      "user_id": "943b122e-73ae-407f-994e-155d1a8e5d4a",
+      "userId": "943b122e-73ae-407f-994e-155d1a8e5d4a",
+      "device_id": "ec07fc06-f10e-47b3-91c0-acef6a6a35d5",
+      "deviceId": "ec07fc06-f10e-47b3-91c0-acef6a6a35d5",
+      "device_name": "Web Browser",
+      "deviceName": "Web Browser",
+      "platform": "web",
+      "status": "APPROVED",
+      "ip_address": "127.0.0.1",
+      "ipAddress": "127.0.0.1",
+      "last_active_at": "2026-11-18 10:52:30",
+      "lastActiveAt": "2026-11-18 10:52:30",
+      "created_at": "2026-11-18 10:52:30",
+      "createdAt": "2026-11-18 10:52:30"
+    }
+  ],
   "customers": [],
   "suppliers": [],
   "products": [],
@@ -31,5 +72,5 @@
   "khataEntries": [],
   "stockLedger": [],
   "purchaseOrders": [],
-  "savedAt": "2026-10-09T05:31:19.949Z"
+  "savedAt": "2026-11-18T10:52:30.312Z"
 }

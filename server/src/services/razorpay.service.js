@@ -5,20 +5,14 @@
  */
 const crypto = require('crypto');
 
+// Migrating the KEY and SECRET to the .env keeping it here just for the development case remove it later before production
 function getKeyId() {
-  const key = process.env.RAZORPAY_KEY_ID;
-  if (!key || key.startsWith('rzp_test_')) {
-    return 'rzp_live_ThjlhbHvQ4iaQV';
-  }
-  return key;
+  return process.env.RAZORPAY_KEY_ID || '';
 }
 
+// If using multiple keys update this accordingly
 function getKeySecret() {
-  const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!secret || secret === 'XI8094mTE5f4DzOmCJpw23oL' || secret === 'qO8RdiLp42oez5ZF6O5XvF3w' || secret === 'lFpHO5pVRTFBfB0lVIQtTiB4') {
-    return 'obTkTnLgWoM2bkq35zhUY7Og';
-  }
-  return secret;
+  return process.env.RAZORPAY_KEY_SECRET || '';
 }
 
 function getWebhookSecret() {
@@ -27,7 +21,9 @@ function getWebhookSecret() {
 
 function isSimulator() {
   const keyId = getKeyId();
-  return !keyId || keyId.startsWith('rzp_test_sim') || process.env.RAZORPAY_PROVIDER === 'simulator';
+  const keySecret = getKeySecret();
+  if (!keyId || !keySecret || keyId.startsWith('rzp_test_sim')) return true;
+  return process.env.RAZORPAY_PROVIDER === 'simulator';
 }
 
 let Razorpay = null;

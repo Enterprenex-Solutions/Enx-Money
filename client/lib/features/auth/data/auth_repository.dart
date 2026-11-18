@@ -265,7 +265,7 @@ class AuthRepository {
     }
     return user;
   }
-
+ 
   // ─── OTP Authentication ────────────────────────────────────────────
 
   /// Send OTP to user's email or phone via backend API

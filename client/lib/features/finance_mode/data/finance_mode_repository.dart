@@ -197,12 +197,12 @@ class FinanceModeRepository {
       };
     } catch (e) {
       return {
-        'success': true,
-        'message': 'Fund transfer of ₹$amount completed successfully! (Offline Simulated)',
+        'success': false,
+        'message': 'Transaction Failed',
         'data': {
           'transferCode': 'TRF-OFFLINE-${DateTime.now().millisecondsSinceEpoch % 100000}',
-          'amount': amount,
-          'status': 'COMPLETED',
+          'amount': 0,
+          'status': 'NOT COMPLETED',
         }
       };
     }
@@ -304,13 +304,13 @@ class FinanceModeRepository {
           'bankCode': bankCode,
           'accountNumber': 'XXXXXXXXXXXX$last4',
           'maskedAccountNumber': '•••• $last4',
-          'accountNumberLast4': last4,
+          'accountNumberLast4': last4, 
           'ifsc': '${bankCode}000$last4',
           'accountType': 'Savings',
           'accountHolderName': 'Verified Account Holder',
           'hasUpiPin': false,
           'vpa': '$mobileNumber@${bankCode.toLowerCase()}',
-          'balance': 45250.00,
+          'balance': 45250.00, 
         }
       ]
     };

@@ -67,6 +67,9 @@ class WalletRepository extends ChangeNotifier {
         'assetType': assetType,
         'sourceDetails': sourceDetails ?? {},
       });
+      if (res['success'] != true) {
+        throw ApiException(message: res['message'] as String? ?? 'Failed');
+      }
       // Refresh wallet state
       await getWallet();
       return (res['data'] as Map<String, dynamic>?) ?? {};
