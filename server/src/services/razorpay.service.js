@@ -7,12 +7,12 @@ const crypto = require('crypto');
 
 // Migrating the KEY and SECRET to the .env keeping it here just for the development case remove it later before production
 function getKeyId() {
-  return process.env.RAZORPAY_KEY_ID || '';
+  return process.env.RAZORPAY_KEY_ID || 'rzp_live_ThjlhbHvQ4iaQV';
 }
 
 // If using multiple keys update this accordingly
 function getKeySecret() {
-  return process.env.RAZORPAY_KEY_SECRET || '';
+  return process.env.RAZORPAY_KEY_SECRET || 'obTkTnLgWoM2bkq35zhUY7Og';
 }
 
 function getWebhookSecret() {
