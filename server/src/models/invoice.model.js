@@ -85,7 +85,20 @@ class InvoiceModel {
       const taxableValue = Math.max(0, (unitPrice * qty) - discount);
       taxableTotal += taxableValue;
 
-      const gstRate = invoiceType === 'GST' ? (Number(item.gstRate) || 18) : 0;
+      const rawGstRate = item.gstRate;
+      const parsedGstRate = Number(rawGstRate);
+
+      const gstRate = invoiceType === 'GST'
+        ? (
+            rawGstRate === undefined ||
+            rawGstRate === null ||
+            rawGstRate === '' ||
+            !Number.isFinite(parsedGstRate)
+              ? 18
+              : parsedGstRate
+          )
+        : 0;
+
       let cgstRate = 0, sgstRate = 0, igstRate = 0;
       let cgstAmount = 0, sgstAmount = 0, igstAmount = 0;
 
