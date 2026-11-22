@@ -110,7 +110,7 @@ class UserModel {
       await this.updateUserDetails(existing.id, {
         name: name || existing.name,
         phone: normalizedPhone || existing.phone,
-        passwordHash: passwordHash || existing.password_hash || existing.passwordHash,
+        passwordHash: (existing.password_hash || existing.passwordHash) ? (existing.password_hash || existing.passwordHash) : passwordHash,
         isBiometricEnabled: isBiometricEnabled !== undefined ? isBiometricEnabled : existing.is_biometric_enabled,
       });
       if (verified) {

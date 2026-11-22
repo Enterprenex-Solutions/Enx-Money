@@ -359,6 +359,7 @@ class AuthService {
     }
 
     // 1. Verify OTP code with identifier (supports purpose fallback between REGISTRATION and AUTH)
+    let verifiedIdentifier = identifier;
     let verification = await OtpService.verifyOtp(identifier, otp, purpose);
     if (!verification.success && (verification.error === 'NOT_FOUND' || verification.error === 'INVALID_CODE')) {
       const altPurpose = purpose === 'REGISTRATION' ? 'AUTH' : 'REGISTRATION';
@@ -375,6 +376,7 @@ class AuthService {
       }
       if (phoneVerification.success) {
         verification = phoneVerification;
+        verifiedIdentifier = formattedPhone;
       }
     }
 
@@ -388,10 +390,19 @@ class AuthService {
       throw error;
     }
 
-    // 2. Mark email/phone verified in database and memory, updating user details if provided
-    let user = normalizedEmail 
+    // 2. Mark email/phone verified in database and memory, updating user details if provided resolving with the verified identifier not email only
+    let user = verifiedIdentifier === normalizedEmail
       ? await UserModel.findByEmail(normalizedEmail)
       : await UserModel.findByPhone(formattedPhone);
+    
+      if (verifiedIdentifier === formattedPhone && normalizedEmail) {
+        const emailUser = await UserModel.findByEmail(normalizedEmail);
+        if (emailUser && (!user || emailUser.id !== user.id)) {
+          const e = new Error('Verification identifier does not match this account');
+          e.statusCode = 400;
+          throw e;
+        }
+      }
 
     const passwordHash = password ? await bcrypt.hash(password, 10) : null;
 
@@ -407,7 +418,10 @@ class AuthService {
       const updateFields = {};
       if (name && name.trim()) updateFields.name = name.trim();
       if ((formattedPhone || phone) && !user.phone) updateFields.phone = formattedPhone || phone;
-      if (passwordHash) updateFields.passwordHash = passwordHash;
+      const hasExistingPassword = Boolean(user.password_hash || user.passwordHash);
+      if (passwordHash && !hasExistingPassword) {
+        updateFields.passwordHash = passwordHash
+      }
 
       if (Object.keys(updateFields).length > 0) {
         await UserModel.updateUserDetails(user.id, updateFields);
