@@ -405,7 +405,7 @@ class FinanceProfileModel {
     const isAsset = accountType !== 'Credit Card';
     const balance = Number(data.openingBalance || data.balance) || 0.00;
 
-    const id = `acc_${mode === 'BUSINESS' ? 'b' : 'p'}_${Date.now().toString().slice(-4)}`;
+    const id = `acc_${mode === 'BUSINESS' ? 'b' : 'p'}_${uuidv4()}`;
     const newAcc = {
       id,
       userId,

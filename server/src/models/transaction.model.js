@@ -268,8 +268,8 @@ class TransactionModel {
    * Create New Financial Transaction with Account Balance Sync
    */
   static async create(data) {
-    const amount = Number(data.amount);
-    if (isNaN(amount) || amount <= 0) {
+    const amount = Number(Number(data.amount).toFixed(2));
+    if (!Number.isFinite(amount) || amount <= 0) {
       throw new Error('Transaction amount must be a valid number greater than zero.');
     }
 
@@ -278,28 +278,19 @@ class TransactionModel {
     const type = (data.type || 'CREDIT').toUpperCase();
 
     let accountName = data.accountName || '';
-    if (data.accountId) {
-      const acc = await FinanceProfileModel.getAccountById(data.accountId);
-      if (acc) accountName = acc.name;
-    }
 
     const now = new Date();
     const status = (data.status || 'PAID').toUpperCase();
 
     if (data.accountId) {
       const acc = await FinanceProfileModel.getAccountById(data.accountId, data.userId || 1);
-      if (acc) accountName = acc.accountName || acc.name || accountName;
-    }
-
-    // Sync account balance if paid
-    if (status === 'PAID' && data.accountId) {
-      try {
-        if (type === 'DEBIT') {
-          await FinanceProfileModel.updateAccountBalance(data.accountId, -Number(amount.toFixed(2)));
-        } else if (type === 'CREDIT') {
-          await FinanceProfileModel.updateAccountBalance(data.accountId, Number(amount.toFixed(2)));
-        }
-      } catch (_) {}
+      if (!acc) {
+        throw new Error('Account not found, inactive, or unauthorized.');
+      }
+      if (acc.mode !== mode) {
+        throw new Error('Account mode does not match transaction mode.');
+      }
+      accountName = acc.accountName || acc.name || accountName;
     }
 
     const tx = {
@@ -334,6 +325,15 @@ class TransactionModel {
       updatedAt: now.toISOString(),
     };
 
+    // Sync account balance if paid
+    if (['PAID', 'SETTLED'].includes(status) && data.accountId) {
+      if (type === 'DEBIT') {
+        await FinanceProfileModel.updateAccountBalance(data.accountId, -Number(amount.toFixed(2)));
+      } else if (type === 'CREDIT') {
+        await FinanceProfileModel.updateAccountBalance(data.accountId, Number(amount.toFixed(2)));
+      }
+    }
+
     _transactionsStore.set(id, tx);
     db.saveResilienceStore();
     return tx;
@@ -352,20 +352,31 @@ class TransactionModel {
     const oldAccountId = tx.accountId;
     const oldStatus = tx.status || 'PAID';
 
-    const newAmount = updates.amount !== undefined ? Number(updates.amount) : oldAmount;
+    const newAmount = updates.amount !== undefined
+      ? Number(Number(updates.amount).toFixed(2))
+      : oldAmount;
+
+    if (!Number.isFinite(newAmount) || newAmount <= 0) {
+      throw new Error('Transaction amount must be a valid number greater than zero.');
+    }
     const newAccountId = updates.accountId !== undefined ? updates.accountId : oldAccountId;
     const newStatus = updates.status !== undefined ? updates.status.toUpperCase() : oldStatus;
 
-    // Account Balance Reconciliation if this is a DEBIT transaction
-    if (tx.type === 'DEBIT') {
-      try {
-        if (oldStatus === 'PAID' && oldAccountId) {
-          await FinanceProfileModel.updateAccountBalance(oldAccountId, oldAmount);
-        }
-        if (newStatus === 'PAID' && newAccountId) {
-          await FinanceProfileModel.updateAccountBalance(newAccountId, -newAmount);
-        }
-      } catch (_) {}
+    // Validate accounts before modifying balances
+    for (const accountId of new Set([oldAccountId, newAccountId])) {
+      if (!accountId) continue;
+
+      const acc = await FinanceProfileModel.getAccountById(
+        accountId, tx.userId
+      );
+
+      if (!acc) {
+        throw new Error('Account not found, inactive, or unauthorized.');
+      }
+
+      if (acc.mode !== tx.accountType) {
+        throw new Error('Account mode does not match transaction mode.');
+      }
     }
 
     let accountName = tx.accountName;
@@ -399,6 +410,28 @@ class TransactionModel {
       updatedAt: new Date().toISOString(),
     };
 
+    // Reconcile account balances and roll back completed changes on failure
+    if (tx.type === 'DEBIT') {
+      const appliedChanges = [];
+
+      try {
+        if (['PAID', 'SETTLED'].includes(oldStatus) && oldAccountId) {
+          await FinanceProfileModel.updateAccountBalance(oldAccountId, oldAmount);
+          appliedChanges.push([oldAccountId, oldAmount]);
+        }
+
+        if (['PAID', 'SETTLED'].includes(newStatus) && newAccountId) {
+          await FinanceProfileModel.updateAccountBalance(newAccountId, -newAmount);
+          appliedChanges.push([newAccountId, -newAmount]);
+        }
+      } catch (error) {
+        for (const [accountId, change] of appliedChanges.reverse()) {
+          await FinanceProfileModel.updateAccountBalance(accountId, -change);
+        }
+        throw error;
+      }
+    }
+
     _transactionsStore.set(id, updated);
     db.saveResilienceStore();
     return updated;
@@ -413,14 +446,25 @@ class TransactionModel {
       return false;
     }
 
-    if (tx.type === 'DEBIT' && (tx.status === 'PAID' || !tx.status) && tx.accountId) {
-      try {
-        await FinanceProfileModel.updateAccountBalance(tx.accountId, Number(tx.amount));
-      } catch (_) {}
-    } else if (tx.type === 'CREDIT' && (tx.status === 'PAID' || !tx.status) && tx.accountId) {
-      try {
-        await FinanceProfileModel.updateAccountBalance(tx.accountId, -Number(tx.amount));
-      } catch (_) {}
+    // Validate linked account before reversing its balance
+    if (tx.accountId && (['PAID', 'SETTLED'].includes(tx.status) || !tx.status)) {
+      const acc = await FinanceProfileModel.getAccountById(
+        tx.accountId, tx.userId
+      );
+
+      if (!acc) {
+        throw new Error('Account not found, inactive, or unauthorized.');
+      }
+
+      if (acc.mode !== tx.accountType) {
+        throw new Error('Account mode does not match transaction mode.');
+      }
+    }
+
+    if (tx.type === 'DEBIT' && (['PAID', 'SETTLED'].includes(tx.status) || !tx.status) && tx.accountId) {
+      await FinanceProfileModel.updateAccountBalance(tx.accountId, Number(tx.amount));
+    } else if (tx.type === 'CREDIT' && (['PAID', 'SETTLED'].includes(tx.status) || !tx.status) && tx.accountId) {
+      await FinanceProfileModel.updateAccountBalance(tx.accountId, -Number(tx.amount));
     }
 
     _transactionsStore.delete(id);

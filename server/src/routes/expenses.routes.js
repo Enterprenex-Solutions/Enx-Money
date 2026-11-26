@@ -1,7 +1,12 @@
 const express = require('express');
 const ExpensesController = require('../controllers/expenses.controller');
 
+const { authenticateToken } = require('../middleware/auth.middleware');
+
 const router = express.Router();
+
+router.use(authenticateToken);
+router.use(require('../middleware/idempotency.middleware'));
 
 router.get('/summary', ExpensesController.getExpenseSummary);
 router.get('/categories', ExpensesController.getCategories);

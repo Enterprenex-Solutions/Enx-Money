@@ -76,9 +76,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       }
       _selectedAccountId = item.accountId;
       _paymentMode = item.paymentMode;
-      _status = item.status;
+      _status = item.status.toUpperCase() == 'SETTLED' ? 'PAID' : item.status.toUpperCase();
       _selectedSupplierId = item.supplierId;
-      if (item.gstRate != null && item.gstRate! > 0) {
+      if (item.gstRate != null &&
+          (item.gstRate! > 0 ||
+              (item.gstRate == 0 && (item.taxableAmount ?? 0) > 0))) {
         _includeGst = true;
         _gstRate = item.gstRate!;
       }
@@ -183,7 +185,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   Future<void> _submitExpense() async {
     if (!_formKey.currentState!.validate() || _isLoading) return;
 
-    final amt = double.tryParse(_amountController.text.trim());
+    final rawAmount = double.tryParse(_amountController.text.trim());
+    final amt = rawAmount != null && rawAmount.isFinite
+        ? double.parse(rawAmount.toStringAsFixed(2))
+        : null;
+
     if (amt == null || amt <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -220,15 +226,38 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         body['invoiceNumber'] = _invoiceNumberController.text.trim();
       }
 
-      if (_includeGst && _gstRate > 0) {
-        final taxable = _computedTaxableAmount;
-        final totalGst = _computedGstAmount;
+      if (_includeGst) {
+        final taxable = double.parse(
+          (amt / (1 + _gstRate / 100)).toStringAsFixed(2),
+        );
+        final totalGst = double.parse(
+          (amt - taxable).toStringAsFixed(2),
+        );
+
+        final existingIgst = widget.initialExpense?.igst ?? 0;
+        final isInterState = existingIgst > 0;
+
+        final cgst = isInterState
+            ? 0.0
+            : double.parse((totalGst / 2).toStringAsFixed(2));
+
         body['gstRate'] = _gstRate;
         body['gstin'] = _gstinController.text.trim().toUpperCase();
-        body['taxableAmount'] = double.parse(taxable.toStringAsFixed(2));
-        body['totalGst'] = double.parse(totalGst.toStringAsFixed(2));
-        body['cgst'] = double.parse((totalGst / 2).toStringAsFixed(2));
-        body['sgst'] = double.parse((totalGst / 2).toStringAsFixed(2));
+        body['taxableAmount'] = taxable;
+        body['totalGst'] = totalGst;
+        body['cgst'] = cgst;
+        body['sgst'] = isInterState
+            ? 0.0
+            : double.parse((totalGst - cgst).toStringAsFixed(2));
+        body['igst'] = isInterState ? totalGst : 0.0;
+      } else if (widget.initialExpense != null) {
+        body['gstRate'] = 0.0;
+        body['gstin'] = '';
+        body['taxableAmount'] = 0.0;
+        body['totalGst'] = 0.0;
+        body['cgst'] = 0.0;
+        body['sgst'] = 0.0;
+        body['igst'] = 0.0;
       }
 
       if (widget.initialExpense != null) {

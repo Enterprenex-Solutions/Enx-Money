@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../src/app');
+const TokenService = require('../src/services/token.service');
 
 describe('Penny-Drop & Account Linking OTP Integration Suite', () => {
   let challengeId;
@@ -143,8 +144,15 @@ describe('Penny-Drop & Account Linking OTP Integration Suite', () => {
 
   describe('Business Expense Double-Entry Settlement', () => {
     it('Deducts expense amount from source account and records status as SETTLED', async () => {
+      const token = TokenService.signAccessToken({
+        id: 99997,
+        email: 'expense.integration@example.com'
+      });
+
       // First, create or retrieve an account
-      const createRes = await request(app).post('/api/finance/accounts').send({
+      const createRes = await request(app).post('/api/finance/accounts')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
         mode: 'BUSINESS',
         accountName: 'HDFC Corporate Current',
         bankName: 'HDFC Bank',
@@ -158,6 +166,7 @@ describe('Penny-Drop & Account Linking OTP Integration Suite', () => {
 
       const expenseRes = await request(app)
         .post('/api/expenses')
+        .set('Authorization', `Bearer ${token}`)
         .send({
           title: 'AWS Cloud Hosting',
           amount: 2500,
