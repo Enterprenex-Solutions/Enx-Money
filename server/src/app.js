@@ -523,7 +523,7 @@ try {
   const { createApp: createEwmsApp } = require('./ewms/app');
   const ewmsApp = createEwmsApp();
   app.use(['/api/v1/ewms', '/ewms/api', '/api/ewms'], ewmsApp);
-  app.use(ewmsApp);
+  // Keep EWMS isolated from ENX Money API routes.
 } catch (ewmsErr) {
   console.warn('[Server] EWMS API mount notice:', ewmsErr.message);
 }

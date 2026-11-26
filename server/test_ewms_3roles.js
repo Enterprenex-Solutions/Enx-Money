@@ -67,7 +67,7 @@ async function runTests() {
 
     // 2. Test Login for DIRECTOR
     console.log('\n[2] Testing Auth Login for DIRECTOR:');
-    const dirLogin = await makeRequest('POST', '/api/v1/auth/login', {
+    const dirLogin = await makeRequest('POST', '/api/v1/ewms/auth/login', {
       email: 'director@enterprenex.solutions',
       password: 'Enterprenex@2026'
     });
@@ -79,7 +79,7 @@ async function runTests() {
 
     // 3. Test Login for MANAGER
     console.log('\n[3] Testing Auth Login for MANAGER:');
-    const mgrLogin = await makeRequest('POST', '/api/v1/auth/login', {
+    const mgrLogin = await makeRequest('POST', '/api/v1/ewms/auth/login', {
       email: 'manager@enterprenex.solutions',
       password: 'Enterprenex@2026'
     });
@@ -91,7 +91,7 @@ async function runTests() {
 
     // 4. Test Login for EMPLOYEE
     console.log('\n[4] Testing Auth Login for EMPLOYEE:');
-    const empLogin = await makeRequest('POST', '/api/v1/auth/login', {
+    const empLogin = await makeRequest('POST', '/api/v1/ewms/auth/login', {
       email: 'employee@enterprenex.solutions',
       password: 'Enterprenex@2026'
     });
