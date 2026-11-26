@@ -4,6 +4,24 @@
  * invoices, customer ledger entries, or payments.
  */
 
+const { createHash } = require('crypto');
+
+function canonicalize(value) {
+  if (Array.isArray(value)) {
+    return value.map(canonicalize);
+  }
+
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.keys(value).sort().map(
+        key => [key, canonicalize(value[key])]
+      )
+    );
+  }
+
+  return value;
+}
+
 const idempotencyCache = new Map();
 const IDEMPOTENCY_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
 
@@ -29,10 +47,34 @@ function idempotencyMiddleware(req, res, next) {
   }
 
   const userId = req.user ? req.user.id : (req.ip || 'anonymous');
-  const cacheKey = `${userId}:${req.method}:${req.baseUrl || ''}${req.path}:${idempotencyKey}`;
+  const requestPath = `${req.baseUrl || ''}${req.path}`;
+  const isExpenseRoute =
+    /^(?:\/api|\/v1)*\/expenses(?=\/|$)/i.test(requestPath);
+
+  const normalizedPath = isExpenseRoute
+    ? requestPath.replace(
+        /^(?:\/api|\/v1)*\/expenses(?=\/|$)/i,
+        '/expenses'
+      ).replace(/\/$/, '')
+    : requestPath;
+
+  const fingerprint = isExpenseRoute
+    ? createHash('sha256')
+        .update(JSON.stringify(canonicalize(req.body ?? null)))
+        .digest('hex')
+    : null;
+
+  const cacheKey = `${userId}:${req.method}:${normalizedPath}:${idempotencyKey}`;
 
   const cached = idempotencyCache.get(cacheKey);
   if (cached) {
+    if (isExpenseRoute && cached.fingerprint !== fingerprint) {
+      return res.status(409).json({
+        success: false,
+        message: 'Idempotency key already used with a different request payload.',
+      });
+    }
+
     if (cached.status === 'IN_PROGRESS') {
       return res.status(409).json({
         success: false,
@@ -48,6 +90,7 @@ function idempotencyMiddleware(req, res, next) {
   // Mark in progress
   idempotencyCache.set(cacheKey, {
     status: 'IN_PROGRESS',
+    fingerprint,
     timestamp: Date.now(),
   });
 
@@ -58,6 +101,7 @@ function idempotencyMiddleware(req, res, next) {
     if (res.statusCode < 500) {
       idempotencyCache.set(cacheKey, {
         status: 'COMPLETED',
+        fingerprint,
         statusCode: res.statusCode,
         body,
         timestamp: Date.now(),

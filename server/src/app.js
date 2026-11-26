@@ -156,7 +156,14 @@ app.use(
 // 3. Request Parsers & Idempotency
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(idempotencyMiddleware);
+app.use((req, res, next) => {
+  // Expense routes handle idempotency after mandatory authentication
+  if (/^(?:\/api|\/v1)*\/expenses(?:\/|$)/i.test(req.path)) {
+    return next();
+  }
+
+  return idempotencyMiddleware(req, res, next);
+});
 
 // Automatic URL normalization: Rewrites legacy /api/api/ prefix to /api/
 app.use((req, res, next) => {

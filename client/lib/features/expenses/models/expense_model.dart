@@ -56,7 +56,7 @@ class ExpenseItem {
 
   String get displayTitle => note.isNotEmpty ? note : '$category Expense';
 
-  bool get isPaid => status.toUpperCase() == 'PAID';
+  bool get isPaid => ['PAID', 'SETTLED'].contains(status.toUpperCase());
   bool get isPending => status.toUpperCase() == 'PENDING' || status.toUpperCase() == 'UNPAID';
 
   IconData get categoryIcon {
