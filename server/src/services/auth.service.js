@@ -19,7 +19,7 @@ class AuthService {
     const formattedPhone = phone ? SmsService.formatToE164(phone) : null;
 
     if (!normalizedEmail && !formattedPhone && !phone) {
-      const error = new Error('Either email or phone number is required.');
+      const error = new Error("Either email or phone number is required.");
       error.statusCode = 400;
       throw error;
     }
@@ -33,39 +33,59 @@ class AuthService {
     if (formattedPhone || phone) {
       existingByPhone = await UserModel.findByPhone(formattedPhone || phone);
       // Demo seed account (Kishore, id: 1) must not block real users registering their mobile number
-      if (existingByPhone && (existingByPhone.id === 1 || existingByPhone.email === 'kishore@enterprenex.com')) {
-        if (!normalizedEmail || normalizedEmail !== 'kishore@enterprenex.com') {
+      if (
+        existingByPhone &&
+        (existingByPhone.id === 1 ||
+          existingByPhone.email === "kishore@enterprenex.com")
+      ) {
+        if (!normalizedEmail || normalizedEmail !== "kishore@enterprenex.com") {
           existingByPhone = null;
         }
       }
     }
 
-    const isSameUser = existingByEmail && existingByPhone && (
-      existingByEmail.id === existingByPhone.id ||
-      existingByEmail.email?.toLowerCase() === existingByPhone.email?.toLowerCase()
-    );
+    const isSameUser =
+      existingByEmail &&
+      existingByPhone &&
+      (existingByEmail.id === existingByPhone.id ||
+        existingByEmail.email?.toLowerCase() ===
+          existingByPhone.email?.toLowerCase());
 
     // Email registration check:
     // If only email is being checked, any verified or password-bearing account is taken as registered.
     // If both email and phone are being checked together (registration flow), an account is only
     // considered already registered if it has completed password credentials (allowing in-progress
     // users who just verified email OTP to proceed with mobile OTP and account creation).
-    const hasEmailPassword = Boolean(existingByEmail && (existingByEmail.password_hash || existingByEmail.passwordHash));
+    const hasEmailPassword = Boolean(
+      existingByEmail &&
+      (existingByEmail.password_hash || existingByEmail.passwordHash),
+    );
     const isEmailRegistered = Boolean(
       existingByEmail &&
-      existingByEmail.status !== 'DELETED' &&
-      (hasEmailPassword || (!formattedPhone && !phone && (existingByEmail.is_email_verified || existingByEmail.isEmailVerified)))
+      existingByEmail.status !== "DELETED" &&
+      (hasEmailPassword ||
+        (!formattedPhone &&
+          !phone &&
+          (existingByEmail.is_email_verified ||
+            existingByEmail.isEmailVerified))),
     );
 
     // Phone registration check:
     // A mobile collision only occurs if the phone number belongs to another user
     // who has completed registration with credentials or verified mobile under another account.
     let isPhoneRegistered = false;
-    if (existingByPhone && existingByPhone.status !== 'DELETED') {
-      const isCurrentEmail = normalizedEmail && existingByPhone.email?.toLowerCase() === normalizedEmail;
+    if (existingByPhone && existingByPhone.status !== "DELETED") {
+      const isCurrentEmail =
+        normalizedEmail &&
+        existingByPhone.email?.toLowerCase() === normalizedEmail;
       if (!isCurrentEmail && !isSameUser) {
-        const hasPhonePassword = Boolean(existingByPhone.password_hash || existingByPhone.passwordHash);
-        const isPhoneVerified = Boolean(existingByPhone.is_mobile_verified || existingByPhone.isMobileVerified);
+        const hasPhonePassword = Boolean(
+          existingByPhone.password_hash || existingByPhone.passwordHash,
+        );
+        const isPhoneVerified = Boolean(
+          existingByPhone.is_mobile_verified ||
+          existingByPhone.isMobileVerified,
+        );
         if (hasPhonePassword || isPhoneVerified) {
           isPhoneRegistered = true;
         }
@@ -73,10 +93,15 @@ class AuthService {
     }
 
     if (isEmailRegistered || isPhoneRegistered) {
-      const field = (isEmailRegistered && isPhoneRegistered) ? 'both' : (isEmailRegistered ? 'email' : 'phone');
-      const error = new Error('This account is already registered.');
+      const field =
+        isEmailRegistered && isPhoneRegistered
+          ? "both"
+          : isEmailRegistered
+            ? "email"
+            : "phone";
+      const error = new Error("This account is already registered.");
       error.statusCode = 409;
-      error.code = 'ALREADY_REGISTERED';
+      error.code = "ALREADY_REGISTERED";
       error.field = field;
       error.matchedEmail = Boolean(isEmailRegistered);
       error.matchedPhone = Boolean(isPhoneRegistered);
@@ -92,34 +117,45 @@ class AuthService {
   /**
    * Send OTP to user's email or mobile for registration/login
    */
-  static async sendOtp({ email, phone, purpose = 'AUTH' }) {
+  static async sendOtp({ email, phone, purpose = "AUTH" }) {
     const normalizedEmail = email ? email.toLowerCase().trim() : null;
     const formattedPhone = phone ? SmsService.formatToE164(phone) : null;
     const identifier = normalizedEmail || formattedPhone;
 
     if (!identifier) {
-      const error = new Error('Either email or phone number is required.');
+      const error = new Error("Either email or phone number is required.");
       error.statusCode = 400;
       throw error;
     }
 
     // Check duplicate account if purpose is REGISTRATION
-    if (purpose === 'REGISTRATION') {
-      await this.checkRegistered({ email: normalizedEmail, phone: formattedPhone || phone });
+    if (purpose === "REGISTRATION") {
+      await this.checkRegistered({
+        email: normalizedEmail,
+        phone: formattedPhone || phone,
+      });
     }
 
     // 1. Check if resend cooldown applies
-    const cooldownCheck = await OtpService.checkResendCooldown(identifier, purpose);
+    const cooldownCheck = await OtpService.checkResendCooldown(
+      identifier,
+      purpose,
+    );
     if (!cooldownCheck.allowed) {
-      const error = new Error(`Please wait ${cooldownCheck.remainingSeconds} seconds before requesting a new OTP.`);
+      const error = new Error(
+        `Please wait ${cooldownCheck.remainingSeconds} seconds before requesting a new OTP.`,
+      );
       error.statusCode = 429;
-      error.code = 'COOLDOWN_ACTIVE';
+      error.code = "COOLDOWN_ACTIVE";
       error.remainingSeconds = cooldownCheck.remainingSeconds;
       throw error;
     }
 
     // 2. Generate and store new hashed OTP
-    const { rawOtp, expiryMinutes } = await OtpService.createAndStoreOtp(identifier, purpose);
+    const { rawOtp, expiryMinutes } = await OtpService.createAndStoreOtp(
+      identifier,
+      purpose,
+    );
 
     // 3. Dispatch Email and/or SMS
     let emailDispatched = false;
@@ -132,11 +168,17 @@ class AuthService {
         otp: rawOtp,
         expiryMinutes,
         purpose,
-      }).then(() => {
-        console.log(`[Mailer] Successfully dispatched OTP email to ${normalizedEmail}`);
-      }).catch((err) => {
-        console.warn(`[Mailer Warning] Dispatch failed for ${normalizedEmail} (${err.message}).`);
-      });
+      })
+        .then(() => {
+          console.log(
+            `[Mailer] Successfully dispatched OTP email to ${normalizedEmail}`,
+          );
+        })
+        .catch((err) => {
+          console.warn(
+            `[Mailer Warning] Dispatch failed for ${normalizedEmail} (${err.message}).`,
+          );
+        });
     }
 
     if (formattedPhone) {
@@ -146,19 +188,21 @@ class AuthService {
         otp: rawOtp,
         expiryMinutes,
       }).catch((err) => {
-        console.warn(`[SMS Warning] Dispatch failed for ${formattedPhone} (${err.message}).`);
+        console.warn(
+          `[SMS Warning] Dispatch failed for ${formattedPhone} (${err.message}).`,
+        );
       });
     }
 
-    let successMessage = 'Verification code generated.';
+    let successMessage = "Verification code generated.";
     if (emailDispatched && smsDispatched) {
-      successMessage = 'Verification code sent to your email and mobile.';
+      successMessage = "Verification code sent to your email and mobile.";
     } else if (emailDispatched) {
-      successMessage = 'Verification code sent to your email.';
+      successMessage = "Verification code sent to your email.";
     } else if (smsDispatched) {
-      successMessage = 'Verification code sent to your mobile.';
+      successMessage = "Verification code sent to your mobile.";
     } else {
-      successMessage = 'Verification code dispatched to your account.';
+      successMessage = "Verification code dispatched to your account.";
     }
 
     const responseData = {
@@ -177,7 +221,7 @@ class AuthService {
   /**
    * Resend OTP to user's email or phone
    */
-  static async resendOtp({ email, phone, purpose = 'AUTH' }) {
+  static async resendOtp({ email, phone, purpose = "AUTH" }) {
     return this.sendOtp({ email, phone, purpose });
   }
 
@@ -187,17 +231,31 @@ class AuthService {
   /**
    * Register a new user and business, then dispatch email OTP
    */
-  static async register({ name, businessName, email, phone, password, consentGiven = false, isAdult = true }) {
-    const normalizedEmail = email ? email.toLowerCase().trim() : '';
+  static async register({
+    name,
+    businessName,
+    email,
+    phone,
+    password,
+    consentGiven = false,
+    isAdult = true,
+  }) {
+    const normalizedEmail = email ? email.toLowerCase().trim() : "";
     const normalizedPhone = phone ? SmsService.formatToE164(phone) : null;
 
     // 1. Check if email is already fully registered with password credentials
-    const existingUser = normalizedEmail ? await UserModel.findByEmail(normalizedEmail) : null;
-    if (existingUser && (existingUser.password_hash || existingUser.passwordHash) && existingUser.status !== 'DELETED') {
-      const error = new Error('This account is already registered.');
+    const existingUser = normalizedEmail
+      ? await UserModel.findByEmail(normalizedEmail)
+      : null;
+    if (
+      existingUser &&
+      (existingUser.password_hash || existingUser.passwordHash) &&
+      existingUser.status !== "DELETED"
+    ) {
+      const error = new Error("This account is already registered.");
       error.statusCode = 409;
-      error.code = 'ALREADY_REGISTERED';
-      error.field = 'email';
+      error.code = "ALREADY_REGISTERED";
+      error.field = "email";
       error.matchedEmail = true;
       error.isRegistered = true;
       throw error;
@@ -206,27 +264,38 @@ class AuthService {
     // 2. Check if mobile number is already registered under another account
     if (normalizedPhone) {
       let existingPhoneUser = await UserModel.findByPhone(normalizedPhone);
-      if (existingPhoneUser && (existingPhoneUser.id === 1 || existingPhoneUser.email === 'kishore@enterprenex.com')) {
-        await UserModel.updateUserDetails(existingPhoneUser.id, { phone: '+919000000001' });
+      if (
+        existingPhoneUser &&
+        (existingPhoneUser.id === 1 ||
+          existingPhoneUser.email === "kishore@enterprenex.com")
+      ) {
+        await UserModel.updateUserDetails(existingPhoneUser.id, {
+          phone: "+919000000001",
+        });
         existingPhoneUser = null;
       }
       if (
         existingPhoneUser &&
-        existingPhoneUser.status !== 'DELETED' &&
+        existingPhoneUser.status !== "DELETED" &&
         existingPhoneUser.email?.toLowerCase() !== normalizedEmail &&
-        (existingPhoneUser.password_hash || existingPhoneUser.passwordHash || existingPhoneUser.is_mobile_verified || existingPhoneUser.isMobileVerified)
+        (existingPhoneUser.password_hash ||
+          existingPhoneUser.passwordHash ||
+          existingPhoneUser.is_mobile_verified ||
+          existingPhoneUser.isMobileVerified)
       ) {
-        const error = new Error('This account is already registered.');
+        const error = new Error("This account is already registered.");
         error.statusCode = 409;
-        error.code = 'ALREADY_REGISTERED';
-        error.field = 'phone';
+        error.code = "ALREADY_REGISTERED";
+        error.field = "phone";
         error.matchedPhone = true;
         error.isRegistered = true;
         throw error;
       }
     }
 
-    const isAlreadyVerified = existingUser && (existingUser.is_email_verified || existingUser.isEmailVerified);
+    const isAlreadyVerified =
+      existingUser &&
+      (existingUser.is_email_verified || existingUser.isEmailVerified);
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -241,7 +310,7 @@ class AuthService {
     } else {
       user = await UserModel.create({
         email: normalizedEmail,
-        name: name ? name.trim() : normalizedEmail.split('@')[0],
+        name: name ? name.trim() : normalizedEmail.split("@")[0],
         phone: normalizedPhone,
         passwordHash,
         isEmailVerified: false,
@@ -255,7 +324,7 @@ class AuthService {
     const business = {
       id: bId,
       userId: user.id,
-      businessName: (businessName || `${name || 'My'}'s Enterprises`).trim(),
+      businessName: (businessName || `${name || "My"}'s Enterprises`).trim(),
       createdAt: new Date().toISOString(),
     };
     _businessStore.set(user.id, business);
@@ -272,23 +341,29 @@ class AuthService {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          status: user.status || 'ACTIVE',
+          status: user.status || "ACTIVE",
           isEmailVerified: true,
-          kycTier: 'VERIFIED',
-          kycStatus: 'VERIFIED',
+          kycTier: "VERIFIED",
+          kycStatus: "VERIFIED",
         },
         accessToken,
-        message: 'Account registered and verified successfully.',
+        message: "Account registered and verified successfully.",
         requiresOtpVerification: false,
       };
     }
 
     // Dispatch 6-digit OTP to email with graceful cooldown handling
-    let otpResult = { expiryMinutes: config.OTP.EXPIRY_MINUTES, cooldownSeconds: 60 };
+    let otpResult = {
+      expiryMinutes: config.OTP.EXPIRY_MINUTES,
+      cooldownSeconds: 60,
+    };
     try {
-      otpResult = await this.sendOtp({ email: normalizedEmail, purpose: 'AUTH' });
+      otpResult = await this.sendOtp({
+        email: normalizedEmail,
+        purpose: "AUTH",
+      });
     } catch (err) {
-      if (err.code === 'COOLDOWN_ACTIVE') {
+      if (err.code === "COOLDOWN_ACTIVE") {
         otpResult = {
           expiryMinutes: config.OTP.EXPIRY_MINUTES,
           cooldownSeconds: err.remainingSeconds || 60,
@@ -303,7 +378,7 @@ class AuthService {
       sub: user.id,
       email: user.email,
       name: user.name,
-      status: user.status || 'active',
+      status: user.status || "active",
       isEmailVerified: false,
     };
     const accessToken = TokenService.generateAccessToken(tokenPayload);
@@ -317,13 +392,14 @@ class AuthService {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        status: user.status || 'active',
+        status: user.status || "active",
         isEmailVerified: false,
-        kycTier: 'NOT VERIFIED',
-        kycStatus: 'NOT VERIFIED',
+        kycTier: "NOT VERIFIED",
+        kycStatus: "NOT VERIFIED",
       },
       accessToken,
-      message: 'Account created! Please verify your email with the 6-digit OTP.',
+      message:
+        "Account created! Please verify your email with the 6-digit OTP.",
       requiresOtpVerification: true,
       expiryMinutes: otpResult.expiryMinutes,
       cooldownSeconds: otpResult.cooldownSeconds || 60,
@@ -337,7 +413,7 @@ class AuthService {
     email,
     phone,
     otp,
-    purpose = 'AUTH',
+    purpose = "AUTH",
     deviceId,
     deviceName,
     platform,
@@ -350,10 +426,10 @@ class AuthService {
     const normalizedEmail = email ? email.toLowerCase().trim() : null;
     const formattedPhone = phone ? SmsService.formatToE164(phone) : null;
     const identifier = normalizedEmail || formattedPhone;
-    const resolvedPlatform = platform || devicePlatform || 'android';
+    const resolvedPlatform = platform || devicePlatform || "android";
 
     if (!identifier) {
-      const error = new Error('Either email or phone number is required.');
+      const error = new Error("Either email or phone number is required.");
       error.statusCode = 400;
       throw error;
     }
@@ -361,18 +437,39 @@ class AuthService {
     // 1. Verify OTP code with identifier (supports purpose fallback between REGISTRATION and AUTH)
     let verifiedIdentifier = identifier;
     let verification = await OtpService.verifyOtp(identifier, otp, purpose);
-    if (!verification.success && (verification.error === 'NOT_FOUND' || verification.error === 'INVALID_CODE')) {
-      const altPurpose = purpose === 'REGISTRATION' ? 'AUTH' : 'REGISTRATION';
-      const altVerification = await OtpService.verifyOtp(identifier, otp, altPurpose);
+    if (
+      !verification.success &&
+      (verification.error === "NOT_FOUND" ||
+        verification.error === "INVALID_CODE")
+    ) {
+      const altPurpose = purpose === "REGISTRATION" ? "AUTH" : "REGISTRATION";
+      const altVerification = await OtpService.verifyOtp(
+        identifier,
+        otp,
+        altPurpose,
+      );
       if (altVerification.success) {
         verification = altVerification;
       }
     }
-    if (!verification.success && formattedPhone && normalizedEmail && identifier === normalizedEmail) {
-      let phoneVerification = await OtpService.verifyOtp(formattedPhone, otp, purpose);
+    if (
+      !verification.success &&
+      formattedPhone &&
+      normalizedEmail &&
+      identifier === normalizedEmail
+    ) {
+      let phoneVerification = await OtpService.verifyOtp(
+        formattedPhone,
+        otp,
+        purpose,
+      );
       if (!phoneVerification.success) {
-        const altPurpose = purpose === 'REGISTRATION' ? 'AUTH' : 'REGISTRATION';
-        phoneVerification = await OtpService.verifyOtp(formattedPhone, otp, altPurpose);
+        const altPurpose = purpose === "REGISTRATION" ? "AUTH" : "REGISTRATION";
+        phoneVerification = await OtpService.verifyOtp(
+          formattedPhone,
+          otp,
+          altPurpose,
+        );
       }
       if (phoneVerification.success) {
         verification = phoneVerification;
@@ -391,25 +488,34 @@ class AuthService {
     }
 
     // 2. Mark email/phone verified in database and memory, updating user details if provided resolving with the verified identifier not email only
-    let user = verifiedIdentifier === normalizedEmail
-      ? await UserModel.findByEmail(normalizedEmail)
-      : await UserModel.findByPhone(formattedPhone);
-    
-      if (verifiedIdentifier === formattedPhone && normalizedEmail) {
-        const emailUser = await UserModel.findByEmail(normalizedEmail);
-        if (emailUser && (!user || emailUser.id !== user.id)) {
-          const e = new Error('Verification identifier does not match this account');
-          e.statusCode = 400;
-          throw e;
-        }
+    let user =
+      verifiedIdentifier === normalizedEmail
+        ? await UserModel.findByEmail(normalizedEmail)
+        : await UserModel.findByPhone(formattedPhone);
+
+    if (verifiedIdentifier === formattedPhone && normalizedEmail) {
+      const emailUser = await UserModel.findByEmail(normalizedEmail);
+      if (emailUser && (!user || emailUser.id !== user.id)) {
+        const e = new Error(
+          "Verification identifier does not match this account",
+        );
+        e.statusCode = 400;
+        throw e;
       }
+    }
 
     const passwordHash = password ? await bcrypt.hash(password, 10) : null;
 
     if (!user) {
       user = await UserModel.create({
-        email: normalizedEmail || `${formattedPhone.replace('+', '')}@enxmoney.local`,
-        name: (name && name.trim()) || (normalizedEmail ? normalizedEmail.split('@')[0] : `User_${formattedPhone.slice(-4)}`),
+        email:
+          normalizedEmail ||
+          `${formattedPhone.replace("+", "")}@enxmoney.local`,
+        name:
+          (name && name.trim()) ||
+          (normalizedEmail
+            ? normalizedEmail.split("@")[0]
+            : `User_${formattedPhone.slice(-4)}`),
         phone: formattedPhone || phone,
         passwordHash,
         isEmailVerified: true,
@@ -417,10 +523,13 @@ class AuthService {
     } else {
       const updateFields = {};
       if (name && name.trim()) updateFields.name = name.trim();
-      if ((formattedPhone || phone) && !user.phone) updateFields.phone = formattedPhone || phone;
-      const hasExistingPassword = Boolean(user.password_hash || user.passwordHash);
+      if ((formattedPhone || phone) && !user.phone)
+        updateFields.phone = formattedPhone || phone;
+      const hasExistingPassword = Boolean(
+        user.password_hash || user.passwordHash,
+      );
       if (passwordHash && !hasExistingPassword) {
-        updateFields.passwordHash = passwordHash
+        updateFields.passwordHash = passwordHash;
       }
 
       if (Object.keys(updateFields).length > 0) {
@@ -440,8 +549,8 @@ class AuthService {
       user.is_mobile_verified = true;
       user.isMobileVerified = true;
     }
-    user.kyc_tier = 'VERIFIED';
-    user.status = 'ACTIVE';
+    user.kyc_tier = "VERIFIED";
+    user.status = "ACTIVE";
     await UserModel.updateLastLogin(user.id);
 
     // Store custom business name if provided
@@ -456,7 +565,9 @@ class AuthService {
 
     // Multi-Device Permission Check
     if (deviceId) {
-      const approvedDevices = (await DeviceModel.getDevicesByUser(user.id)).filter(d => d.status === 'APPROVED');
+      const approvedDevices = (
+        await DeviceModel.getDevicesByUser(user.id)
+      ).filter((d) => d.status === "APPROVED");
 
       if (approvedDevices.length === 0) {
         // First device: automatically authorized as primary device
@@ -466,10 +577,12 @@ class AuthService {
           deviceName,
           platform: resolvedPlatform,
           ipAddress,
-          status: 'APPROVED',
+          status: "APPROVED",
         });
       } else {
-        const isCurrentApproved = approvedDevices.some(d => d.device_id === deviceId);
+        const isCurrentApproved = approvedDevices.some(
+          (d) => d.device_id === deviceId,
+        );
         if (isCurrentApproved) {
           await DeviceModel.registerDevice({
             userId: user.id,
@@ -477,12 +590,14 @@ class AuthService {
             deviceName,
             platform: resolvedPlatform,
             ipAddress,
-            status: 'APPROVED',
+            status: "APPROVED",
           });
         } else {
           // Second / new device: requires approval from primary device
-          const pendingRequests = await DeviceModel.getPendingRequestsForUser(user.id);
-          let activeReq = pendingRequests.find(r => r.device_id === deviceId);
+          const pendingRequests = await DeviceModel.getPendingRequestsForUser(
+            user.id,
+          );
+          let activeReq = pendingRequests.find((r) => r.device_id === deviceId);
 
           if (!activeReq) {
             activeReq = await DeviceModel.createApprovalRequest({
@@ -500,7 +615,7 @@ class AuthService {
               ipAddress: activeReq.ip_address,
               verificationCode: activeReq.verification_code,
               time: activeReq.created_at,
-            }).catch(e => console.warn('[Device Alert Email]', e.message));
+            }).catch((e) => console.warn("[Device Alert Email]", e.message));
           }
 
           return {
@@ -510,13 +625,16 @@ class AuthService {
             deviceName: activeReq.device_name,
             verificationCode: activeReq.verification_code,
             expiresAt: activeReq.expires_at,
-            message: 'Login attempt detected from a new device. Permission is required from your primary device.',
+            message:
+              "Login attempt detected from a new device. Permission is required from your primary device.",
           };
         }
       }
     }
 
-    const business = _businessStore.get(user.id) || { businessName: 'My Enterprise' };
+    const business = _businessStore.get(user.id) || {
+      businessName: "My Enterprise",
+    };
 
     // 3. Generate JWT Token
     const accessToken = TokenService.signAccessToken(user);
@@ -530,48 +648,67 @@ class AuthService {
       phone: user.phone,
       mobileNumber: user.phone,
       isEmailVerified: true,
-      isMobileVerified: Boolean(user.is_mobile_verified || user.isMobileVerified),
-      kycTier: 'VERIFIED',
-      kycStatus: 'VERIFIED',
-      status: user.status || 'ACTIVE',
+      isMobileVerified: Boolean(
+        user.is_mobile_verified || user.isMobileVerified,
+      ),
+      kycTier: "VERIFIED",
+      kycStatus: "VERIFIED",
+      status: user.status || "ACTIVE",
       lastLoginAt: user.last_login_at || new Date().toISOString(),
     };
 
     return {
       user: sanitizedUser,
       accessToken,
-      tokenType: 'Bearer',
-      message: 'Email verified and logged in successfully',
+      tokenType: "Bearer",
+      message: "Email verified and logged in successfully",
     };
   }
 
   /**
    * Login with email and password
    */
-  static async loginWithPassword({ identifier, password, deviceId, deviceName, platform, ipAddress }) {
-    const cleanId = (identifier || '').trim();
-    const user = await UserModel.findByIdentifier(cleanId) || await UserModel.findByEmail(cleanId);
+  static async loginWithPassword({
+    identifier,
+    password,
+    deviceId,
+    deviceName,
+    platform,
+    ipAddress,
+  }) {
+    const cleanId = (identifier || "").trim();
+    const user =
+      (await UserModel.findByIdentifier(cleanId)) ||
+      (await UserModel.findByEmail(cleanId));
     if (!user) {
-      const error = new Error('Invalid email or password');
+      const error = new Error("Invalid email or password");
       error.statusCode = 401;
       throw error;
     }
 
-    if (user.status === 'DELETED') {
-      const error = new Error('This account has been deleted. Please contact support.');
+    if (user.status === "DELETED") {
+      const error = new Error(
+        "This account has been deleted. Please contact support.",
+      );
       error.statusCode = 403;
       throw error;
     }
 
     const storedHash = user.password_hash || user.passwordHash;
     if (!storedHash) {
-      const error = new Error('No password set. Please verify email or reset password.');
+      const error = new Error(
+        "No password set. Please verify email or reset password.",
+      );
       error.statusCode = 400;
       throw error;
     }
 
     let isMatch = false;
-    if (storedHash.startsWith('$2a$') || storedHash.startsWith('$2b$') || storedHash.startsWith('$2y$')) {
+    if (
+      storedHash.startsWith("$2a$") ||
+      storedHash.startsWith("$2b$") ||
+      storedHash.startsWith("$2y$")
+    ) {
       isMatch = await bcrypt.compare(password, storedHash);
     } else {
       // Legacy plain-text or custom hash migration
@@ -579,34 +716,39 @@ class AuthService {
         isMatch = true;
         // Auto-upgrade to secure bcrypt hash
         const modernHash = await bcrypt.hash(password, 10);
-        await UserModel.updateUserDetails(user.id, { passwordHash: modernHash });
+        await UserModel.updateUserDetails(user.id, {
+          passwordHash: modernHash,
+        });
       }
     }
 
     if (!isMatch) {
-      const error = new Error('Invalid email or password');
+      const error = new Error("Invalid email or password");
       error.statusCode = 401;
       throw error;
     }
 
     const isVerified = Boolean(user.is_email_verified || user.isEmailVerified);
 
-    if (!isVerified && process.env.ENFORCE_EMAIL_VERIFICATION === 'true') {
+    if (!isVerified && process.env.ENFORCE_EMAIL_VERIFICATION === "true") {
       try {
-        await this.sendOtp({ email: user.email, purpose: 'AUTH' });
+        await this.sendOtp({ email: user.email, purpose: "AUTH" });
       } catch (e) {
         if (e.statusCode !== 429) throw e;
       }
       return {
         requiresOtpVerification: true,
         email: user.email,
-        message: 'Your email address is not verified yet. A verification OTP has been sent.',
+        message:
+          "Your email address is not verified yet. A verification OTP has been sent.",
       };
     }
 
     // Multi-Device Permission Check
     if (deviceId) {
-      const approvedDevices = (await DeviceModel.getDevicesByUser(user.id)).filter(d => d.status === 'APPROVED');
+      const approvedDevices = (
+        await DeviceModel.getDevicesByUser(user.id)
+      ).filter((d) => d.status === "APPROVED");
 
       if (approvedDevices.length === 0) {
         // First device: automatically authorized as primary device
@@ -616,10 +758,12 @@ class AuthService {
           deviceName,
           platform,
           ipAddress,
-          status: 'APPROVED',
+          status: "APPROVED",
         });
       } else {
-        const isCurrentApproved = approvedDevices.some(d => d.device_id === deviceId);
+        const isCurrentApproved = approvedDevices.some(
+          (d) => d.device_id === deviceId,
+        );
         if (isCurrentApproved) {
           await DeviceModel.registerDevice({
             userId: user.id,
@@ -627,12 +771,14 @@ class AuthService {
             deviceName,
             platform,
             ipAddress,
-            status: 'APPROVED',
+            status: "APPROVED",
           });
         } else {
           // Second / new device: requires approval from primary device
-          const pendingRequests = await DeviceModel.getPendingRequestsForUser(user.id);
-          let activeReq = pendingRequests.find(r => r.device_id === deviceId);
+          const pendingRequests = await DeviceModel.getPendingRequestsForUser(
+            user.id,
+          );
+          let activeReq = pendingRequests.find((r) => r.device_id === deviceId);
 
           if (!activeReq) {
             activeReq = await DeviceModel.createApprovalRequest({
@@ -650,7 +796,7 @@ class AuthService {
               ipAddress: activeReq.ip_address,
               verificationCode: activeReq.verification_code,
               time: activeReq.created_at,
-            }).catch(e => console.warn('[Device Alert Email]', e.message));
+            }).catch((e) => console.warn("[Device Alert Email]", e.message));
           }
 
           return {
@@ -660,7 +806,8 @@ class AuthService {
             deviceName: activeReq.device_name,
             verificationCode: activeReq.verification_code,
             expiresAt: activeReq.expires_at,
-            message: 'Login attempt detected from a new device. Permission is required from your primary device.',
+            message:
+              "Login attempt detected from a new device. Permission is required from your primary device.",
           };
         }
       }
@@ -668,7 +815,9 @@ class AuthService {
 
     await UserModel.updateLastLogin(user.id);
     const updatedUser = await UserModel.findById(user.id);
-    const business = _businessStore.get(user.id) || { businessName: 'My Enterprise' };
+    const business = _businessStore.get(user.id) || {
+      businessName: "My Enterprise",
+    };
     const accessToken = TokenService.signAccessToken(updatedUser);
 
     const sanitizedUser = {
@@ -680,9 +829,11 @@ class AuthService {
       phone: updatedUser.phone,
       mobileNumber: updatedUser.phone,
       isEmailVerified: isVerified,
-      isMobileVerified: Boolean(updatedUser.is_mobile_verified || updatedUser.isMobileVerified),
-      kycTier: isVerified ? 'VERIFIED' : 'NOT VERIFIED',
-      kycStatus: isVerified ? 'VERIFIED' : 'NOT VERIFIED',
+      isMobileVerified: Boolean(
+        updatedUser.is_mobile_verified || updatedUser.isMobileVerified,
+      ),
+      kycTier: isVerified ? "VERIFIED" : "NOT VERIFIED",
+      kycStatus: isVerified ? "VERIFIED" : "NOT VERIFIED",
       status: updatedUser.status,
       lastLoginAt: updatedUser.last_login_at,
     };
@@ -690,7 +841,7 @@ class AuthService {
     return {
       user: sanitizedUser,
       accessToken,
-      tokenType: 'Bearer',
+      tokenType: "Bearer",
     };
   }
 
@@ -698,39 +849,51 @@ class AuthService {
    * Forgot Password - Send OTP to registered email/phone
    */
   static async forgotPassword({ email, identifier }) {
-    const lookup = (identifier || email || '').trim();
+    const lookup = (identifier || email || "").trim();
     if (!lookup) {
-      const error = new Error('Email or mobile number is required.');
+      const error = new Error("Email or mobile number is required.");
       error.statusCode = 400;
       throw error;
     }
 
-    const user = await UserModel.findByIdentifier(lookup) || await UserModel.findByEmail(lookup);
+    const user =
+      (await UserModel.findByIdentifier(lookup)) ||
+      (await UserModel.findByEmail(lookup));
     if (!user) {
-      const error = new Error('No registered account found with this email address or mobile number.');
+      const error = new Error(
+        "No registered account found with this email address or mobile number.",
+      );
       error.statusCode = 404;
       throw error;
     }
 
     const targetEmail = user.email;
     const targetPhone = user.phone;
-    return this.sendOtp({ email: targetEmail, phone: targetPhone, purpose: 'RESET_PASSWORD' });
+    return this.sendOtp({
+      email: targetEmail,
+      phone: targetPhone,
+      purpose: "RESET_PASSWORD",
+    });
   }
 
   /**
    * Verify Reset OTP and generate temporary resetToken
    */
   static async verifyResetOtp({ email, identifier, otp }) {
-    const lookup = (identifier || email || '').trim();
+    const lookup = (identifier || email || "").trim();
     if (!lookup) {
-      const error = new Error('Email or mobile number is required.');
+      const error = new Error("Email or mobile number is required.");
       error.statusCode = 400;
       throw error;
     }
 
-    const user = await UserModel.findByIdentifier(lookup) || await UserModel.findByEmail(lookup);
+    const user =
+      (await UserModel.findByIdentifier(lookup)) ||
+      (await UserModel.findByEmail(lookup));
     if (!user) {
-      const error = new Error('No registered account found with this email address or mobile number.');
+      const error = new Error(
+        "No registered account found with this email address or mobile number.",
+      );
       error.statusCode = 404;
       throw error;
     }
@@ -739,9 +902,17 @@ class AuthService {
     const targetPhone = user.phone;
 
     // Verify OTP code: Check targetEmail first, fallback to targetPhone
-    let verification = await OtpService.verifyOtp(targetEmail, otp, 'RESET_PASSWORD');
+    let verification = await OtpService.verifyOtp(
+      targetEmail,
+      otp,
+      "RESET_PASSWORD",
+    );
     if (!verification.success && targetPhone) {
-      const phoneVerification = await OtpService.verifyOtp(targetPhone, otp, 'RESET_PASSWORD');
+      const phoneVerification = await OtpService.verifyOtp(
+        targetPhone,
+        otp,
+        "RESET_PASSWORD",
+      );
       if (phoneVerification.success) verification = phoneVerification;
     }
 
@@ -760,7 +931,7 @@ class AuthService {
 
     return {
       success: true,
-      message: 'OTP verified successfully.',
+      message: "OTP verified successfully.",
       email: targetEmail,
       phone: targetPhone,
       resetToken,
@@ -770,17 +941,25 @@ class AuthService {
   /**
    * Reset Password with resetToken or OTP
    */
-  static async resetPassword({ email, identifier, otp, resetToken, newPassword }) {
-    const lookup = (identifier || email || '').trim();
+  static async resetPassword({
+    email,
+    identifier,
+    otp,
+    resetToken,
+    newPassword,
+  }) {
+    const lookup = (identifier || email || "").trim();
     if (!lookup) {
-      const error = new Error('Email or mobile number is required.');
+      const error = new Error("Email or mobile number is required.");
       error.statusCode = 400;
       throw error;
     }
 
-    const user = await UserModel.findByIdentifier(lookup) || await UserModel.findByEmail(lookup);
+    const user =
+      (await UserModel.findByIdentifier(lookup)) ||
+      (await UserModel.findByEmail(lookup));
     if (!user) {
-      const error = new Error('User not found');
+      const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
@@ -792,27 +971,38 @@ class AuthService {
     if (resetToken) {
       try {
         const decoded = await TokenService.verifyResetToken(resetToken);
-        const tokenEmail = (decoded.email || '').toLowerCase().trim();
-        const userEmail = (targetEmail || '').toLowerCase().trim();
+        const tokenEmail = (decoded.email || "").toLowerCase().trim();
+        const userEmail = (targetEmail || "").toLowerCase().trim();
         const isEmailMatch = tokenEmail && tokenEmail === userEmail;
-        const isSubMatch = decoded.sub && String(decoded.sub) === String(user.id);
+        const isSubMatch =
+          decoded.sub && String(decoded.sub) === String(user.id);
 
         if (!isEmailMatch && !isSubMatch) {
-          const error = new Error('Reset token does not match the account.');
+          const error = new Error("Reset token does not match the account.");
           error.statusCode = 400;
           throw error;
         }
         // Blacklist resetToken to prevent reuse
         await TokenService.revokeToken(resetToken, user.id);
       } catch (err) {
-        const error = new Error(err.message || 'Invalid or expired reset token');
+        const error = new Error(
+          err.message || "Invalid or expired reset token",
+        );
         error.statusCode = 400;
         throw error;
       }
     } else if (otp) {
-      let verification = await OtpService.verifyOtp(targetEmail, otp, 'RESET_PASSWORD');
+      let verification = await OtpService.verifyOtp(
+        targetEmail,
+        otp,
+        "RESET_PASSWORD",
+      );
       if (!verification.success && targetPhone) {
-        const phoneVerification = await OtpService.verifyOtp(targetPhone, otp, 'RESET_PASSWORD');
+        const phoneVerification = await OtpService.verifyOtp(
+          targetPhone,
+          otp,
+          "RESET_PASSWORD",
+        );
         if (phoneVerification.success) verification = phoneVerification;
       }
       if (!verification.success) {
@@ -821,7 +1011,9 @@ class AuthService {
         throw error;
       }
     } else {
-      const error = new Error('Either a verified reset token or OTP code is required.');
+      const error = new Error(
+        "Either a verified reset token or OTP code is required.",
+      );
       error.statusCode = 400;
       throw error;
     }
@@ -831,14 +1023,15 @@ class AuthService {
     await UserModel.updateUserDetails(user.id, { passwordHash });
 
     // 3. Invalidate any remaining OTPs for RESET_PASSWORD
-    await OtpModel.invalidateAllForEmail(targetEmail, 'RESET_PASSWORD');
+    await OtpModel.invalidateAllForEmail(targetEmail, "RESET_PASSWORD");
     if (targetPhone) {
-      await OtpModel.invalidateAllForEmail(targetPhone, 'RESET_PASSWORD');
+      await OtpModel.invalidateAllForEmail(targetPhone, "RESET_PASSWORD");
     }
 
     return {
       success: true,
-      message: 'Password has been updated successfully. Please sign in with your new password.',
+      message:
+        "Password has been updated successfully. Please sign in with your new password.",
     };
   }
 
@@ -847,26 +1040,30 @@ class AuthService {
    */
   static async changePassword({ userId, currentPassword, newPassword }) {
     if (!userId) {
-      const error = new Error('Authentication required');
+      const error = new Error("Authentication required");
       error.statusCode = 401;
       throw error;
     }
 
     if (!currentPassword || !newPassword) {
-      const error = new Error('Both current password and new password are required');
+      const error = new Error(
+        "Both current password and new password are required",
+      );
       error.statusCode = 400;
       throw error;
     }
 
     if (newPassword.length < 8) {
-      const error = new Error('New password must be at least 8 characters long');
+      const error = new Error(
+        "New password must be at least 8 characters long",
+      );
       error.statusCode = 400;
       throw error;
     }
 
     const user = await UserModel.findById(userId);
-    if (!user || user.status === 'DELETED') {
-      const error = new Error('User account not found');
+    if (!user || user.status === "DELETED") {
+      const error = new Error("User account not found");
       error.statusCode = 404;
       throw error;
     }
@@ -874,13 +1071,17 @@ class AuthService {
     const storedHash = user.password_hash || user.passwordHash;
     if (storedHash) {
       let isMatch = false;
-      if (storedHash.startsWith('$2a$') || storedHash.startsWith('$2b$') || storedHash.startsWith('$2y$')) {
+      if (
+        storedHash.startsWith("$2a$") ||
+        storedHash.startsWith("$2b$") ||
+        storedHash.startsWith("$2y$")
+      ) {
         isMatch = await bcrypt.compare(currentPassword, storedHash);
       } else {
         isMatch = currentPassword === storedHash;
       }
       if (!isMatch) {
-        const error = new Error('Current password is incorrect');
+        const error = new Error("Current password is incorrect");
         error.statusCode = 400;
         throw error;
       }
@@ -891,7 +1092,7 @@ class AuthService {
 
     return {
       success: true,
-      message: 'Password changed successfully',
+      message: "Password changed successfully",
     };
   }
 
@@ -900,20 +1101,20 @@ class AuthService {
    */
   static async verifyPassword({ userId, password }) {
     if (!userId) {
-      const error = new Error('Authentication required');
+      const error = new Error("Authentication required");
       error.statusCode = 401;
       throw error;
     }
 
     if (!password) {
-      const error = new Error('Password is required');
+      const error = new Error("Password is required");
       error.statusCode = 400;
       throw error;
     }
 
     const user = await UserModel.findById(userId);
-    if (!user || user.status === 'DELETED') {
-      const error = new Error('User account not found');
+    if (!user || user.status === "DELETED") {
+      const error = new Error("User account not found");
       error.statusCode = 404;
       throw error;
     }
@@ -923,19 +1124,23 @@ class AuthService {
       return {
         success: true,
         verified: true,
-        message: 'Password verified successfully',
+        message: "Password verified successfully",
       };
     }
 
     let isMatch = false;
-    if (storedHash.startsWith('$2a$') || storedHash.startsWith('$2b$') || storedHash.startsWith('$2y$')) {
+    if (
+      storedHash.startsWith("$2a$") ||
+      storedHash.startsWith("$2b$") ||
+      storedHash.startsWith("$2y$")
+    ) {
       isMatch = await bcrypt.compare(password, storedHash);
     } else {
       isMatch = password === storedHash;
     }
 
     if (!isMatch) {
-      const error = new Error('Incorrect account password');
+      const error = new Error("Incorrect account password");
       error.statusCode = 400;
       throw error;
     }
@@ -943,7 +1148,7 @@ class AuthService {
     return {
       success: true,
       verified: true,
-      message: 'Password verified successfully',
+      message: "Password verified successfully",
     };
   }
 
@@ -952,13 +1157,15 @@ class AuthService {
    */
   static async getMe(userId) {
     const user = await UserModel.findById(userId);
-    if (!user || user.status === 'DELETED') {
-      const error = new Error('User not found or account has been deleted');
+    if (!user || user.status === "DELETED") {
+      const error = new Error("User not found or account has been deleted");
       error.statusCode = 404;
       throw error;
     }
 
-    const business = _businessStore.get(user.id) || { businessName: 'My Enterprise' };
+    const business = _businessStore.get(user.id) || {
+      businessName: "My Enterprise",
+    };
     const isVerified = Boolean(user.is_email_verified || user.isEmailVerified);
 
     return {
@@ -970,10 +1177,12 @@ class AuthService {
       phone: user.phone,
       mobileNumber: user.phone,
       isEmailVerified: isVerified,
-      isMobileVerified: Boolean(user.is_mobile_verified || user.isMobileVerified),
-      kycTier: isVerified ? 'VERIFIED' : 'NOT VERIFIED',
-      kycStatus: isVerified ? 'VERIFIED' : 'NOT VERIFIED',
-      status: user.status || 'ACTIVE',
+      isMobileVerified: Boolean(
+        user.is_mobile_verified || user.isMobileVerified,
+      ),
+      kycTier: isVerified ? "VERIFIED" : "NOT VERIFIED",
+      kycStatus: isVerified ? "VERIFIED" : "NOT VERIFIED",
+      status: user.status || "ACTIVE",
       consentGiven: Boolean(user.consentGiven),
       consentTimestamp: user.consentTimestamp || null,
       isAdult: user.isAdult !== undefined ? Boolean(user.isAdult) : true,
@@ -988,7 +1197,7 @@ class AuthService {
     if (token) {
       await TokenService.revokeToken(token, userId);
     }
-    return { success: true, message: 'Logged out successfully' };
+    return { success: true, message: "Logged out successfully" };
   }
 
   /**
@@ -996,8 +1205,8 @@ class AuthService {
    */
   static async deleteAccount(userId, token = null) {
     const user = await UserModel.findById(userId);
-    if (!user || user.status === 'DELETED') {
-      const error = new Error('User not found');
+    if (!user || user.status === "DELETED") {
+      const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
@@ -1011,7 +1220,8 @@ class AuthService {
     }
     await UserModel.deleteUser(userId);
     return {
-      message: 'Account and associated personal data deleted successfully. Regulatory audit records anonymized.',
+      message:
+        "Account and associated personal data deleted successfully. Regulatory audit records anonymized.",
     };
   }
 
@@ -1019,28 +1229,78 @@ class AuthService {
    * External web-based deletion request (Google Play Policy Compliance & DPDP Act Right to Erasure)
    */
   static async requestDeletion({ email, reason }) {
-    const normalizedEmail = email ? email.toLowerCase().trim() : '';
+    const normalizedEmail = email ? email.toLowerCase().trim() : "";
     if (normalizedEmail) {
       const user = await UserModel.findByEmail(normalizedEmail);
       if (user) {
-        _businessStore.delete(user.id);
-        _businessStore.delete(Number(user.id));
-        await OtpModel.purgeForEmail(user.email);
-        await UserModel.deleteUser(user.id);
+        // Change: sending a verification before deletion to verify if the account actually belongs to the user.
+        const { rawOtp, expiryMinutes } = await OtpService.createAndStoreOtp(
+          normalizedEmail,
+          "ACCOUNT_DELETION",
+        );
+        EmailService.sendOtpEmail({
+          email: normalizedEmail,
+          otp: rawOtp,
+          expiryMinutes,
+          purpose: "ACCOUNT_DELETION",
+        }).catch((err) =>
+          console.warn(
+            `Dispatch OTP failed ${normalizedEmail} (${err.message}).`,
+          ),
+        );
       }
     }
+    // Common message sent to the client.
     return {
-      message: 'Account deletion request processed successfully. In compliance with Google Play Data Deletion requirements, all personal data has been permanently deleted or anonymized.',
+      message:
+        "If an account exists for this email, a 6-digit confirmation code has been sent to it. Enter the code to complete deletion.",
+    };
+  }
+
+  // Previous function created a deletion authenticator now adding a confirmation on authentication.
+  static async confirmDeletion({ email, otp }) {
+    const normalizedEmail = email ? email.toLowerCase().trim() : "";
+    if (!normalizedEmail || !otp) {
+      const e = new Error("Email and confirmation code are required.");
+      e.statusCode = 400;
+      throw e;
+    }
+    // Check for the OTP sent to the account user.
+    const verification = await OtpService.verifyOtp(
+      normalizedEmail,
+      otp,
+      "ACCOUNT_DELETION",
+    );
+    if (!verification.success) {
+      const e = new Error(
+        verification.message || "Invalid or expired confirmation code.",
+      );
+      e.statusCode = 400;
+      e.code = verification.error;
+      throw e;
+    }
+    const user = await UserModel.findByEmail(normalizedEmail);
+    if (user) {
+      _businessStore.delete(user.id);
+      _businessStore.delete(Number(user.id));
+      await OtpModel.purgeForEmail(user.email);
+      await UserModel.deleteUser(user.id);
+    }
+    return {
+      message: "Account deletion completed successfully.",
     };
   }
 
   /**
    * Submit KYC Verification via tokenized reference (No raw Aadhaar storage)
    */
-  static async submitKyc(userId, { documentType, documentReference, panNumber } = {}) {
+  static async submitKyc(
+    userId,
+    { documentType, documentReference, panNumber } = {},
+  ) {
     const user = await UserModel.findById(userId);
-    if (!user || user.status === 'DELETED') {
-      const error = new Error('User not found');
+    if (!user || user.status === "DELETED") {
+      const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
@@ -1048,17 +1308,18 @@ class AuthService {
     // Tokenized reference only - authoritative status updated
     await UserModel.setEmailVerified(userId, true);
     await UserModel.updateUserDetails(userId, {
-      kycTier: 'VERIFIED',
-      kycStatus: 'VERIFIED',
+      kycTier: "VERIFIED",
+      kycStatus: "VERIFIED",
     });
 
     return {
       success: true,
-      status: 'VERIFIED',
-      kycTier: 'VERIFIED',
-      kycStatus: 'VERIFIED',
-      documentType: documentType || 'TOKENIZED_REFERENCE',
-      message: 'KYC verified successfully using tokenized reference verification.',
+      status: "VERIFIED",
+      kycTier: "VERIFIED",
+      kycStatus: "VERIFIED",
+      documentType: documentType || "TOKENIZED_REFERENCE",
+      message:
+        "KYC verified successfully using tokenized reference verification.",
     };
   }
 
@@ -1068,26 +1329,28 @@ class AuthService {
   static async checkDeviceApprovalStatus(requestId) {
     const req = await DeviceModel.getApprovalRequest(requestId);
     if (!req) {
-      const error = new Error('Approval request not found');
+      const error = new Error("Approval request not found");
       error.statusCode = 404;
       throw error;
     }
 
-    if (req.status === 'APPROVED') {
+    if (req.status === "APPROVED") {
       const user = await UserModel.findById(req.user_id);
       if (!user) {
-        const error = new Error('User not found');
+        const error = new Error("User not found");
         error.statusCode = 404;
         throw error;
       }
       const accessToken = TokenService.signAccessToken(user);
-      const business = _businessStore.get(user.id) || { businessName: 'My Enterprise' };
+      const business = _businessStore.get(user.id) || {
+        businessName: "My Enterprise",
+      };
 
       return {
-        status: 'APPROVED',
-        message: 'Device approved successfully! Access granted.',
+        status: "APPROVED",
+        message: "Device approved successfully! Access granted.",
         accessToken,
-        tokenType: 'Bearer',
+        tokenType: "Bearer",
         user: {
           id: user.id,
           email: user.email,
@@ -1095,28 +1358,29 @@ class AuthService {
           fullName: user.name,
           businessName: business.businessName,
           phone: user.phone,
-          status: user.status || 'ACTIVE',
+          status: user.status || "ACTIVE",
         },
       };
     }
 
-    if (req.status === 'REJECTED') {
+    if (req.status === "REJECTED") {
       return {
-        status: 'REJECTED',
-        message: 'Access denied. The account owner rejected this device.',
+        status: "REJECTED",
+        message: "Access denied. The account owner rejected this device.",
       };
     }
 
-    if (req.status === 'EXPIRED') {
+    if (req.status === "EXPIRED") {
       return {
-        status: 'EXPIRED',
-        message: 'Device approval request expired. Please try logging in again.',
+        status: "EXPIRED",
+        message:
+          "Device approval request expired. Please try logging in again.",
       };
     }
 
     return {
-      status: 'PENDING',
-      message: 'Waiting for permission from your primary device.',
+      status: "PENDING",
+      message: "Waiting for permission from your primary device.",
       verificationCode: req.verification_code,
       expiresAt: req.expires_at,
     };
@@ -1135,15 +1399,18 @@ class AuthService {
   static async approveDevice(userId, requestId) {
     const req = await DeviceModel.getApprovalRequest(requestId);
     if (!req || req.user_id !== userId) {
-      const error = new Error('Approval request not found or unauthorized');
+      const error = new Error("Approval request not found or unauthorized");
       error.statusCode = 404;
       throw error;
     }
 
-    const resolved = await DeviceModel.resolveApprovalRequest(requestId, 'APPROVED');
+    const resolved = await DeviceModel.resolveApprovalRequest(
+      requestId,
+      "APPROVED",
+    );
     return {
       success: true,
-      status: 'APPROVED',
+      status: "APPROVED",
       message: `Device '${req.device_name}' approved successfully.`,
       request: resolved,
     };
@@ -1155,15 +1422,18 @@ class AuthService {
   static async rejectDevice(userId, requestId) {
     const req = await DeviceModel.getApprovalRequest(requestId);
     if (!req || req.user_id !== userId) {
-      const error = new Error('Approval request not found or unauthorized');
+      const error = new Error("Approval request not found or unauthorized");
       error.statusCode = 404;
       throw error;
     }
 
-    const resolved = await DeviceModel.resolveApprovalRequest(requestId, 'REJECTED');
+    const resolved = await DeviceModel.resolveApprovalRequest(
+      requestId,
+      "REJECTED",
+    );
     return {
       success: true,
-      status: 'REJECTED',
+      status: "REJECTED",
       message: `Device '${req.device_name}' access rejected.`,
       request: resolved,
     };
@@ -1183,7 +1453,7 @@ class AuthService {
     await DeviceModel.removeDevice(userId, deviceId);
     return {
       success: true,
-      message: 'Device revoked successfully.',
+      message: "Device revoked successfully.",
     };
   }
 }

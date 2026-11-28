@@ -341,6 +341,7 @@ class AuthController {
 
   /**
    * POST /api/auth/request-deletion or /api/users/request-deletion (Public external web request)
+   * This requests authentication from the user in form of OTP 
    */
   static async requestDeletion(req, res, next) {
     try {
@@ -354,6 +355,23 @@ class AuthController {
         message: result.message,
         data: null,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/auth/confirm-deletion (Public external web request)
+   * This requests the actual deletion of account
+   */
+  static async confirmDeletion(req, res, next) {
+    try {
+      const { email, otp } = req.body;
+      if (!email || !otp) {
+        return res.status(400).json({ success: false, message: 'Without email and code you will not be verified.' });
+      }
+      const result =  await AuthService.confirmDeletion({ email, otp });
+      return successResponse(res, { statusCode: 200, message: result.message, data: null });
     } catch (error) {
       next(error);
     }

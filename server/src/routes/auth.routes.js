@@ -44,7 +44,8 @@ router.post(['/kyc/verify', '/kyc'], authenticateToken, AuthController.submitKyc
 
 // Google Play Account Deletion Policy Compliance Endpoints
 router.delete(['/account', '/delete-account'], authenticateToken, AuthController.deleteAccount);
-router.post(['/request-deletion', '/delete-request'], AuthController.requestDeletion);
+router.post(['/request-deletion', '/delete-request'], otpRateLimiter, AuthController.requestDeletion);
+router.post(['/confirm-deletion', '/delete-confirm'], otpRateLimiter, AuthController.confirmDeletion);
 
 // Multi-Device Login Approval & Device Management Endpoints
 router.get(['/device-approval-status/:requestId', '/device-approval-status/:requestId/'], AuthController.checkDeviceApprovalStatus);
