@@ -13,6 +13,16 @@ describe('Full Loan EMI Management Backend APIs', () => {
   let recordedPaymentId = '';
 
   beforeAll(() => {
+    jest.useFakeTimers({
+      doNotFake: [
+        'nextTick', 'setImmediate', 'clearImmediate',
+        'setTimeout', 'clearTimeout',
+        'setInterval', 'clearInterval',
+        'hrtime', 'performance', 'queueMicrotask'
+      ]
+    });
+    jest.setSystemTime(new Date('2026-10-15T12:00:00Z'));
+
     tokenA = TokenService.signAccessToken({
       id: userA,
       email: 'userA@enxmoney.com',
@@ -26,6 +36,10 @@ describe('Full Loan EMI Management Backend APIs', () => {
       name: 'User B',
       status: 'ACTIVE',
     });
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
   });
 
   describe('1. Loan CRUD APIs', () => {
